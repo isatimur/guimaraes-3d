@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "relation",
+    "id": 2836771,
+    "height_m": 24,
+    "height_source": "estimate"
+  },
+  "lat": 41.44062,
+  "lon": -8.29233,
+  "model": "convent"
+}

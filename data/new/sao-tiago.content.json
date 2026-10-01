@@ -1,0 +1,111 @@
+{
+ "id": "sao-tiago",
+ "name_pt": "Praça de São Tiago",
+ "name_ru": "Площадь Сантьяго",
+ "category": "street",
+ "year": "Средневековье",
+ "short_ru": "Средневековая площадь с деревянными балконами и террасами кафе — сердце квартала ЮНЕСКО",
+ "long_ru": "По преданию, апостол Иаков принёс сюда образ Девы Марии и поставил его в языческом храме — отсюда имя площади. Вокруг неё селились франки, пришедшие с графом Генрихом. Дома XVII–XVIII веков с деревянными галереями окружают площадь, а готическая аркада старой ратуши ведёт на соседнюю площадь Оливейры. Сегодня это самая живая площадь старого города: кафе, террасы и праздники Николинаш.",
+ "image": "assets/img/guimaraes/sao-tiago.jpg",
+ "image_credit": {
+  "author": "Nelson Monteiro Magalhães",
+  "license": "CC BY-SA 3.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_31.jpg"
+ },
+ "history_ru": "Легенда ведёт площадь к первым векам христианства: святой Иаков — по-португальски Сан-Тиагу — принёс сюда образ Девы Марии и поставил его в языческом храме. Документы упоминают площадь много веков подряд, и она сохранила средневековую планировку. Рядом с ней селились франки, которые пришли в Португалию вместе с графом Генрихом Бургундским.\n\nНа площади стояла часовня святого Иакова с крыльцом — здание начала XVII века на месте более старой, обветшавшей капеллы. Она была этапом пути в Сантьяго-де-Компостела. В июле 1882 года совет города решил выкупить и снести её ради расширения площади по проекту инженера Алмейды Рибейру 1860-х годов. Закон разрешил снос в мае 1886 года, и в январе 1887 года часовню разобрали, несмотря на протесты. Сегодня контур её плана выложен в мостовой.\n\nРомантичные сегодня дома с деревянными балконами когда-то считали трущобами. Площадь редко попадала на старые открытки: место считали «недостойным». В 1904 году совет утвердил расширение площади со сносом трёх домов, а в 1911 году читатель республиканской газеты требовал снести весь квартал целиком. Вместо этого в последней четверти XX века архитектор Фернанду Тавора бережно обновил площадь и символически вернул на неё часовню — линией её плана на мостовой.\n\nОдну сторону площади замыкает здание старой ратуши с готической аркадой в нижнем этаже: сквозь неё проходят на площадь Оливейры. Площадь входит в исторический центр Гимарайнша, объект Всемирного наследия ЮНЕСКО с 2001 года. Каждый год во время студенческих праздников Николинаш здесь проходят «Масанзиньяш» — обряд с яблоками, который собирает на площади весь город.",
+ "facts_ru": [
+  "По легенде, имя площади дал апостол Иаков, принёсший сюда образ Девы Марии.",
+  "Часовню святого Иакова разобрали в январе 1887 года; её план выложен в мостовой.",
+  "Аркада старой ратуши соединяет площадь с площадью Оливейры.",
+  "Реконструкцией площади в конце XX века руководил Фернанду Тавора.",
+  "Часть исторического центра Гимарайнша — объекта ЮНЕСКО с 2001 года."
+ ],
+ "sources": [
+  {
+   "title": "Santiago Square — Wikipedia (en)",
+   "url": "https://en.wikipedia.org/wiki/Santiago_Square"
+  },
+  {
+   "title": "Centro Histórico de Guimarães e Zona de Couros — Wikipédia (pt)",
+   "url": "https://pt.wikipedia.org/wiki/Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_e_Zona_de_Couros"
+  },
+  {
+   "title": "A Praça de S. Tiago (3) — Memórias de Araduca",
+   "url": "https://blog.araduca.pt/2011/08/praca-de-s-tiago-3.html"
+  }
+ ],
+ "tip_ru": "Лучшее время — вечер: террасы кафе занимают всю площадь. Найдите на мостовой линию, повторяющую план снесённой часовни. Через аркаду старой ратуши выходите на площадь Оливейры, а по улице Санта-Мария — наверх, к дворцу герцогов и замку.",
+ "gallery": [
+  {
+   "src": "assets/img/guimaraes/sao-tiago-1.jpg",
+   "kind": "exterior",
+   "caption_ru": "Старая ратуша: готическая аркада и зубцы",
+   "credit": {
+    "author": "José Luis Filpo Cabana",
+    "license": "CC BY 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Antigos_Pa%C3%A7os_do_Concelho,_Guimar%C3%A3es.jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/sao-tiago-2.jpg",
+   "kind": "detail",
+   "caption_ru": "Деревянные балконы с цветами",
+   "credit": {
+    "author": "K. Kendall",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Balconies_in_Pra%C3%A7a_de_Santiago,Guimaraes.jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/sao-tiago-3.jpg",
+   "kind": "exterior",
+   "caption_ru": "Террасы кафе на площади",
+   "credit": {
+    "author": "Ray Swi-hymn",
+    "license": "CC BY-SA 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:20200201_Guimar%C3%A3esOQ_4480_(49653584468).jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/sao-tiago-4.jpg",
+   "kind": "exterior",
+   "caption_ru": "Дома XVII–XVIII веков с деревянными галереями",
+   "credit": {
+    "author": "Concierge.2C",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_-_Pra%C3%A7a_de_Santiago.jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/sao-tiago-5.jpg",
+   "kind": "exterior",
+   "caption_ru": "Столики под деревом на краю площади",
+   "credit": {
+    "author": "Palickap",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es,_Largo_da_Oliveira_(1).jpg"
+   }
+  }
+ ],
+ "panorama": null,
+ "videos": [
+  {
+   "youtube_id": "VHlsMPFYZBU",
+   "title": "Praça de Santiago, Guimarães",
+   "channel": "Ines Oliveira",
+   "lang": "pt"
+  },
+  {
+   "youtube_id": "ZIykwgyQ31g",
+   "title": "Praça são Tiago - Guimarães",
+   "channel": "A memória do património 2019",
+   "lang": "pt"
+  },
+  {
+   "youtube_id": "nMAaKljoE1M",
+   "title": "Guimaraes Praca de Santiago",
+   "channel": "Wolters World",
+   "lang": "en"
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "relation",
+    "id": 19769884,
+    "height_m": 1.2,
+    "height_source": "estimate"
+  },
+  "lat": 41.43986,
+  "lon": -8.29316,
+  "model": "tannery"
+}

@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "way",
+    "id": 184819483,
+    "height_m": 6,
+    "height_source": "estimate"
+  },
+  "lat": 41.52813,
+  "lon": -8.31639,
+  "model": "citania"
+}

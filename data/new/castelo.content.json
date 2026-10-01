@@ -1,0 +1,111 @@
+{
+ "id": "castelo",
+ "name_pt": "Castelo de Guimarães",
+ "name_ru": "Замок Гимарайнш",
+ "category": "civic",
+ "year": "X век",
+ "short_ru": "Замок X века на гранитном холме: «колыбель Португалии» и одно из семи чудес страны",
+ "long_ru": "Графиня Мумадона Диаш заложила замок около 958 года, чтобы защитить свой монастырь от мавров и норманнов. В конце XI века граф Генрих Бургундский перестроил его в свою резиденцию; по преданию, здесь родился первый король Португалии Афонсу Энрикеш. Стены в форме щита с зубчатыми башнями и донжон посередине — итог готической перестройки XIII века и реставрации 1937–1940 годов. Замок открыт для посещения, с боевого хода виден весь город.",
+ "image": "assets/img/guimaraes/castelo.jpg",
+ "image_credit": {
+  "author": "Krzysztof Golik",
+  "license": "CC BY-SA 4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimaraes_(11).jpg"
+ },
+ "history_ru": "В середине X века поселение Вимаранеш жило под угрозой набегов: с юга приходили мавры, с моря — норманны. Графиня Мумадона Диаш, вдова графа Эрменеджилду Гонсалвеша, основала в низине монастырь, а на вершине холма Монте-Ларгу велела построить замок-убежище. Дарственная 958 года уже упоминает эту крепость под именем Сан-Мамеде. Тогда это была, скорее всего, одна башня с оградой.\n\nВ конце XI века король Леона Альфонсо VI отдал земли графства Портукале Генриху Бургундскому. Граф Генрих и его жена Тереза сделали Гимарайнш своей резиденцией. Старую постройку снесли, подняли донжон и расширили ограду с двумя воротами: главными с запада и «воротами предательства» с востока. По преданию, здесь родился их сын Афонсу Энрикеш. В 1127 году он выдержал в этих стенах осаду Альфонсо VII, а 24 июня 1128 года на соседнем поле Сан-Мамеде разбил войско матери. Эту битву считают рождением Португалии.\n\nНынешний облик замок получил при короле Динише на рубеже XIII–XIV веков: план в форме щита, зубчатые башни, боевой ход по стенам. В 1322, 1369 и 1385 годах крепость снова осаждали. В 1389 году Жуан I объединил верхний и нижний посёлки в один город Гимарайнш; городская стена тогда тянулась на два километра с восемью башнями и восемью воротами.\n\nС XV века артиллерия сделала замок бесполезным. В XVI веке в нём разместили городскую тюрьму, в XVII — королевский сенник. В 1836 году совет города чуть не разобрал его на брусчатку: предложение отклонили с перевесом в один голос. В 1881 году замок первым в Минью получил статус исторического памятника первого класса, в 1908–1910 годах стал национальным памятником. В 1937–1940 годах его отреставрировали к 800-летию Португалии и открыли заново 4 июня 1940 года. В 2007 году замок вошёл в число семи чудес Португалии; в 2022 году его посетили 302 761 человек.",
+ "facts_ru": [
+  "Дарственная 958 года уже упоминает замок под именем Сан-Мамеде.",
+  "По преданию, в замке родился первый король Португалии Афонсу Энрикеш.",
+  "24 июня 1128 года у стен замка прошла битва при Сан-Мамеде.",
+  "В 1836 году предложение разобрать замок на брусчатку отклонили одним голосом.",
+  "Национальный памятник с 1910 года; в 2007 году — одно из семи чудес Португалии."
+ ],
+ "sources": [
+  {
+   "title": "Castelo de Guimarães — Wikipédia (pt)",
+   "url": "https://pt.wikipedia.org/wiki/Castelo_de_Guimar%C3%A3es"
+  },
+  {
+   "title": "Castle of Guimarães — Wikipedia (en)",
+   "url": "https://en.wikipedia.org/wiki/Castle_of_Guimar%C3%A3es"
+  },
+  {
+   "title": "Bilhética e horários — Paço dos Duques / Castelo de Guimarães",
+   "url": "https://pacodosduques.gov.pt/planear-visita/bilhetica-horarios/"
+  }
+ ],
+ "tip_ru": "Замок открыт ежедневно с 10:00 до 18:00, последний вход в 17:30. Билет — 5 €, вместе с дворцом герцогов — 8 €. Донжон закрыт для посещения, но по боевому ходу стен можно обойти весь замок. Между замком и дворцом стоит романская церковь Сан-Мигел, а у пандуса дворца — статуя Афонсу Энрикеша. Замок закрыт 1 января, в Пасху, 1 мая, 24 июня и 25 декабря.",
+ "gallery": [
+  {
+   "src": "assets/img/guimaraes/castelo-1.jpg",
+   "kind": "interior",
+   "caption_ru": "Донжон с флагом Португалии, вид со двора замка",
+   "credit": {
+    "author": "michell zappa",
+    "license": "CC BY-SA 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Alca%C3%A7ova_do_Castelo_de_Guimar%C3%A3es.jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/castelo-2.jpg",
+   "kind": "exterior",
+   "caption_ru": "Замок и парк с высоты птичьего полёта",
+   "credit": {
+    "author": "Luís Miguel Jorge Duarte",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:DJI_0136.castelo_guimar%C3%A3esJPG.jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/castelo-3.jpg",
+   "kind": "exterior",
+   "caption_ru": "Подсвеченные стены замка ночью",
+   "credit": {
+    "author": "Luís A.A.F. Ribeiro",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimar%C3%A3es_(Foto_noturna).jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/castelo-4.jpg",
+   "kind": "exterior",
+   "caption_ru": "Дорожка к главным воротам и башням",
+   "credit": {
+    "author": "Krzysztof Golik",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimaraes_(7).jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/castelo-5.jpg",
+   "kind": "detail",
+   "caption_ru": "Памятная доска на гранитной скале у подножия стен",
+   "credit": {
+    "author": "Béria Lima de Rodríguez",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimar%C3%A3es_(Homenagem).JPG"
+   }
+  }
+ ],
+ "panorama": null,
+ "videos": [
+  {
+   "youtube_id": "NiuG5HGT5aU",
+   "title": "Castelo de Guimarães",
+   "channel": "Castelos",
+   "lang": "pt"
+  },
+  {
+   "youtube_id": "aqn_bC4iZg4",
+   "title": "Castelo de Guimarães – O Berço de Portugal e o Sonho de um Rei",
+   "channel": "Portugal Esquecido - Carlos Almeida - Mototurismo",
+   "lang": "pt"
+  },
+  {
+   "youtube_id": "rMI6pLIyBLs",
+   "title": "Castelo de Guimarães aereal view - by YO!",
+   "channel": "Yo portugal",
+   "lang": "pt"
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "way",
+    "id": 346365692,
+    "height_m": 27,
+    "height_source": "osm height tag"
+  },
+  "lat": 41.44791,
+  "lon": -8.29045,
+  "model": "castle"
+}

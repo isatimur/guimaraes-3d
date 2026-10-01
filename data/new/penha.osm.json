@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "way",
+    "id": 342339768,
+    "height_m": 26,
+    "height_source": "estimate"
+  },
+  "lat": 41.4318,
+  "lon": -8.26985,
+  "model": "cable-car"
+}

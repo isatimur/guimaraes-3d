@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "way",
+    "id": 230976313,
+    "height_m": 22,
+    "height_source": "estimate"
+  },
+  "lat": 41.44295,
+  "lon": -8.2766,
+  "model": "monastery"
+}

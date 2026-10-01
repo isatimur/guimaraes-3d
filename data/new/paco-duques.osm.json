@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "relation",
+    "id": 2433235,
+    "height_m": 22,
+    "height_source": "estimate"
+  },
+  "lat": 41.44646,
+  "lon": -8.29101,
+  "model": "ducal-palace"
+}

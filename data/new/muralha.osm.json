@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "relation",
+    "id": 19901679,
+    "height_m": 15,
+    "height_source": "estimate"
+  },
+  "lat": 41.44135,
+  "lon": -8.29505,
+  "model": "city-wall"
+}

@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "way",
+    "id": 104203858,
+    "height_m": 9,
+    "height_source": "estimate"
+  },
+  "lat": 41.44726,
+  "lon": -8.29099,
+  "model": "chapel-romanesque"
+}

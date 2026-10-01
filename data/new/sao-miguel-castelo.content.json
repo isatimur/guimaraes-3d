@@ -1,0 +1,107 @@
+{
+ "id": "sao-miguel-castelo",
+ "name_pt": "Igreja de São Miguel do Castelo",
+ "name_ru": "Церковь Сан-Мигел-ду-Каштелу",
+ "category": "religious",
+ "year": "1239",
+ "short_ru": "Романская капелла XIII века у замка, где, по преданию, крестили Афонсу Энрикеша",
+ "long_ru": "Маленькую гранитную церковь построила коллегиата Оливейры; архиепископ Браги Силвестре Годинью освятил её около 1239 года. Предание говорит, что в её купели крестили первого короля Португалии, хотя храм моложе короля на целый век. Пол выложен надгробными плитами рыцарей. В 1870-е годы церковь лежала в руинах; её спасло Общество Мартинша Сарменту.",
+ "image": "assets/img/guimaraes/sao-miguel-castelo.jpg",
+ "image_credit": {
+  "author": "Gerd Eichmann",
+  "license": "CC BY-SA 4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-28-Capela_Sao_Miguel_do_Castelo-2011-gje.jpg"
+ },
+ "history_ru": "Церковь впервые упомянута в 1216 году в документе коллегиаты Гимарайнша. Каноники строили её в разгар спора с архиепископом Браги — храм появился в обход его воли, и, возможно, поэтому он так прост: глухие стены, узкие окна-щели, один неф и прямоугольная апсида. В описи короля Афонсу III назван каменщик Гарсия Петрариуш. Архиепископ Силвестре Годинью освятил церковь около 1239 года. Для романики это поздно: в деталях уже чувствуется готика.\n\nПредание связывает капеллу с Афонсу Энрикешем. Слева от входа стоит круглая гранитная купель за железной решёткой, а рядом — плита с надписью, что в ней в 1106 году крестили будущего короля. Историки в это не верят: церковь построена на век позже. Но легенда пережила века, а в XIX веке её укрепил романтический национализм.\n\nПол церкви вымощен гранитными плитами; многие из них — надгробия с именами и знаками рыцарей. Триумфальную арку украшает фриз из переплетённых лент. На северном фасаде по обе стороны двери — две аркосолии, ниши для погребений; одна из них с резным архивольтом.\n\nВ 1795 году приор коллегиаты заменил арку между нефом и апсидой. К 1870 году церковь перестала быть приходской и стояла в руинах. Комиссия горожан из Общества Мартинша Сарменту восстановила её в 1874–1880 годах и вернула на место первоначальную арку. 16 июня 1910 года церковь объявили национальным памятником вместе с замком и дворцом герцогов. В 1936 году с фасада сняли позднюю звонницу, в 1939-м сменили кровлю и двери, а в 1957 году ландшафтный архитектор Виана Баррету благоустроил площадку вокруг.",
+ "facts_ru": [
+  "Церковь впервые упомянута в 1216 году, освящена около 1239 года.",
+  "Плита у купели утверждает, что здесь в 1106 году крестили Афонсу Энрикеша.",
+  "Пол выложен надгробными плитами средневековых рыцарей.",
+  "Руины восстановило Общество Мартинша Сарменту в 1874–1880 годах.",
+  "Национальный памятник с 16 июня 1910 года."
+ ],
+ "sources": [
+  {
+   "title": "Igreja de São Miguel do Castelo — Wikipédia (pt)",
+   "url": "https://pt.wikipedia.org/wiki/Igreja_de_S%C3%A3o_Miguel_do_Castelo"
+  },
+  {
+   "title": "Church of São Miguel do Castelo — Wikipedia (en)",
+   "url": "https://en.wikipedia.org/wiki/Church_of_S%C3%A3o_Miguel_do_Castelo"
+  }
+ ],
+ "tip_ru": "Капелла стоит на «священном холме» между замком и дворцом герцогов; от любого из них — две минуты пешком. Внутри полутемно: дайте глазам привыкнуть и рассмотрите плиты пола и купель слева от входа. С площадки перед церковью открывается лучший вид на замок.",
+ "gallery": [
+  {
+   "src": "assets/img/guimaraes/sao-miguel-castelo-1.jpg",
+   "kind": "interior",
+   "caption_ru": "Неф под деревянной кровлей, вид к апсиде",
+   "credit": {
+    "author": "GFreihalter",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_S%C3%A3o_Miguel_do_Castelo_445.jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/sao-miguel-castelo-2.jpg",
+   "kind": "interior",
+   "caption_ru": "Плита у купели: «В этой купели был крещён король Афонсу Энрикеш»",
+   "credit": {
+    "author": "Joseolgon",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Igreja_de_S%C3%A3o_Miguel_do_Castelo_(1).jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/sao-miguel-castelo-3.jpg",
+   "kind": "interior",
+   "caption_ru": "Надгробные плиты рыцарей на полу нефа",
+   "credit": {
+    "author": "Ray Swi-hymn",
+    "license": "CC BY-SA 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:20200201_S.Miguel_4424_(49654318922).jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/sao-miguel-castelo-4.jpg",
+   "kind": "detail",
+   "caption_ru": "Аркосолий с резным архивольтом на северном фасаде",
+   "credit": {
+    "author": "Alice Rios",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Capela_de_Guimar%C3%A3es.jpg"
+   }
+  },
+  {
+   "src": "assets/img/guimaraes/sao-miguel-castelo-5.jpg",
+   "kind": "exterior",
+   "caption_ru": "Портал и окно-щель на западном фасаде",
+   "credit": {
+    "author": "Panegyrics of Granovetter",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:30901_Igreja_de_S%C3%A3o_Miguel_do_Castelo_(54868516129).jpg"
+   }
+  }
+ ],
+ "panorama": null,
+ "videos": [
+  {
+   "youtube_id": "gciQfl0biD8",
+   "title": "Igreja de S. Miguel do Castelo",
+   "channel": "A memória do património 2019",
+   "lang": "pt"
+  },
+  {
+   "youtube_id": "isTDigsZra4",
+   "title": "Igreja São Miguel, Guimarães Portugal",
+   "channel": "Porta dos Fundadores",
+   "lang": "pt"
+  },
+  {
+   "youtube_id": "oDLm8Lxqnwg",
+   "title": "Visiting the Igreja De Sao Miguel do Castelo (Castle Church of St. Michael) in Guimares, Portugal",
+   "channel": "Gretzky Dog and Friends",
+   "lang": "en"
+  }
+ ]
+}

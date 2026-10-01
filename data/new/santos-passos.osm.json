@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "way",
+    "id": 166138931,
+    "height_m": 30,
+    "height_source": "estimate"
+  },
+  "lat": 41.44086,
+  "lon": -8.2897,
+  "model": "basilica-twin"
+}

@@ -1,0 +1,581 @@
+{
+  "_meta": {
+    "about": "Real-world dimensions of the Guimarães landmarks, for authoring the procedural models at 1:1 metres. Every numeric leaf under footprint_m, height_m, elements and facade_azimuth_deg has an entry in sources[] (by path). An entry has either a url (published figure or OSM tag) or source:'estimate' with reasoning.",
+    "units": "metres unless the key says otherwise; heights are above the local ground at the main entrance",
+    "facade_azimuth_deg": "compass direction (0-360, clockwise from north) that the main facade looks towards. footprints.json bearing_deg is a folded long axis in [0,180) and cannot say which end is the front; facade_axis_rel says how the azimuth relates to it.",
+    "osm_geometry": "extent_m, edge lengths and edge normals were measured from data/guimaraes/footprints.json outlines with scripts/geo-lib.mjs minAreaRect/toXY; ground heights from data/guimaraes/terrain.json (EU-DEM 25 m).",
+    "checked": "2026-09-30"
+  },
+  "castelo": {
+    "footprint_m": {
+      "length": 61,
+      "width": 40.6,
+      "matches_osm": true,
+      "note": "OSM way 346365692 is the crenellated curtain wall ring (207 m perimeter, 1587 m², a faceted shield plan). The keep w346365691 (12.3 x 11.8 m) stands at the north-west end; seven wall towers are mapped (e-cultura counts eight)."
+    },
+    "height_m": {
+      "total": 27,
+      "keep": 27,
+      "curtain_wall": 12,
+      "wall_towers": 14
+    },
+    "elements": {
+      "wall_towers_mapped": 7,
+      "wall_towers_published": 8,
+      "keep_side_m": 12.3,
+      "wall_perimeter_m": 207,
+      "enclosure_area_m2": 1587,
+      "ground_altitude_m": 230
+    },
+    "facade_faces": "SW",
+    "facade_azimuth_deg": 234,
+    "facade_axis_rel": "outward normal of the 14 m south-west face; bearing_deg is 147",
+    "facade_note": "The gate side looks south-west down the Colina Sagrada towards the Igreja de São Miguel do Castelo and the Paço dos Duques; the keep rises at the north-west end of the enclosure.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "gate direction", "reasoning": "Outward normal of the 14.1 m OSM edge on the south-west side (234 deg), the side facing São Miguel (bearing 214 deg from the centroid) and the Paço." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.keep_side_m", "elements.wall_perimeter_m", "elements.enclosure_area_m2", "elements.wall_towers_mapped"], "source": "estimate", "fact": "OSM way 346365692 / 346365691 geometry", "reasoning": "footprints.json extent_m, ring length and area; keep rectangle 12.3 x 11.8 m; towers w807304448-454." },
+      { "paths": ["height_m.total", "height_m.keep"], "url": "https://www.e-cultura.pt/patrimonio_item/5401", "fact": "keep height", "value": "A Torre de Menagem, que atinge 27 metros de altura" },
+      { "paths": ["elements.wall_towers_published"], "url": "https://www.e-cultura.pt/patrimonio_item/5401", "fact": "wall towers", "value": "oito torres quadrangulares que no seu conjunto rodeiam aquela torre" },
+      { "paths": ["height_m.curtain_wall", "height_m.wall_towers"], "source": "estimate", "fact": "wall and tower heights", "reasoning": "No published figure. OSM tags the ring height=18, which reads as its highest point; in photos the crenellated curtain is about 0.45 x the 27 m keep (12 m) and the wall towers a little above it (14 m)." },
+      { "paths": ["elements.ground_altitude_m"], "source": "estimate", "fact": "ground", "reasoning": "EU-DEM sample at the centroid in data/guimaraes/terrain.json." }
+    ],
+    "confidence": "medium"
+  },
+  "paco-duques": {
+    "footprint_m": {
+      "length": 63.5,
+      "width": 61.4,
+      "matches_osm": true,
+      "note": "OSM relation 2433235: a near-square block (3370 m²) with the central courtyard as its inner ring (465 m², kept as a hole in footprints.json). The four corner towers are not separate OSM objects."
+    },
+    "height_m": {
+      "total": 22,
+      "chimneys_and_towers": 22,
+      "eaves": 14
+    },
+    "elements": {
+      "storeys": 3,
+      "corner_towers": 4,
+      "chimneys": 39,
+      "courtyard_area_m2": 465,
+      "construction_begun": 1420,
+      "restoration_completed": 1959
+    },
+    "facade_faces": "NW",
+    "facade_azimuth_deg": 294,
+    "facade_axis_rel": "outward normal of the three west edges (19.1 + 15.2 + 14.5 m); bearing_deg is 114",
+    "facade_note": "The entrance front looks north-west over the Colina Sagrada terrace with the statue of Afonso Henriques (OSM node 2217084051, bearing 309 deg from the centroid); the castle is behind it to the north-east.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the OSM west edges (294 deg); the Afonso Henriques statue and the approach from the Colina Sagrada lie on that side." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.courtyard_area_m2"], "source": "estimate", "fact": "OSM relation 2433235 geometry", "reasoning": "footprints.json extent_m; inner ring w182728792 area." },
+      { "paths": ["elements.storeys"], "url": "https://www.openstreetmap.org/relation/2433235", "fact": "storeys", "value": "building:levels=3" },
+      { "paths": ["elements.corner_towers", "elements.construction_begun", "elements.restoration_completed"], "url": "https://en.wikipedia.org/wiki/Palace_of_the_Dukes_of_Braganza", "fact": "towers and dates", "value": "four rectangular towers; initiated between 1420 and 1422; inaugurated 24 June 1959" },
+      { "paths": ["elements.chimneys"], "source": "estimate", "fact": "chimney count", "reasoning": "The 39 brick chimneys are the figure of the city guides and of cities/guimaraes.json; en.wikipedia only mentions 'six tall chimneys' on one front and no fetched source states the total, so it stays an estimate." },
+      { "paths": ["height_m.total", "height_m.chimneys_and_towers", "height_m.eaves"], "source": "estimate", "fact": "heights", "reasoning": "No published height (pt/en Wikipedia, DGPC 70513, pacodosduques.gov.pt checked). Three tall storeys of about 4.5 m give eaves near 14 m; the steep roofs, corner towers and chimneys top out about 22 m, roughly the 25 m short side of the courtyard in photos." }
+    ],
+    "confidence": "medium"
+  },
+  "sao-miguel-castelo": {
+    "footprint_m": {
+      "length": 22.6,
+      "width": 9.2,
+      "matches_osm": true,
+      "note": "OSM way 104203858: a single rectangular nave, 196 m², east-west with the entrance at the west end."
+    },
+    "height_m": {
+      "total": 9,
+      "bell_gable": 9,
+      "eaves": 5
+    },
+    "elements": {
+      "naves": 1,
+      "consecrated": 1239
+    },
+    "facade_faces": "SW",
+    "facade_azimuth_deg": 247,
+    "facade_axis_rel": "bearing_deg + 180 (west end of the 67 deg long axis)",
+    "facade_note": "West front with the portal and bell gable looks WSW towards the Paço dos Duques; the apse is at the east end, towards the castle.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the 9.2 m west end of the OSM outline (247 deg); a Romanesque chapel has its portal on the west end." },
+      { "paths": ["footprint_m.length", "footprint_m.width"], "source": "estimate", "fact": "OSM way 104203858 geometry", "reasoning": "footprints.json extent_m." },
+      { "paths": ["height_m.eaves"], "url": "https://www.openstreetmap.org/way/104203858", "fact": "eaves height", "value": "height=5, building:levels=1" },
+      { "paths": ["height_m.total", "height_m.bell_gable"], "source": "estimate", "fact": "ridge and bell gable", "reasoning": "Gabled roof over a 9.2 m wide nave adds about 2.5 m to the 5 m eaves; the sineira over the west front rises about 1.5 m more, so 9 m." },
+      { "paths": ["elements.naves", "elements.consecrated"], "url": "https://pt.wikipedia.org/wiki/Igreja_de_S%C3%A3o_Miguel_do_Castelo", "fact": "plan and date", "value": "uma igreja de pequenas dimensões; sagrada ... em 1239" }
+    ],
+    "confidence": "medium"
+  },
+  "oliveira": {
+    "footprint_m": {
+      "length": 46.5,
+      "width": 22.6,
+      "matches_osm": true,
+      "note": "OSM way 167517737 is the church alone (856 m²), east-west. The Padrão do Salado (5.2 x 4.6 m, w820481033) stands 8 m west of the front on the Largo da Oliveira (1267 m², w167517738); the cloister is the Museu de Alberto Sampaio landmark."
+    },
+    "height_m": {
+      "total": 30,
+      "tower": 30,
+      "nave_ridge": 17,
+      "padrao": 9
+    },
+    "elements": {
+      "naves": 3,
+      "nave_bays": 3,
+      "tower_completed": 1513,
+      "padrao_side_m": 5.2,
+      "largo_area_m2": 1267
+    },
+    "facade_faces": "W",
+    "facade_azimuth_deg": 265,
+    "facade_axis_rel": "bearing_deg + 180 (west end of the 86 deg long axis)",
+    "facade_note": "The Gothic west portal and rose window face the Largo da Oliveira and the Padrão do Salado; the Manueline bell tower stands at the south-west corner, the apse at the east on Rua Alfredo Guimarães.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the 8.3 m west end of the OSM outline (265 deg); the Largo da Oliveira centre lies 29 m west of the church centroid and the Padrão is on that side." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.padrao_side_m", "elements.largo_area_m2"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m; Padrão rectangle 5.2 x 4.6 m; square ring area." },
+      { "paths": ["elements.naves", "elements.nave_bays"], "url": "https://pt.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira_(Guimar%C3%A3es)", "fact": "plan", "value": "três naves com três tramos" },
+      { "paths": ["elements.tower_completed"], "url": "https://www.cm-guimaraes.pt/monumentos/poi/igreja-de-nossa-senhora-da-oliveira", "fact": "Manueline tower", "value": "torre manuelina ... cerca de 1513-1515" },
+      { "paths": ["height_m.total", "height_m.tower", "height_m.nave_ridge", "height_m.padrao"], "source": "estimate", "fact": "heights", "reasoning": "No published height (pt.wikipedia, cm-guimaraes.pt, DGPC 70509 checked). In photos from the Largo the tower is about 1.8 x the nave ridge; a 22.6 m wide three-nave church has its ridge near 17 m, so tower 30 m. The Padrão is a four-arch Gothic canopy with a cross on top, about 9 m." }
+    ],
+    "confidence": "medium"
+  },
+  "sao-tiago": {
+    "footprint_m": {
+      "length": 81.8,
+      "width": 37.6,
+      "matches_osm": true,
+      "note": "OSM way 32501267 is the paved square (1579 m², an irregular trapezium). Its enclosure is the ring of 14 three- and four-storey houses with addr:street Praça de São Tiago, all parts in footprints.json; the Largo da Oliveira opens at the south-east corner."
+    },
+    "height_m": {
+      "total": 12.8,
+      "houses_four_storey": 12.8,
+      "houses_three_storey": 9.6
+    },
+    "elements": {
+      "houses_fronting": 14,
+      "house_storeys_max": 4,
+      "square_area_m2": 1579
+    },
+    "facade_faces": "none",
+    "facade_azimuth_deg": 127,
+    "facade_axis_rel": "none (a square); the azimuth points from the square centre to the Largo da Oliveira and the church",
+    "facade_note": "A square has no facade. The houses with arcades and balconies close the north, west and south sides; the south-east corner opens into the Largo da Oliveira (bearing 127 deg from the centre), the north-east corner into Rua de Santa Maria.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "direction to the Largo da Oliveira", "reasoning": "Bearing from the square centroid (41.44335, -8.29320) to the Oliveira church centroid (41.44293, -8.29246): 127 deg." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.square_area_m2", "elements.houses_fronting"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m and area; 14 house ways w473881520-532 and w1427926768 included as parts." },
+      { "paths": ["elements.house_storeys_max", "height_m.total", "height_m.houses_four_storey"], "url": "https://www.openstreetmap.org/way/473881530", "fact": "tallest house", "value": "building:levels=4 (x 3.2 m = 12.8 m)" },
+      { "paths": ["height_m.houses_three_storey"], "source": "estimate", "fact": "three-storey houses", "reasoning": "building:levels=3 on eleven of the house ways, x 3.2 m per level." }
+    ],
+    "confidence": "medium"
+  },
+  "toural": {
+    "footprint_m": {
+      "length": 128.2,
+      "width": 45.5,
+      "matches_osm": true,
+      "note": "OSM way 591247671 (place=square, 4019 m²) is the whole Largo including the fountain garden; w1463370179 is only its paved surface. The Chafariz do Toural (w591247672, 26 m²) is a part; the Igreja de São Pedro (40 x 19 m) closes the west corner and the Torre da Alfândega wall the south-east corner (own landmark)."
+    },
+    "height_m": {
+      "total": 20,
+      "sao_pedro_pediment": 20,
+      "fountain": 6
+    },
+    "elements": {
+      "fountain_basins": 3,
+      "garden_opened": 1878,
+      "requalified": 2012,
+      "square_area_m2": 4019
+    },
+    "facade_faces": "none",
+    "facade_azimuth_deg": 243,
+    "facade_axis_rel": "none (a square); the azimuth points from the square centre to the Igreja de São Pedro",
+    "facade_note": "A square has no facade. The 18th-c. house fronts line the north-east side (Rua de Santo António end); the Igreja de São Pedro stands at the west corner (bearing 243 deg from the centre); Alameda de São Dâmaso and the wall run along the south-east.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "direction to São Pedro", "reasoning": "Bearing from the square centroid (41.44180, -8.29559) to the church centroid (41.44160, -8.29611): 243 deg." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.square_area_m2"], "source": "estimate", "fact": "OSM way 591247671 geometry", "reasoning": "footprints.json extent_m and area." },
+      { "paths": ["elements.fountain_basins", "elements.garden_opened", "elements.requalified"], "url": "https://pt.wikipedia.org/wiki/Largo_do_Toural", "fact": "fountain, garden, requalification", "value": "chafariz renascentista de três taças; abre em 1878; requalificação em 2012 (Guimarães Capital Europeia da Cultura)" },
+      { "paths": ["height_m.total", "height_m.sao_pedro_pediment", "height_m.fountain"], "source": "estimate", "fact": "heights", "reasoning": "No published height. São Pedro (begun 1737) has a broad pedimented front without its planned towers, about 20 m; the three-basin fountain with its crowning figure is about 6 m in photos against the 3-4 storey houses." }
+    ],
+    "confidence": "medium"
+  },
+  "penha": {
+    "footprint_m": {
+      "length": 33.7,
+      "width": 19.4,
+      "matches_osm": true,
+      "note": "OSM way 342339768 is the sanctuary church alone (605 m²) on the summit terrace at about 573 m. The site in footprints.json is the Penha park w565428859 (55 320 m²) with 28 footpaths among the boulders, chapels, hotel, restaurants, and the Teleférico de Guimarães as a 1577 m 'cable' line with 14 pylons and both stations (Hortas w104203806 at about 190 m, Penha w104203786)."
+    },
+    "height_m": {
+      "total": 26,
+      "entrance_tower": 26,
+      "nave": 16,
+      "cable_stations": 8,
+      "cable_pylons": 12
+    },
+    "elements": {
+      "naves": 1,
+      "works_begun": 1930,
+      "inaugurated": 1947,
+      "ground_altitude_m": 573,
+      "cable_length_published_m": 1700,
+      "cable_rise_published_m": 400,
+      "cable_length_osm_m": 1577,
+      "cable_pylons": 14,
+      "cable_cabins": 32,
+      "cable_opened": 1995
+    },
+    "facade_faces": "W",
+    "facade_azimuth_deg": 282,
+    "facade_axis_rel": "bearing_deg + 180 (west end of the 102 deg long axis)",
+    "facade_note": "The entrance front with the great stair, the tower and the 1949 cross looks west-north-west over the city; the apse is at the east end. The teleférico arrives on the terrace 90 m south-east of the church.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the three west-end edges of the OSM outline (282 deg); the tower with the angel 'facing the city' is on that end and Guimarães lies to the north-west." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.cable_length_osm_m", "elements.cable_pylons"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m; length of way 104203846 in the local projection; 14 aerialway=pylon nodes on it." },
+      { "paths": ["elements.naves", "elements.works_begun", "elements.inaugurated"], "url": "https://pt.wikipedia.org/wiki/Santu%C3%A1rio_da_Penha", "fact": "plan and dates", "value": "As obras iniciaram-se em 6 de Agosto de 1930; A inauguração foi em 14 de Setembro de 1947; nave única (Marques da Silva, Art Déco)" },
+      { "paths": ["elements.cable_length_published_m", "elements.cable_rise_published_m", "elements.cable_cabins", "elements.cable_opened"], "url": "https://pt.wikipedia.org/wiki/Telef%C3%A9rico_de_Guimar%C3%A3es", "fact": "cable car", "value": "O seu percurso de 1700 m vence uma altitude de 400 m; trinta e duas cabines de transporte de passageiros; inaugurado no dia 11 de Março de 1995" },
+      { "paths": ["elements.ground_altitude_m"], "source": "estimate", "fact": "ground", "reasoning": "EU-DEM sample at the church centroid in data/guimaraes/terrain.json (the summit peak node is 613 m)." },
+      { "paths": ["height_m.total", "height_m.entrance_tower", "height_m.nave", "height_m.cable_stations", "height_m.cable_pylons"], "source": "estimate", "fact": "heights", "reasoning": "No published height (pt.wikipedia, penhaguimaraes.com, turipenha.pt checked). The granite tower over the entrance reads about 1.0 x the 26 m front width in photos; nave about 16 m. Stations are single-storey halls (8 m); the Poma gondola pylons are lattice/tube masts of about 12 m." }
+    ],
+    "confidence": "medium"
+  },
+  "santos-passos": {
+    "footprint_m": {
+      "length": 44.4,
+      "width": 23.8,
+      "matches_osm": true,
+      "note": "OSM way 166138931 (882 m²): nave and apse on a 134 deg axis, the twin-tower front at the north-east end above the stair. The Largo de São Gualter garden (w451046703) lies on the axis in front, then the Largo da República do Brasil."
+    },
+    "height_m": {
+      "total": 30,
+      "towers": 30,
+      "facade_pediment": 18
+    },
+    "elements": {
+      "towers": 2,
+      "church_completed": 1785,
+      "towers_completed": 1875,
+      "facade_width_m": 18.4
+    },
+    "facade_faces": "NE",
+    "facade_azimuth_deg": 44,
+    "facade_axis_rel": "bearing_deg - 90 (north-east end of the 134 deg long axis)",
+    "facade_note": "The convex azulejo front with the two towers and the granite stair faces north-east down the Largo da República do Brasil axis; en.wikipedia gives the same orientation.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the two 18.4 m north-east edges of the OSM outline (44 deg); en.wikipedia: the main façade faces northeast." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.facade_width_m"], "source": "estimate", "fact": "OSM way 166138931 geometry", "reasoning": "footprints.json extent_m; the north-east edge is 18.4 m." },
+      { "paths": ["elements.towers", "elements.towers_completed"], "url": "https://en.wikipedia.org/wiki/Santos_Passos_Church", "fact": "towers", "value": "two slender bell towers topped by pyramidal corbels ... completed in 1875" },
+      { "paths": ["elements.church_completed"], "url": "https://www.cm-guimaraes.pt/monumentos/poi/igreja-de-n-sra-da-consolacao-e-santos-passos", "fact": "church completion", "value": "Em outubro de 1785 é concluída a nova igreja" },
+      { "paths": ["height_m.total", "height_m.towers", "height_m.facade_pediment"], "source": "estimate", "fact": "heights", "reasoning": "No published height (en/pt Wikipedia, cm-guimaraes.pt checked). The slender towers are about 1.6 x the 18.4 m front width in frontal photos from the Largo (30 m); the pediment between them about 18 m." }
+    ],
+    "confidence": "medium"
+  },
+  "sao-francisco": {
+    "footprint_m": {
+      "length": 125.5,
+      "width": 59.1,
+      "matches_osm": true,
+      "note": "OSM relation 2836771 is church plus convent (4508 m²) on a 57 deg axis with two inner rings: the cloister (330 m²) and a light well (190 m²), kept as holes. The church is the north-west range; the convent wings extend south-east."
+    },
+    "height_m": {
+      "total": 24,
+      "bell_tower": 24,
+      "nave_ridge": 16,
+      "convent_wings": 12
+    },
+    "elements": {
+      "naves": 1,
+      "cloister_storeys": 2,
+      "cloister_begun": 1591,
+      "apse_completed": 1461,
+      "cloister_area_m2": 330
+    },
+    "facade_faces": "NW",
+    "facade_azimuth_deg": 329,
+    "facade_axis_rel": "bearing_deg - 90 + 180 (the 38 m north-west edge of the church range)",
+    "facade_note": "The church front with the Gothic portal looks north-west onto the Largo de São Francisco and its cruzeiro (OSM node 14069289491, bearing 310 deg from the centroid); the convent and cloister lie behind it to the south-east.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the 38 m north-west edge of the OSM outline (329 deg); the Cruzeiro de São Francisco stands on that side." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.cloister_area_m2"], "source": "estimate", "fact": "OSM relation 2836771 geometry", "reasoning": "footprints.json extent_m; inner ring w211917458 area." },
+      { "paths": ["elements.naves", "elements.cloister_storeys", "elements.cloister_begun", "elements.apse_completed"], "url": "https://pt.wikipedia.org/wiki/Igreja_de_S%C3%A3o_Francisco_(Guimar%C3%A3es)", "fact": "plan, cloister, dates", "value": "nave única com capelas laterais; claustro de dois andares; 1591: claustro; cerca de 1461: capela-mor gótica" },
+      { "paths": ["height_m.total", "height_m.bell_tower", "height_m.nave_ridge", "height_m.convent_wings"], "source": "estimate", "fact": "heights", "reasoning": "No published height (pt.wikipedia checked). Single bell tower beside the front about 24 m in photos; Gothic nave ridge about 16 m; two-storey convent wings with roof about 12 m." }
+    ],
+    "confidence": "medium"
+  },
+  "alberto-sampaio": {
+    "footprint_m": {
+      "length": 63.3,
+      "width": 49.1,
+      "matches_osm": true,
+      "note": "OSM way 255483376 (1361 m²) covers the Romanesque cloister and the chapter-house ranges of the Colegiada north of the Oliveira church; the cloister garth is not mapped as a hole."
+    },
+    "height_m": {
+      "total": 10,
+      "cloister_ranges": 10
+    },
+    "elements": {
+      "storeys": 2,
+      "area_m2": 1361
+    },
+    "facade_faces": "E",
+    "facade_azimuth_deg": 78,
+    "facade_axis_rel": "bearing_deg - 90 (the 40 m east edge)",
+    "facade_note": "The museum entrance is on Rua Alfredo Guimarães on the east side; the church closes the south side and the Largo da Oliveira lies south-west.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "entrance direction", "reasoning": "Outward normal of the 40.3 m east edge of the OSM outline (78 deg), on Rua Alfredo Guimarães where the museum door is." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.area_m2"], "source": "estimate", "fact": "OSM way 255483376 geometry", "reasoning": "footprints.json extent_m and area." },
+      { "paths": ["height_m.total", "height_m.cloister_ranges", "elements.storeys"], "source": "estimate", "fact": "height and storeys", "reasoning": "No published height. Two-storey cloister ranges (upper gallery over the Romanesque arcade) with tiled roofs, about 10 m to the ridge." }
+    ],
+    "confidence": "low"
+  },
+  "muralha": {
+    "footprint_m": {
+      "length": 20,
+      "width": 8,
+      "matches_osm": false,
+      "note": "OSM maps the Torre da Alfândega as a node (12200073501) on a 12.5 m barrier=city_wall stub (w255483374); the 20 x 8 m rectangle on that stub is synthesized. The 270 m wall stretch along Avenida Alberto Sampaio (w150780884) is a line part; both belong to the site relation 19901679 'Muralhas de Guimarães'."
+    },
+    "height_m": {
+      "total": 15,
+      "tower": 15,
+      "wall": 8
+    },
+    "elements": {
+      "wall_stretch_length_m": 270,
+      "tower_stub_length_m": 12.5,
+      "tower_floors": 2
+    },
+    "facade_faces": "NE",
+    "facade_azimuth_deg": 25,
+    "facade_axis_rel": "bearing_deg (115) - 90: the face of the stub towards the Largo do Toural",
+    "facade_note": "The 'Aqui nasceu Portugal' letters are on the wall face looking towards the Largo do Toural (bearing 320 deg from the tower), on the north-east side of the stub; the south side is Rua do Anjo / Alameda de São Dâmaso.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "inscription side", "reasoning": "Outward normal of the 20 m north-east side of the synthesized rectangle (25 deg): the Largo do Toural centre lies at 320 deg, closer to that face than to the 205 deg face." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.wall_stretch_length_m", "elements.tower_stub_length_m"], "source": "estimate", "fact": "OSM geometry", "reasoning": "Synthesized 20 x 8 m rectangle (HEIGHTS width_m/depth_m); way 150780884 is 270 m long, way 255483374 12.5 m." },
+      { "paths": ["height_m.total", "height_m.tower", "height_m.wall", "elements.tower_floors"], "source": "estimate", "fact": "heights", "reasoning": "No published height (cm-guimaraes.pt, nit.pt on the 2024 reopening checked). A two-floor tower over the wall walk of a 13th-c. town wall: wall with merlons about 8 m, tower about 15 m, from photos." }
+    ],
+    "confidence": "low"
+  },
+  "plataforma-artes": {
+    "footprint_m": {
+      "length": 118.3,
+      "width": 25.3,
+      "matches_osm": true,
+      "note": "OSM way 454870532 is the CIAJG museum bar (2420 m²) on the south-east side of the raised square w171548441 (4457 m², layer 1); the two other bars of the complex, w454870535 (64 x 12 m) and w664204282 (78 x 12 m, layer 2), are parts. The 22 000 m² of the project sheet cover the whole former market site."
+    },
+    "height_m": {
+      "total": 16,
+      "museum_bar": 16,
+      "workshop_bars": 12
+    },
+    "elements": {
+      "floor_levels": 4,
+      "project_area_m2": 22000,
+      "square_area_m2": 4457,
+      "design_years_from": 2010
+    },
+    "facade_faces": "NW",
+    "facade_azimuth_deg": 335,
+    "facade_axis_rel": "bearing_deg (64) - 90 + 360: the long side on the square",
+    "facade_note": "The museum's entrance side is the long north-west face on the raised square (bearing 13 deg from the centroid to the square centre); the opposite side drops to Avenida Conde de Margaride.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the north-west edges of the OSM outline (335 deg), the side on the Plataforma square." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.square_area_m2"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m; area of way 171548441." },
+      { "paths": ["elements.project_area_m2", "elements.floor_levels", "elements.design_years_from"], "url": "https://www.pitagorasgroup.com/project/platform-of-arts-and-creativity/", "fact": "project sheet", "value": "22 000m2; drawings for -2 floor, -1 floor, 0 ground floor, 1 floor; 2010-2011" },
+      { "paths": ["height_m.total", "height_m.museum_bar", "height_m.workshop_bars"], "source": "estimate", "fact": "heights", "reasoning": "No published height (Pitágoras, cm-guimaraes.pt, pt.wikipedia checked). The metal-clad museum box shows two tall floors above the square plus the plinth level: about 16 m; the workshop bars about 12 m." }
+    ],
+    "confidence": "medium"
+  },
+  "couros": {
+    "footprint_m": {
+      "length": 140.9,
+      "width": 81.2,
+      "matches_osm": false,
+      "note": "OSM relation 19769884 is seven groups of tanks (73-665 m², 1619 m² in all) along the Ribeira de Couros; the outline is their convex hull (7906 m²) and the houses between them stay in buildings.json. The lavoir w820481034 (9 x 7 m) is a part."
+    },
+    "height_m": {
+      "total": 1.2,
+      "tank_rims": 1.2,
+      "lavoir": 1
+    },
+    "elements": {
+      "tank_groups": 7,
+      "tank_area_m2": 1619,
+      "whc_inscription": 2023
+    },
+    "facade_faces": "none",
+    "facade_azimuth_deg": 79,
+    "facade_axis_rel": "bearing_deg (long axis of the hull along the stream)",
+    "facade_note": "Open tanks along the stream, no facade. The azimuth is the long axis of the hull; Rua de Couros runs along the north side, the Convento de São Francisco lies to the north-east.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg", "footprint_m.length", "footprint_m.width", "elements.tank_groups", "elements.tank_area_m2"], "source": "estimate", "fact": "OSM relation 19769884 geometry", "reasoning": "footprints.json extent_m of the hull and its bearing; seven outer rings, areas summed." },
+      { "paths": ["elements.whc_inscription"], "url": "https://www.openstreetmap.org/relation/19769884", "fact": "World Heritage inscription", "value": "whc:inscription_date=2023; whc:name=Historic Centre of Guimarães and Couros Zone" },
+      { "paths": ["height_m.total", "height_m.tank_rims", "height_m.lavoir"], "source": "estimate", "fact": "heights", "reasoning": "No published figure. The granite tanks are sunk into the ground with rims about 1.2 m above the paving; the lavoir basin about 1 m." }
+    ],
+    "confidence": "medium"
+  },
+  "santa-marinha": {
+    "footprint_m": {
+      "length": 113.1,
+      "width": 65.5,
+      "matches_osm": true,
+      "note": "OSM way 230976313 is the monastery / pousada block (3538 m², north-south); the Igreja de Santa Marinha (w257159145, 774 m²) adjoins it on the south-west and the garden w220350965 (25 011 m²) wraps the site."
+    },
+    "height_m": {
+      "total": 22,
+      "church_tower": 22,
+      "monastery": 12
+    },
+    "elements": {
+      "storeys": 2,
+      "rooms": 51,
+      "garden_area_m2": 25011,
+      "church_area_m2": 774
+    },
+    "facade_faces": "W",
+    "facade_azimuth_deg": 265,
+    "facade_axis_rel": "bearing_deg (176) + 90: the west edges",
+    "facade_note": "The monastery front and the church façade look west over the terrace and the garden towards the city; the Távora wing extends along the east side.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the west edges of the OSM outline (265 deg), the side of the church front and the entrance court." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.garden_area_m2", "elements.church_area_m2"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m; areas of ways 220350965 and 257159145." },
+      { "paths": ["elements.storeys", "elements.rooms"], "url": "https://pt.wikipedia.org/wiki/Mosteiro_de_Santa_Marinha_da_Costa", "fact": "storeys and rooms", "value": "um corpo de dois pisos onde se encontram as instalações da pousada; 27 dos quartos ... 22 quartos e 2 suites" },
+      { "paths": ["height_m.total", "height_m.church_tower", "height_m.monastery"], "source": "estimate", "fact": "heights", "reasoning": "No published height (pt.wikipedia checked). Two tall monastic storeys with roof about 12 m; the church bell tower about 22 m in photos." }
+    ],
+    "confidence": "medium"
+  },
+  "estadio-afonso-henriques": {
+    "footprint_m": {
+      "length": 198.1,
+      "width": 184.3,
+      "matches_osm": true,
+      "note": "OSM way 211693383 is the stadium site (31 231 m²); the pitch w189966626 (107 x 70 m, long axis 171 deg) and twelve grandstand ways (Poente, Nascente, Norte, Sul and their Inferior / Superior tiers) are parts."
+    },
+    "height_m": {
+      "total": 32,
+      "poente_stand": 32,
+      "nascente_stand": 32,
+      "norte_stand": 28,
+      "sul_stand": 28,
+      "upper_tiers": 26,
+      "lower_tiers": 10
+    },
+    "elements": {
+      "capacity": 30029,
+      "pitch_length_m": 105,
+      "pitch_width_m": 68,
+      "stands": 4,
+      "tiers": 2,
+      "opened": 1965,
+      "rebuilt": 2003
+    },
+    "facade_faces": "W",
+    "facade_azimuth_deg": 261,
+    "facade_axis_rel": "bearing_deg (171) + 90: the outer face of the Poente main stand",
+    "facade_note": "The main (Poente) stand with the offices and entrances looks west over the car park; the pitch runs almost north-south (171 deg). The south stand is fully covered, the others partly.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "main stand direction", "reasoning": "Outward normal of the 35 m west edge of the OSM site outline (261 deg), the outer face of the Poente stand." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.tiers"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m; OSM maps Inferior and Superior tier polygons for each stand." },
+      { "paths": ["elements.capacity", "elements.pitch_length_m", "elements.pitch_width_m", "elements.stands", "elements.opened", "elements.rebuilt"], "url": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_D._Afonso_Henriques", "fact": "capacity, pitch, stands, dates", "value": "30 029 espectadores; 105 x 68 m; quatro bancadas; 1965; reabertura 25 de julho de 2003" },
+      { "paths": ["height_m.total", "height_m.poente_stand", "height_m.nascente_stand", "height_m.norte_stand", "height_m.sul_stand", "height_m.upper_tiers", "height_m.lower_tiers"], "source": "estimate", "fact": "stand heights", "reasoning": "No published height (pt.wikipedia, Vitória SC checked). A two-tier 30 000-seat stand with roof is about 32 m at the roof edge; the single deep Norte / Sul stands about 28 m; the Superior tier polygons 26 m and the Inferior tiers 10 m." }
+    ],
+    "confidence": "medium"
+  },
+  "uminho-azurem": {
+    "footprint_m": {
+      "length": 785.3,
+      "width": 422.9,
+      "matches_osm": true,
+      "note": "OSM way 182091438 is the whole Campus de Azurém (amenity=university, 17.8 ha). Parts in footprints.json: 36 buildings (every OSM building inside the campus), 1 garden, 1 pond and 68 footpaths. The campus is exclude_outline: false, but its buildings are parts, so buildings.json no longer draws them: the model must draw every building part."
+    },
+    "height_m": {
+      "total": 16,
+      "engineering_school": 14,
+      "teaching_blocks": 7
+    },
+    "elements": {
+      "campus_area_m2": 177635,
+      "osm_buildings": 36,
+      "tallest_building_levels": 5,
+      "footpaths": 68
+    },
+    "facade_faces": "none",
+    "facade_azimuth_deg": 157,
+    "facade_axis_rel": "none (an open campus); the azimuth is the outward normal of the 284 m south-west edge on Alameda da Universidade, where the main entrance is",
+    "facade_note": "A campus has no single facade. The main entrance opens from Alameda da Universidade on the south-west edge; the Escola de Engenharia and the pedagogical complexes are aligned on a 56 deg grid.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg", "footprint_m.length", "footprint_m.width", "elements.campus_area_m2", "elements.osm_buildings", "elements.footpaths"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m, area and part counts; normal of the 283.9 m south-west edge." },
+      { "paths": ["height_m.total", "elements.tallest_building_levels"], "url": "https://www.openstreetmap.org/way/129352430", "fact": "tallest campus building", "value": "Residência Universitária de Azurém - Bloco G2, building:levels=5 (x 3.2 m = 16 m)" },
+      { "paths": ["height_m.engineering_school", "height_m.teaching_blocks"], "source": "estimate", "fact": "other buildings", "reasoning": "No published heights (uminho.pt checked). Escola de Engenharia: three storeys plus roof plant, 14 m; the pedagogical complexes and departments without levels tags are two-storey slabs, 7 m (the part default)." }
+    ],
+    "confidence": "medium"
+  },
+  "briteiros": {
+    "footprint_m": {
+      "length": 520.1,
+      "width": 388.8,
+      "matches_osm": true,
+      "note": "OSM way 184819483 is the protected site (16.3 ha) on the Monte de São Romão. Parts: four rampart lines (barrier=city_wall), five small buildings (two reconstructed round houses and three at the entrance) and the chapel of São Romão; the excavated houses themselves are not mapped."
+    },
+    "height_m": {
+      "total": 6,
+      "chapel": 6,
+      "ramparts": 2,
+      "ramparts_reconstructed": 4,
+      "houses": 4
+    },
+    "elements": {
+      "site_area_ha": 24,
+      "visitable_area_ha": 7,
+      "osm_area_m2": 163460,
+      "acropolis_length_m": 250,
+      "acropolis_width_m": 150,
+      "rampart_lines": 4,
+      "rampart_thickness_m": 2.5,
+      "house_diameter_m": 5,
+      "council_house_diameter_m": 11,
+      "structures_excavated": 200,
+      "summit_altitude_m": 336
+    },
+    "facade_faces": "none",
+    "facade_azimuth_deg": 162,
+    "facade_axis_rel": "none (an open hill fort); the azimuth is the outward normal of the 90 m south edge, where the entrance and the visitor buildings are",
+    "facade_note": "A hill fort has no facade. Visitors enter from the road on the south side; the acropolis with the council house and the chapel is the summit at the centre-north.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg", "footprint_m.length", "footprint_m.width", "elements.osm_area_m2", "elements.rampart_lines"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m and area; normal of the 89.6 m south edge; four barrier=city_wall ways inside the site." },
+      { "paths": ["elements.site_area_ha", "elements.visitable_area_ha", "elements.acropolis_length_m", "elements.acropolis_width_m", "elements.house_diameter_m", "elements.council_house_diameter_m", "elements.structures_excavated", "elements.summit_altitude_m", "elements.rampart_thickness_m", "height_m.ramparts", "height_m.ramparts_reconstructed"], "url": "https://pt.wikipedia.org/wiki/Cit%C3%A2nia_de_Briteiros", "fact": "site figures", "value": "cerca de 24 hectares; zona visitável cerca de 7 hectares; acrópole cerca de 250 x 150 m; casas circulares cerca de 5 m de diâmetro; casa do conselho cerca de 11 m de diâmetro; muralhas de dois a três metros de largura, altura média de 2 metros, troços reconstruídos até 4 metros; mais de 200 estruturas; Monte de São Romão 336 m" },
+      { "paths": ["height_m.total", "height_m.chapel", "height_m.houses"], "source": "estimate", "fact": "roofed buildings", "reasoning": "The chapel of São Romão (OSM way 527217517, 11 x 6 m) is a small single-nave chapel, about 6 m; the reconstructed round houses (5 m across) carry conical thatched roofs to about 4 m." }
+    ],
+    "confidence": "medium"
+  },
+  "vila-flor": {
+    "footprint_m": {
+      "length": 66.5,
+      "width": 18.2,
+      "matches_osm": true,
+      "note": "OSM way 130533853 is the 18th-c. palace (1209 m²), a long block on Avenida D. Afonso Henriques. The 2005 Grande Auditório (w130533849, 2198 m²) and Pequeno Auditório (w130533855, 708 m²) sit below the terrace to the south-west; the garden w339820300 (9490 m²) descends south."
+    },
+    "height_m": {
+      "total": 15,
+      "palace": 15,
+      "grande_auditorio": 15,
+      "pequeno_auditorio": 9
+    },
+    "elements": {
+      "palace_storeys": 2,
+      "grande_auditorio_seats": 800,
+      "pequeno_auditorio_seats": 200,
+      "exhibition_area_m2": 1000,
+      "arts_centre_opened": 2005,
+      "garden_area_m2": 9490
+    },
+    "facade_faces": "N",
+    "facade_azimuth_deg": 7,
+    "facade_axis_rel": "bearing_deg (97) - 90: the 66.5 m north edge",
+    "facade_note": "The palace front with the parapet statues faces north onto Avenida D. Afonso Henriques; the garden terraces and the auditoria are behind it to the south and south-west.",
+    "sources": [
+      { "paths": ["facade_azimuth_deg"], "source": "estimate", "fact": "facade direction", "reasoning": "Outward normal of the 66.5 m north edge of the OSM outline (7 deg), on Avenida D. Afonso Henriques." },
+      { "paths": ["footprint_m.length", "footprint_m.width", "elements.garden_area_m2"], "source": "estimate", "fact": "OSM geometry", "reasoning": "footprints.json extent_m; area of way 339820300." },
+      { "paths": ["elements.grande_auditorio_seats", "elements.pequeno_auditorio_seats", "elements.exhibition_area_m2", "elements.arts_centre_opened"], "url": "https://pt.wikipedia.org/wiki/Centro_Cultural_Vila_Flor", "fact": "auditoria and opening", "value": "um grande auditório com capacidade para cerca de 800 lugares; um pequeno auditório com 200 lugares; uma área expositiva de cerca de 1000 metros quadrados; 17 de Setembro de 2005" },
+      { "paths": ["height_m.total", "height_m.palace", "height_m.grande_auditorio", "height_m.pequeno_auditorio", "elements.palace_storeys"], "source": "estimate", "fact": "heights", "reasoning": "No published height (pt.wikipedia, ccvf.pt checked). Two tall palace storeys with a parapet of statues, about 15 m; the Grande Auditório stage house about 15 m above its own ground; the Pequeno Auditório 9 m." }
+    ],
+    "confidence": "medium"
+  }
+}

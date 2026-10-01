@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "way",
+    "id": 211693383,
+    "height_m": 32,
+    "height_source": "estimate"
+  },
+  "lat": 41.44589,
+  "lon": -8.30099,
+  "model": "stadium"
+}

@@ -1,0 +1,11 @@
+{
+  "osm": {
+    "type": "way",
+    "id": 182091438,
+    "height_m": 16,
+    "height_source": "osm building:levels×3.2"
+  },
+  "lat": 41.45264,
+  "lon": -8.28991,
+  "model": "university"
+}
