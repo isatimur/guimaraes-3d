@@ -19,6 +19,7 @@
 // { [id]: builder } and spread it into DETAILED below.
 import { Kit, PALETTE, MAT, triangleCount } from './models/kit.js';
 import { blockBuilders } from './models/guimaraes/block.js';
+import { builders as detailedBuilders } from './models/guimaraes/index.js';
 
 export { PALETTE, MAT, triangleCount };
 
@@ -45,7 +46,7 @@ export const LANDMARK_SPECS = {
   'vila-flor': { type: 'palace', h: 15, yaw: 0 },
 };
 
-const DETAILED = {};
+const DETAILED = { ...detailedBuilders };
 const BUILDERS = { ...blockBuilders(Object.keys(LANDMARK_SPECS)), ...DETAILED };
 
 const TYPE_DEFAULT = Object.fromEntries(Object.entries(LANDMARK_SPECS).map(([id, s]) => [s.type, id]));
