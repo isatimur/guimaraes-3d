@@ -21,6 +21,7 @@
 //
 // With effects off, main.js renders straight to the canvas instead.
 import * as THREE from 'three';
+import { deviceDpr } from './scene.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
@@ -309,7 +310,7 @@ export function createEffects(renderer, scene, camera, { reducedMotion = false }
   // mode on top, so renderer, composer and every pass stay in step.
   let quality = 'auto';
   let last = null; // { w, h, dpr } from the last setSize
-  const autoDpr = () => Math.min(window.devicePixelRatio || 1, 2);
+  const autoDpr = deviceDpr; // the app's cap (scene.js DPR): 2, or 1.5 / 1.25 in light mode
   function limitFor(w, h) {
     const gl = renderer.getContext();
     const maxRB = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE) || 4096;

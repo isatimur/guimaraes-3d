@@ -133,46 +133,29 @@ export function flightCurve(from, to, sky, { clear = FLIGHT_CLEARANCE } = {}) {
 // monastery toward sunset, the two stadiums, then Bom Jesus at dusk and
 // Sameiro at night. About 8 minutes in all.
 export const CINEMA_ORDER = [
-  { id: 'se-braga', shot: 'crane', dur: 14, time: 'morning' },
-  // the Manueline chapel-tower beside the cathedral
-  { id: 'coimbras', shot: 'dolly', dur: 10, time: 'morning' },
-  { id: 'populo', shot: 'dolly', dur: 10, time: 'morning' },
-  { id: 'torre-menagem', shot: 'rise', dur: 11, time: 'morning' },
-  { id: 'praca-republica', shot: 'orbit', dur: 12, time: 'morning' },
-  { id: 'avenida-central', shot: 'dolly', dur: 11, time: 'morning' },
-  // the museum garden, then the Congregados facade along the avenue
-  { id: 'nogueira-silva', shot: 'orbit', dur: 10, time: 'morning' },
-  { id: 'congregados', shot: 'dolly', dur: 10, time: 'morning' },
-  { id: 'ucp-braga', shot: 'crane', dur: 11, time: 'day' },
-  // two schools and the university campus, north-east
-  { id: 'leonardo-da-vinci', shot: 'rise', dur: 9, time: 'day' },
-  { id: 'uminho-gualtar', shot: 'crane', dur: 11, time: 'day' },
-  { id: 'dmaria-ii', shot: 'crane', dur: 9, time: 'day' },
-  { id: 'santa-barbara', shot: 'orbit', dur: 11, time: 'day' },
-  { id: 'biscainhos', shot: 'crane', dur: 11, time: 'day' },
-  { id: 'arco-porta-nova', shot: 'dolly', dur: 10, time: 'day' },
-  // the Roman museum, then the baths beside it
-  { id: 'diogo-sousa', shot: 'crane', dur: 10, time: 'day' },
-  { id: 'termas-romanas', shot: 'crane', dur: 11, time: 'day' },
-  { id: 'santa-cruz', shot: 'dolly', dur: 10, time: 'day' },
-  { id: 'sao-marcos', shot: 'rise', dur: 9, time: 'day' },
-  { id: 'palacio-raio', shot: 'orbit', dur: 11, time: 'day' },
-  // below street level in a courtyard: only a steep view reaches it
-  { id: 'fonte-idolo', shot: 'crane', dur: 10, time: 'day', minElev: 1.05 },
-  // a slow orbit over the lake and the São João chapel
-  { id: 'parque-ponte', shot: 'orbit', dur: 11, time: 'day' },
-  // along the timber façade
-  { id: 'forum-braga', shot: 'dolly', dur: 10, time: 'sunset' },
-  { id: 'theatro-circo', shot: 'dolly', dur: 11, time: 'sunset' },
-  // the Visigothic chapel, on the way out to Tibaes
-  { id: 'sao-frutuoso', shot: 'crane', dur: 11, time: 'sunset' },
-  { id: 'tibaes', shot: 'orbit', dur: 13, time: 'sunset' },
-  // the old stadium (1950), then the new one (2003)
-  { id: 'estadio-1-maio', shot: 'rise', dur: 10, time: 'sunset' },
-  { id: 'estadio-braga', shot: 'rise', dur: 12, time: 'sunset' },
-  { id: 'bom-jesus', shot: 'dolly', dur: 15, time: 'sunset' },
-  // night falls during the last shot, 6 s in
-  { id: 'sameiro', shot: 'rise', dur: 16, time: 'sunset', then: 'night', at: 6 },
+  // dawn at the cradle of Portugal: the castle on its granite hill
+  { id: 'castelo', shot: 'crane', dur: 15, time: 'morning' },
+  { id: 'sao-miguel-castelo', shot: 'rise', dur: 9, time: 'morning' },
+  { id: 'paco-duques', shot: 'orbit', dur: 12, time: 'morning' },
+  // the medieval wall and the "Aqui nasceu Portugal" tower
+  { id: 'muralha', shot: 'dolly', dur: 10, time: 'morning' },
+  { id: 'oliveira', shot: 'crane', dur: 12, time: 'morning' },
+  { id: 'alberto-sampaio', shot: 'dolly', dur: 10, time: 'morning' },
+  { id: 'sao-tiago', shot: 'orbit', dur: 10, time: 'morning' },
+  { id: 'toural', shot: 'dolly', dur: 11, time: 'day' },
+  // the old market turned arts centre, then the tannery quarter
+  { id: 'plataforma-artes', shot: 'crane', dur: 11, time: 'day' },
+  { id: 'couros', shot: 'orbit', dur: 10, time: 'day' },
+  { id: 'santa-marinha', shot: 'orbit', dur: 12, time: 'day' },
+  { id: 'sao-francisco', shot: 'dolly', dur: 10, time: 'day' },
+  { id: 'santos-passos', shot: 'crane', dur: 11, time: 'day' },
+  { id: 'vila-flor', shot: 'dolly', dur: 10, time: 'sunset' },
+  { id: 'uminho-azurem', shot: 'crane', dur: 10, time: 'sunset' },
+  // the stadium on the western edge, then the Iron-Age hill fort
+  { id: 'estadio-afonso-henriques', shot: 'rise', dur: 11, time: 'sunset' },
+  { id: 'briteiros', shot: 'orbit', dur: 13, time: 'sunset' },
+  // the film ends on Penha, the sanctuary and its cable car; night falls 6 s in
+  { id: 'penha', shot: 'crane', dur: 17, time: 'sunset', then: 'night', at: 6 },
 ];
 
 // Framing numbers for one landmark at its real size. A draped site (Bom

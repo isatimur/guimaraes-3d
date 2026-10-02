@@ -324,7 +324,10 @@ export function createCameraRig(camera, dom, heightAt, { reducedMotion, onFlight
     flyTo(pos, tgt, 1.4);
   }
 
-  function flyTo(toPos, toTarget, duration) {
+  // orbit (radians, optional): the signature move on select. The camera
+  // also swings this far around the target and settles on the framing as
+  // it lands. Off under reduced motion.
+  function flyTo(toPos, toTarget, duration, { orbit = 0 } = {}) {
     tour = null;
     vel.set(0, 0, 0); // a framing flight ends any keyboard glide
     // A new request replaces any flight in progress, starting from the
@@ -339,9 +342,13 @@ export function createCameraRig(camera, dom, heightAt, { reducedMotion, onFlight
       toTarget: toTarget.clone(),
       t: 0,
       duration: reducedMotion ? Math.min(duration, 0.4) : duration,
+      orbit: reducedMotion ? 0 : orbit,
     };
     controls.enabled = false;
   }
+  const _arm = new THREE.Vector3();
+  const _dest = new THREE.Vector3();
+  const _Y = new THREE.Vector3(0, 1, 0);
 
   // Framed view of a landmark: keep the current bearing, look slightly down,
   // and shift the target right a little: the subject sits in the gap
@@ -354,13 +361,17 @@ export function createCameraRig(camera, dom, heightAt, { reducedMotion, onFlight
   // bearing (optional, radians): the landmark's best viewing direction
   // (world xz from the subject to the camera = (sin b, cos b)). When the
   // current bearing is more than ~65 degrees off it, swing toward it.
-  function frame(box, { panelOpen = true, bearing = null, base = null } = {}) {
+  // focus (optional): { x, y, fill } in CSS px, where the subject should
+  // land on screen (the callout card takes the rest), and the share of the
+  // view height it may fill (1 = the whole height). orbit: see flyTo.
+  function frame(box, { panelOpen = true, bearing = null, base = null, focus = null, orbit = 0 } = {}) {
     const size = box.getSize(new THREE.Vector3());
     const r = 0.5 * size.length();
     const tanV = Math.tan((camera.fov * Math.PI) / 360);
     // sphere in the vertical field; the free gap between panels is narrower
     // than the canvas on desktop, so keep a margin
-    const dist = THREE.MathUtils.clamp((r / tanV) * (panelOpen && window.innerWidth > 900 ? 1.35 : 1.15), 12, 1200);
+    const room = focus ? 1.15 / THREE.MathUtils.clamp(focus.fill ?? 1, 0.3, 1) : panelOpen && window.innerWidth > 900 ? 1.35 : 1.15;
+    const dist = THREE.MathUtils.clamp((r / tanV) * room, 12, 1200);
     controls.minDistance = Math.min(MIN_DISTANCE, dist * 0.55);
     const center = box.getCenter(new THREE.Vector3());
     const ground = base ?? box.min.y;
@@ -379,13 +390,25 @@ export function createCameraRig(camera, dom, heightAt, { reducedMotion, onFlight
     const elev = 0.5 + 0.3 * (1 - THREE.MathUtils.smoothstep(r, 3, 15));
     const tgt = center.clone().setY(center.y + height * 0.05);
     _right.set(_dir.z, 0, -_dir.x); // camera right = forward(-_dir) x up
-    const shift = panelOpen && window.innerWidth > 900 ? dist * 0.06 : 0;
-    tgt.addScaledVector(_right, shift);
+    if (focus) {
+      // as fitBox: move the target so the subject lands on focus.x / focus.y
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const aspect = camera.aspect || W / H;
+      const offX = (focus.x - W / 2) / W;
+      const offY = (focus.y - H / 2) / H;
+      tgt.addScaledVector(_right, -offX * 2 * dist * tanV * aspect);
+      // along the ground, toward the view: foreshortened by the elevation
+      tgt.addScaledVector(_dir, (-offY * 2 * dist * tanV) / Math.max(0.35, Math.sin(elev)));
+    } else {
+      const shift = panelOpen && window.innerWidth > 900 ? dist * 0.06 : 0;
+      tgt.addScaledVector(_right, shift);
+    }
     const pos = tgt.clone()
       .addScaledVector(_dir, Math.cos(elev) * dist)
       .add(new THREE.Vector3(0, Math.sin(elev) * dist, 0));
     pos.y = Math.max(pos.y, heightAt(pos.x, pos.z) + GROUND_CLEARANCE * 2);
-    flyTo(pos, tgt, 1.2);
+    flyTo(pos, tgt, orbit && !reducedMotion ? 1.7 : 1.2, { orbit });
   }
 
   function clampPose() {
@@ -412,7 +435,17 @@ export function createCameraRig(camera, dom, heightAt, { reducedMotion, onFlight
       // wall-clock progress, so a slow device still lands on time
       flight.t = Math.min(1, flight.t + Math.min(rawDt, 0.25) / flight.duration);
       const k = easeInOutCubic(flight.t);
-      camera.position.lerpVectors(flight.fromPos, flight.toPos, k);
+      if (flight.orbit) {
+        // the destination turns about the landing target; the swing left
+        // fades with a smoothstep that lags the move, so the last part of
+        // the flight reads as a slow orbit settling on the framing
+        const s = THREE.MathUtils.smoothstep(flight.t, 0.12, 1);
+        _arm.subVectors(flight.toPos, flight.toTarget).applyAxisAngle(_Y, flight.orbit * (1 - s));
+        _dest.addVectors(flight.toTarget, _arm);
+        camera.position.lerpVectors(flight.fromPos, _dest, k);
+      } else {
+        camera.position.lerpVectors(flight.fromPos, flight.toPos, k);
+      }
       controls.target.lerpVectors(flight.fromTarget, flight.toTarget, k);
       // lift the path a little mid-flight so it arcs over rooftops
       camera.position.y += Math.sin(Math.PI * k) * flight.fromPos.distanceTo(flight.toPos) * 0.08;

@@ -278,9 +278,15 @@ if (cloudShape.z > 0.001) {
 }
 
 // ------------------------------------------------------------ renderer
-export function createRenderer(canvas) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', stencil: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+// The one device-pixel-ratio cap of the app: 2 in high quality, 1.5 in
+// light mode, 1.25 on a low-end device (main.js sets it before the renderer
+// exists). createRenderer, main.js resize() and effects.js read it here.
+export const DPR = { cap: 2 };
+export const deviceDpr = () => Math.min(window.devicePixelRatio || 1, DPR.cap);
+
+export function createRenderer(canvas, { antialias = true } = {}) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias, powerPreference: 'high-performance', stencil: false });
+  renderer.setPixelRatio(deviceDpr());
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -294,7 +300,7 @@ export function createRenderer(canvas) {
 
 // ------------------------------------------------------------ time of day
 export const TIMES = ['morning', 'day', 'sunset', 'night'];
-export const DEFAULT_TIME = 'sunset';
+export const DEFAULT_TIME = 'morning'; // Guimarães opens at dawn: the cradle of Portugal, green Penha
 
 // Sun position: azimuth is a compass bearing (0 north, 90 east), elevation
 // in degrees. World axes: +x east, -z north.
@@ -1170,7 +1176,7 @@ export function createGround(terrain) {
   geo.computeVertexNormals();
   const col = new Float32Array(nx * nz * 3);
   const R = 16; // 64 m
-  for (let k = 0; k < nx * nz; k++) {
+  const aoAt = (k) => {
     const x = pos[k * 3];
     const z = pos[k * 3 + 2];
     const h = pos[k * 3 + 1];
@@ -1179,7 +1185,8 @@ export function createGround(terrain) {
     const concave = (around - h) * 0.6 + (around2 - h) * 0.4; // world units
     const ao = THREE.MathUtils.clamp(1 - concave * 0.09, 0.6, 1.1);
     col[k * 3] = col[k * 3 + 1] = col[k * 3 + 2] = ao;
-  }
+  };
+  for (let k = 0; k < nx * nz; k++) aoAt(k);
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
   geo.computeBoundingSphere();
 
@@ -1225,7 +1232,56 @@ export function createGround(terrain) {
   mesh.receiveShadow = true;
   mesh.castShadow = false; // the proxy below casts the hill shadows
   mesh.name = 'ground';
-  mesh.add(shadowProxy(terrain));
+  const proxy = shadowProxy(terrain);
+  mesh.add(proxy);
+  // Progressive start (main.js): the ground is first built on the raw DEM,
+  // before the landmark fits exist. Once their pads are in the terrain,
+  // this re-reads heightAt where the pads reach (plus the AO radius), so
+  // the result is the ground createGround would have built with the pads.
+  const lowerIndex = (arr, v) => {
+    let lo = 0;
+    let hi = arr.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (arr[mid] < v) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo;
+  };
+  mesh.userData.applyPads = (pads = terrain.pads) => {
+    if (!pads.length) return 0;
+    const reach = R * 2.5 + 1; // AO samples this far away
+    const touched = new Uint8Array(nx * nz);
+    let n = 0;
+    for (const p of pads) {
+      const r = p.r + reach;
+      const i0 = Math.max(0, lowerIndex(xs, p.cx - r) - 1);
+      const i1 = Math.min(nx - 1, lowerIndex(xs, p.cx + r) + 1);
+      const j0 = Math.max(0, lowerIndex(zs, p.cz - r) - 1);
+      const j1 = Math.min(nz - 1, lowerIndex(zs, p.cz + r) + 1);
+      for (let j = j0; j <= j1; j++) {
+        for (let i = i0; i <= i1; i++) {
+          const k = j * nx + i;
+          if (touched[k]) continue;
+          touched[k] = 1;
+          pos[k * 3 + 1] = heightAt(xs[i], zs[j]);
+          n++;
+        }
+      }
+    }
+    // AO after all heights (it reads heightAt, not the mesh, but keep order clear)
+    for (let k = 0; k < nx * nz; k++) if (touched[k]) aoAt(k);
+    geo.attributes.position.needsUpdate = true;
+    geo.attributes.color.needsUpdate = true;
+    geo.computeVertexNormals();
+    geo.computeBoundingSphere();
+    // the shadow proxy follows (one node per DEM cell)
+    const pp = proxy.geometry.attributes.position;
+    for (let k = 0; k < pp.count; k++) pp.setY(k, heightAt(pp.getX(k), pp.getZ(k)) - 0.6);
+    pp.needsUpdate = true;
+    proxy.geometry.computeBoundingSphere();
+    return n;
+  };
   mesh.userData.setLandcover = (tex, rect) => {
     uniforms.tLand.value = tex;
     uniforms.uLandRect.value.set(rect.x0, rect.z0, 1 / rect.w, 1 / rect.d);

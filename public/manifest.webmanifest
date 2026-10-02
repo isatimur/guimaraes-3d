@@ -1,7 +1,7 @@
 {
-  "name": "Braga 3D — mapa interativo",
-  "short_name": "Braga 3D",
-  "description": "An interactive 3D map of Braga: cathedrals, gardens, squares and hilltop sanctuaries.",
+  "name": "Guimarães 3D — mapa interativo",
+  "short_name": "Guimarães 3D",
+  "description": "An interactive 3D map of Guimarães: the cradle of Portugal, its medieval centre and the Penha mountain.",
   "lang": "pt-PT",
   "start_url": "/",
   "scope": "/",

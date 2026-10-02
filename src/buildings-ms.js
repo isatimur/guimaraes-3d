@@ -168,11 +168,26 @@ function orientedBox(pts) {
   return [at(u0, v0), at(u1, v0), at(u1, v1), at(u0, v1)];
 }
 
-const newT = () => ({ pos: [], nor: [], col: [], wall: [], idx: [] });
+// lod: the near/middle index blocks (buildings.js: pitched roofs in
+// `near`, their flat caps in `farCap`)
+const newT = (lod = false) => (lod ? { pos: [], nor: [], col: [], wall: [], idx: [], near: [], farCap: [] } : { pos: [], nor: [], col: [], wall: [], idx: [] });
+const FAR = { far: true }; // extrudeBuilding: a flat box
+// near meshes farther than this from the camera draw flat caps for the
+// pitched roofs (src/buildings.js MID_M)
+const MID_U = 1400 * S;
 
 // plain arrays -> typed arrays with bounds
 function pack(T, tint) {
   if (!T.idx.length) return null;
+  let ranges = null;
+  let list = T.idx;
+  if (T.near && (T.near.length || T.farCap.length)) {
+    const a = T.near.length;
+    const b = T.idx.length;
+    const c = T.farCap.length;
+    list = T.near.concat(T.idx, T.farCap);
+    ranges = { near: [0, a + b], mid: [a, b + c] };
+  }
   const n = T.pos.length / 3;
   const pos = new Float32Array(T.pos);
   const nor = new Int8Array(T.nor.length);
@@ -187,7 +202,7 @@ function pack(T, tint) {
       col[v * 3 + k] = c < 0 ? 0 : c > 255 ? 255 : Math.round(c);
     }
   }
-  const idx = new Uint32Array(T.idx);
+  const idx = new Uint32Array(list);
   const box = new THREE.Box3();
   for (let i = 0; i < pos.length; i += 3) {
     if (pos[i] < box.min.x) box.min.x = pos[i];
@@ -197,7 +212,16 @@ function pack(T, tint) {
     if (pos[i + 2] < box.min.z) box.min.z = pos[i + 2];
     if (pos[i + 2] > box.max.z) box.max.z = pos[i + 2];
   }
-  return { pos, nor, col, wall: new Float32Array(T.wall), idx, box, verts: n, tris: T.idx.length / 3 };
+  return { pos, nor, col, wall: new Float32Array(T.wall), idx, box, verts: n, tris: (ranges ? ranges.near[1] : T.idx.length) / 3, ranges };
+}
+
+// near / middle LOD of a mesh with index ranges, by its distance (world units)
+function setMid(g, d) {
+  const r = g?.userData.ranges;
+  if (!r) return;
+  const mid = g.drawRange.start > 0;
+  const want = d > (mid ? MID_U * 0.9 : MID_U);
+  if (want !== mid) g.setDrawRange(...(want ? r.mid : r.near));
 }
 
 // one geometry from packed parts [{ p, born }]
@@ -239,6 +263,10 @@ function geometryOf(list) {
   g.setAttribute('aWall', new THREE.BufferAttribute(wall, 4));
   g.setAttribute('aBorn', new THREE.BufferAttribute(born, 1));
   g.setIndex(new THREE.BufferAttribute(ix, 1));
+  if (one && list[0].p.ranges) {
+    g.userData.ranges = list[0].p.ranges;
+    g.setDrawRange(...list[0].p.ranges.near);
+  }
   g.boundingBox = box;
   g.boundingSphere = box.getBoundingSphere(new THREE.Sphere());
   return g;
@@ -252,7 +280,12 @@ const bytesOf = (g) => {
 // ------------------------------------------------------------ the layer
 // footprints: data/footprints.json as loaded ({ id: { outline, parts } });
 // plans: the fitted landmark plans; osm: the core OSM footprints (world).
-export function createMsBuildings({ scene, camera, terrain, heightAt, proj, footprints = {}, plans = [], osm = [], mobile = false, debug = {} }) {
+// lite (light mode, main.js): no far LOD at all. Ring tiles load, as near
+// meshes, only within 1.5 km of the camera; a 2 km core block shows only
+// while it is within 1.5 km (horizontally) of the camera or the focus.
+const LITE_U = 1500 * S;
+
+export function createMsBuildings({ scene, camera, terrain, heightAt, proj, footprints = {}, plans = [], osm = [], mobile = false, lite = false, debug = {} }) {
   const mode = new URLSearchParams(location.search).get('ms');
   const off = mode === '0';
   const tint = mode === 'debug';
@@ -271,7 +304,9 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
   }
   scene.add(group);
 
-  const NEAR_M = mobile ? 2000 : 4000;
+  const NEAR_M = lite ? LITE_U / S : mobile ? 2000 : 4000;
+  // light mode: 1 km core blocks, so the 1.5 km limit cuts finely
+  const coreTileM = lite ? 1000 : CORE_TILE_M;
   const material = createBuildingMaterial({ fade: true });
   material.name = 'buildings-ms';
   let ground = null;
@@ -371,7 +406,7 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
         extrudeBuilding(T, f.pts, h, 'ms', f.areaM2, J.seed + i, ground);
         if (J.Tfar && f.areaM2 >= FAR_MIN_M2) {
           const box = orientedBox(f.pts);
-          extrudeBuilding(J.Tfar, box, h, 'ms', f.areaM2, J.seed + i, ground);
+          extrudeBuilding(J.Tfar, box, h, 'ms', f.areaM2, J.seed + i, ground, false, FAR);
           extrudeBuilding(J.Tvf, box, h, 'ms', f.areaM2, J.seed + i, ground, true);
         }
         // the core: the same building, roof only, for the tiles far from view
@@ -415,13 +450,13 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
       decode: (b) => (Array.isArray(b.p) && b.p.length >= 3 && b.h > 0 ? b.p.map((q) => proj.project(q[0], q[1])) : null),
       h: (b) => b.h,
       tileOf(f) {
-        const key = `${Math.floor(f.cx / S / CORE_TILE_M)},${Math.floor(f.cz / S / CORE_TILE_M)}`;
+        const key = `${Math.floor(f.cx / S / coreTileM)},${Math.floor(f.cz / S / coreTileM)}`;
         let T = cells.get(key);
-        if (!T) cells.set(key, (T = newT()));
+        if (!T) cells.set(key, (T = newT(true)));
         return T;
       },
       tileOfVf(f) {
-        const key = `${Math.floor(f.cx / S / CORE_TILE_M)},${Math.floor(f.cz / S / CORE_TILE_M)}`;
+        const key = `${Math.floor(f.cx / S / coreTileM)},${Math.floor(f.cz / S / coreTileM)}`;
         let T = cellsVf.get(key);
         if (!T) cellsVf.set(key, (T = newT()));
         return T;
@@ -436,6 +471,9 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
           const mesh = new THREE.Mesh(g, material);
           mesh.name = `buildings-ms-${key}`;
           mesh.userData.full = g;
+          const [kx, kz] = key.split(',').map(Number);
+          const cu = coreTileM * S;
+          mesh.userData.rect = { x0: kx * cu, x1: (kx + 1) * cu, zN: kz * cu, zS: (kz + 1) * cu };
           if (pv) mesh.userData.roofs = geometryOf([{ p: pv, born: clock }]);
           mesh.matrixAutoUpdate = false;
           mesh.castShadow = castNow;
@@ -500,7 +538,7 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
     fetching--;
     if (id !== T.reqId) return; // unloaded meanwhile
     const o = tile.o;
-    const Tn = newT();
+    const Tn = newT(true);
     const Tf = newT();
     const Tvf = newT();
     const job = {
@@ -632,7 +670,7 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
       const d3 = Math.hypot(dCam, altU);
       T.prio = 1 / Math.max(d3, 25);
       if (T.job) T.job.prio = T.prio;
-      if (T.state !== 'idle' && T.state !== 'failed' && d > 2 * R) {
+      if (T.state !== 'idle' && T.state !== 'failed' && (d > 2 * R || (lite && d3 > nearU * 1.2))) {
         unload(T);
         changed = true;
         continue;
@@ -648,23 +686,33 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
             changed = true;
           }
         }
-        const want = d3 < nearU ? 'near' : d3 > nearU * 1.2 ? 'far' : T.lod || 'far';
+        // light mode: near only (the unload above takes the far ones)
+        const want = lite ? 'near' : d3 < nearU ? 'near' : d3 > nearU * 1.2 ? 'far' : T.lod || 'far';
         if (want !== T.lod) {
           setLod(T, want);
           changed = true;
         }
+        if (T.mesh) setMid(T.mesh.geometry, d3);
         continue;
       }
-      if (T.state === 'idle' && d < R && !(clock < T.retryAt)) cands.push(T);
+      if (T.state === 'idle' && d < R && !(clock < T.retryAt) && !(lite && d3 > nearU)) cands.push(T);
+    }
+    // light mode: a core block shows only within 1.5 km of the camera or the focus
+    if (lite) {
+      for (const m of coreMeshes) {
+        const r = m.userData.rect;
+        m.visible = Math.min(rectDist(r, cam.x, cam.z), rectDist(r, focus.x, focus.z)) < (m.visible ? LITE_U * 1.1 : LITE_U);
+      }
     }
     // the core's outer 2 km tiles: roof-only when wholly beyond 6 km (camera) and 3 km (focus)
     for (const m of coreMeshes) {
-      const roofs = m.userData.roofs;
-      if (!roofs) continue;
       const full = m.userData.full;
       if (!full.boundingSphere) full.computeBoundingSphere();
       const bs = full.boundingSphere;
       const dc = Math.hypot(bs.center.x - cam.x, bs.center.z - cam.z, altU) - bs.radius;
+      setMid(full, dc);
+      const roofs = m.userData.roofs;
+      if (!roofs) continue;
       const df = Math.hypot(bs.center.x - focus.x, bs.center.z - focus.z) - bs.radius;
       const roofNow = m.geometry === roofs;
       const want = df > FOCUS_KEEP_U && dc > (roofNow ? VFAR_U * 0.9 : VFAR_U);
@@ -697,7 +745,7 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
     group.traverse((m) => {
       if (!m.isMesh) return;
       meshes++;
-      tris += m.geometry.index.count / 3;
+      tris += Math.min(m.geometry.index.count, m.geometry.drawRange.count) / 3;
     });
     Object.assign(stats, { ringLoaded: loaded, ringNear: near, ringFar: far, ringBuildings: n, tris: Math.round(tris), meshes, gpuMB: +(gpuBytes / 1048576).toFixed(1), pending: fetching + jobs.length });
     if (debug.stats) debug.stats.ms = { core: stats.core, ringLoaded: loaded, tris: stats.tris };
@@ -707,7 +755,8 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
     frames++;
     clock = BUILDING_UNIFORMS.uClock.value; // src/tiles.js advances it
     if (!started) {
-      if (!(debug.ready && frames > 20)) return;
+      // after the first full frames (main.js sets interactive before ready)
+      if (!((debug.interactive || debug.ready) && frames > 20)) return;
       started = true;
       const ax = groundAxes(terrain);
       ground = makeGround(heightAt, ax.xs, ax.zs);

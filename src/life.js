@@ -33,6 +33,7 @@ import { createWeather, addScaled } from './weather.js';
 import { createLive } from './live.js';
 import { createTrafficModel } from './traffic-model.js';
 import { buildNetwork, createFlow } from './road-network.js';
+import { createStreetscape } from './streetscape.js';
 
 // shared by the materials here: night 0..1 and the emissive boost (above
 // the bloom threshold when post-processing is on)
@@ -53,8 +54,9 @@ function lcg(seed) {
 // Heights of a landmark mesh's up-facing surfaces at world points: for
 // each point the highest surface between lo[i] and hi[i] (world y), or
 // NaN. One pass over the triangles. The geometry is world-oriented around
-// the mesh position (fit.js), at real scale.
-function surfaceHeights(mesh, xs, zs, lo, hi) {
+// the mesh position (fit.js), at real scale. (streetscape.js: the paving of
+// the landmark squares.)
+export function surfaceHeights(mesh, xs, zs, lo, hi) {
   const out = new Float32Array(xs.length).fill(NaN);
   if (!mesh?.geometry?.attributes?.position) return out;
   const P = mesh.geometry.attributes.position.array;
@@ -348,7 +350,7 @@ const lampChunk = (y0, y1) => `
   totalEmissiveRadiance += lamp * band * uLifeNight * uLifeGlow * 1.6;
 }`;
 
-function buildTraffic({ roads, project, heightAt, mobile, model }) {
+function buildTraffic({ roads, project, heightAt, mobile, model, N: nCars }) {
   const zones = CAR_FREE().map(([la, lo, r]) => ({ ...project(la, lo), r: r * S }));
   const blocked = (x, z) => zones.some((q) => (x - q.x) ** 2 + (z - q.z) ** 2 < q.r * q.r);
 
@@ -357,8 +359,8 @@ function buildTraffic({ roads, project, heightAt, mobile, model }) {
   const net = buildNetwork(roads, project, heightAt);
   const g = net.graph;
   if (!g.n) return null;
-  // buffers for the peak (traffic-model.js): 600, or 300 on phones
-  const N = mobile ? 300 : 600;
+  // buffers for the peak (traffic-model.js): 600, 300 on phones, 150 in light mode
+  const N = nCars ?? (mobile ? 300 : 600);
   const rnd = lcg(20260928);
   const flow = createFlow(net, { N, rnd, blocked });
   if (!flow) return null;
@@ -731,7 +733,7 @@ function birdMaterial(uHeight) {
   return mat;
 }
 
-function buildBirds({ items, heightAt, project, nature, mobile }) {
+function buildBirds({ items, heightAt, project, nature, mobile, lite = false }) {
   const byId = (id) => items.find((i) => i.data.id === id);
   const anchors = [];
   for (const [id, lift, r] of [['bom-jesus', 13, 26], ['sameiro', 16, 26], ['se-braga', 9, 15]]) {
@@ -745,7 +747,7 @@ function buildBirds({ items, heightAt, project, nature, mobile }) {
     const c = project(q[0], q[1]);
     anchors.push({ id: 'rio-este', x: c.x, z: c.z, y: heightAt(c.x, c.z) + 14, r: 40 });
   }
-  const M = mobile ? 20 : 40;
+  const M = lite ? 10 : mobile ? 20 : 40;
   const uHeight = { value: 900 };
   const geo = birdGeometry();
   const mat = birdMaterial(uHeight);
@@ -1110,7 +1112,9 @@ const NIGHT_WATER = new THREE.Color(0.5, 0.42, 0.3);
 
 // ------------------------------------------------------------ public
 export function createLife(ctx) {
-  const { renderer, scene, camera, atmosphere, project, heightAt, roads, items, nature, fx, reducedMotion = false, mobile = false, debug = {}, setHash = () => {} } = ctx;
+  const { renderer, scene, camera, atmosphere, project, heightAt, roads, items, nature, fx, reducedMotion = false, mobile = false, lite = false, debug = {}, setHash = () => {} } = ctx;
+  // light mode (main.js): 150 cars at the peak, 10 birds
+  const carMax = lite ? 150 : mobile ? 300 : 600;
   const group = new THREE.Group();
   group.name = 'life';
   scene.add(group);
@@ -1130,14 +1134,19 @@ export function createLife(ctx) {
   // one clock for traffic and buses: the real Lisbon time in live mode (or
   // ?now=), the preset's hour otherwise (traffic-model.js PRESET_HOUR)
   const model = safe('traffic model', () =>
-    createTrafficModel({ max: mobile ? 300 : 600, getNow: live.now, isLive: () => live.live, getPreset: () => atmosphere.time, project, mobile }),
+    createTrafficModel({ max: carMax, getNow: live.now, isLive: () => live.live, getPreset: () => atmosphere.time, project, mobile }),
   );
 
   const funicular = safe('funicular', () => buildFunicular({ project, heightAt, items }));
-  const traffic = safe('traffic', () => buildTraffic({ roads, project, heightAt, mobile, model }));
-  const birds = safe('birds', () => buildBirds({ items, heightAt, project, nature, mobile }));
+  const traffic = safe('traffic', () => buildTraffic({ roads, project, heightAt, mobile, model, N: carMax }));
+  const birds = safe('birds', () => buildBirds({ items, heightAt, project, nature, mobile, lite }));
   const fountains = safe('fountains', () => buildFountains({ project, heightAt, items, mobile }));
-  for (const p of [funicular, traffic, birds, fountains]) if (p) group.add(p.object);
+  // the street level: calçada squares, furniture, people, POI signs
+  // (streetscape.js; it builds once its data has arrived)
+  const street = safe('streetscape', () =>
+    createStreetscape({ camera, roads, project, heightAt, items, outlines: ctx.outlines, footprints: ctx.footprints, lite, mobile, debug, model, fx, surfaceHeights }),
+  );
+  for (const p of [funicular, traffic, birds, fountains, street]) if (p) group.add(p.object);
 
   const ctxLive = { scene, camera, renderer, project, heightAt, datumM, mobile, reducedMotion, live, model, atmosphere, group };
   // aircraft and buses: a separate chunk, loaded after the first frame
@@ -1162,6 +1171,7 @@ export function createLife(ctx) {
     traffic: traffic?.stats ?? null,
     birds: birds?.stats ?? null,
     fountains: fountains?.stats ?? null,
+    streetscape: street?.stats ?? null,
     rainDrops: 0,
     visibleVehicles: 0,
   };
@@ -1207,6 +1217,7 @@ export function createLife(ctx) {
     traffic?.update(adt, camera, frustum, view);
     birds?.update(adt, camera, view);
     fountains?.update(camera, view);
+    street?.update(adt, frustum, view);
     air?.update(adt, dt, view);
     buses?.update(adt, dt, view);
     badgeLines();
@@ -1226,6 +1237,7 @@ export function createLife(ctx) {
     traffic,
     birds,
     fountains,
+    street,
     stats,
     group,
     model,
@@ -1237,5 +1249,6 @@ export function createLife(ctx) {
     },
   };
   debug.life = api;
+  if (street) debug.streetscape = street;
   return api;
 }

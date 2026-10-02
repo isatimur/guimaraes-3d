@@ -310,16 +310,21 @@ export function createUI(landmarks, routes, h) {
     }, 260);
   }
 
+  // the list row of the shown place (-1: none)
+  function markActive(i) {
+    rows.forEach((r, k) => {
+      r.b.classList.toggle('is-active', k === i);
+      r.b.setAttribute('aria-current', k === i ? 'true' : 'false');
+    });
+    if (i >= 0 && view === 'places') rows[i]?.b.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
   // opts: { pos: '2 / 7', back: 'Маршрут «…»' | null }
   function show(i, opts = {}) {
     const l = landmarks[i];
     const same = current === l;
     current = l;
-    rows.forEach((r, k) => {
-      r.b.classList.toggle('is-active', k === i);
-      r.b.setAttribute('aria-current', k === i ? 'true' : 'false');
-    });
-    if (view === 'places') rows[i].b.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    markActive(i);
 
     $('#detail-meta').textContent = [categoryLabel(l.category), l.year].filter(Boolean).join(' · ');
     $('#detail-title').textContent = l.name;
@@ -361,10 +366,12 @@ export function createUI(landmarks, routes, h) {
   function hide() {
     stopPlayback();
     conceal(panel);
-    rows.forEach((r) => {
-      r.b.classList.remove('is-active');
-      r.b.setAttribute('aria-current', 'false');
-    });
+    markActive(-1);
+  }
+  // the full panel only; the place stays selected (the callout takes over)
+  function hidePanel() {
+    stopPlayback();
+    conceal(panel);
   }
 
   function visibleIndices() {
@@ -474,6 +481,22 @@ export function createUI(landmarks, routes, h) {
   }
   $('#share').addEventListener('click', () => h.onShare());
   const tools = toolsSheet();
+  const atmo = createAtmosphere();
+  $('#atmo-open')?.addEventListener('click', () => atmo.open());
+  // «Маршруты» in the menu: the routes tab of the list
+  $('#routes-open')?.addEventListener('click', () => {
+    if (!routes.length) return;
+    setView('routes');
+    document.body.classList.remove('is-callout');
+    $('#tab-routes')?.focus({ preventScroll: true });
+  });
+  const routesBtn = $('#routes-open');
+  if (routesBtn && !routes.length) routesBtn.hidden = true;
+  const callout = createCallout({
+    onMore: () => h.onMore?.(),
+    onClose: () => h.onClose(),
+    onPano: (p, from) => h.onPanoCallout?.(p, from),
+  });
 
   const toastEl = $('#toast');
   let toastTimer = 0;
@@ -491,6 +514,10 @@ export function createUI(landmarks, routes, h) {
   return {
     show,
     hide,
+    hidePanel,
+    markActive,
+    atmo,
+    callout,
     visibleIndices,
     isOpen: () => panel.classList.contains('is-open'),
     showRoute,
@@ -509,15 +536,17 @@ export function createUI(landmarks, routes, h) {
 }
 
 // ------------------------------------------------------------ header tools
-// One DOM for both layouts (index.html #tools-sheet):
-//   desktop: .tools-sheet and .tools-group are display: contents, so every
-//            tool sits in the header row in DOM order (group by group);
-//   <= 900 px: the header keeps «Кино» and «Меню»; the sheet slides up from
-//            the bottom, one row per group, never taller than the places
-//            sheet (36vh), so the compass and scale bar stay free.
-// Groups, in header order: modes, language, legend, share, sky, display.
-export const TOOL_GROUPS = ['modes', 'language', 'legend', 'share', 'sky', 'display'];
-const NARROW = '(max-width: 900px)';
+// The header holds five things (index.html .topbar): wordmark, search,
+// «Сейчас» with the «Атмосфера» arrow, «Кино», «⋯». Every other tool lives
+// in the menu (#tools-sheet), one row per group:
+//   desktop: a drop-down panel under «⋯», right-aligned;
+//   <= 900 px: a sheet that slides up from the bottom.
+// Closed, the menu is only invisible (visibility), so a popover may still
+// anchor to a button in it (share.js reads the share button's rect).
+// The «sky» group (time, weather, season, live) is never shown: the
+// «Атмосфера» popover drives those controls (createAtmosphere).
+// Groups, in menu order: modes, atmosphere, language, legend, share, sky, display.
+export const TOOL_GROUPS = ['modes', 'atmosphere', 'language', 'legend', 'share', 'sky', 'display'];
 let sheet = null;
 
 // Put a JS-created header control into its group; it shows in the header
@@ -543,7 +572,6 @@ export function toolsSheet() {
   const toggle = document.getElementById('tools-toggle');
   const bar = document.querySelector('.topbar');
   let open = false;
-  let mq = null; // set once the markup is there
   sheet = {
     get open() {
       return open;
@@ -551,9 +579,8 @@ export function toolsSheet() {
     set,
   };
   if (!root || !toggle || !bar) return sheet;
-  mq = window.matchMedia(NARROW);
   function set(on, { focus = true } = {}) {
-    on = !!on && !!mq?.matches;
+    on = !!on;
     if (on === open) return;
     open = on;
     root.classList.toggle('is-open', on);
@@ -578,16 +605,277 @@ export function toolsSheet() {
   document.addEventListener('pointerdown', (e) => {
     if (open && !root.contains(e.target) && !toggle.contains(e.target) && !e.target.closest?.('.share-pop')) set(false, { focus: false });
   });
-  mq.addEventListener?.('change', () => mq.matches || set(false, { focus: false }));
-  // a control appended straight to .topbar would land in the phone's top
-  // row: move it into the sheet (the documented path is mountTool)
-  const keep = (n) => n === root || n === toggle || n.matches?.('.modes, .life-break, .life-badge');
+  // a control appended straight to .topbar would land in the header row:
+  // move it into the menu (the documented path is mountTool)
+  const keep = (n) => n === root || n === toggle || n.matches?.('.brand, .search, .modes, .life-break, .life-badge');
   new MutationObserver((recs) => {
     for (const r of recs) for (const n of r.addedNodes) if (n.nodeType === 1 && n.parentNode === bar && !keep(n)) mountTool(n, 'display');
   }).observe(bar, { childList: true });
   // and the ones added before the sheet existed
   for (const n of [...bar.children]) if (!keep(n)) mountTool(n, 'display');
   return sheet;
+}
+
+// ------------------------------------------------------------ atmosphere
+// One popover (index.html #atmo) for the time of day, the season and the
+// weather, plus the header «Сейчас» button. Each preset clicks the original
+// control in the hidden «sky» group, so main.js, live.js and seasons.js keep
+// their own logic, storage and hash; the pressed states are read back from
+// those controls. Season, weather and live exist only once the deferred
+// layers are built: until then their presets are disabled.
+const NARROW_Q = '(max-width: 900px)';
+export function createAtmosphere() {
+  const pop = $('#atmo');
+  const btn = $('#atmo-btn');
+  const now = $('#now-btn');
+  const api = { open() {}, close() {}, get isOpen() { return false; } };
+  if (!pop || !btn) return api;
+  const opts = [...pop.querySelectorAll('[data-atmo]')];
+  const target = (key) => {
+    const [kind, v] = key.split(':');
+    if (kind === 'live') return document.getElementById('live-toggle');
+    if (kind === 'time') return document.querySelector(`#time-switch [data-time="${v}"]`);
+    if (kind === 'season') return document.querySelector(`#season-switch [data-season="${v}"]`);
+    if (kind === 'weather') return document.querySelector(`#weather-menu [data-weather="${v}"]`);
+    return null;
+  };
+  const pressed = (n) => n?.getAttribute('aria-pressed') === 'true';
+  function sync() {
+    const liveBtn = target('live');
+    const live = pressed(liveBtn);
+    for (const o of opts) {
+      const key = o.dataset.atmo;
+      const tg = target(key);
+      o.disabled = !tg;
+      const on = key === 'live' ? live : key.startsWith('time:') ? !live && pressed(tg) : pressed(tg);
+      o.setAttribute('aria-pressed', String(on));
+    }
+    if (now) {
+      now.disabled = !liveBtn;
+      now.setAttribute('aria-pressed', String(live));
+      if (liveBtn?.title) now.title = liveBtn.title;
+    }
+  }
+  let queued = false;
+  const queue = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      sync();
+    });
+  };
+  const sheetEl = document.getElementById('tools-sheet');
+  if (sheetEl) new MutationObserver(queue).observe(sheetEl, { subtree: true, childList: true, attributes: true, attributeFilter: ['aria-pressed'] });
+  sync();
+
+  pop.addEventListener('click', (e) => {
+    const o = e.target.closest('[data-atmo]');
+    if (!o || o.disabled) return;
+    const key = o.dataset.atmo;
+    const tg = target(key);
+    if (!tg) return;
+    if (key !== 'live' || !pressed(tg)) tg.click();
+    queue();
+  });
+  now?.addEventListener('click', () => {
+    target('live')?.click();
+    queue();
+  });
+
+  let open = false;
+  function place() {
+    if (window.matchMedia(NARROW_Q).matches) {
+      pop.style.left = '';
+      pop.style.top = '';
+      return;
+    }
+    const r = (btn.closest('.now-split') || btn).getBoundingClientRect();
+    const w = pop.offsetWidth || 340;
+    pop.style.left = `${Math.round(Math.max(12, Math.min(r.right - w, window.innerWidth - w - 12)))}px`;
+    pop.style.top = `${Math.round(r.bottom + 8)}px`;
+  }
+  function set(on, { focus = true } = {}) {
+    if (on === open) return;
+    open = on;
+    if (on) {
+      sync();
+      toolsSheet().set(false, { focus: false });
+      pop.hidden = false;
+      place();
+      requestAnimationFrame(() => pop.classList.add('is-open'));
+      if (focus) (pop.querySelector('[aria-pressed="true"]:not(:disabled)') || pop.querySelector('[data-atmo]:not(:disabled)'))?.focus({ preventScroll: true });
+    } else {
+      pop.classList.remove('is-open');
+      pop.hidden = true;
+      if (focus && (pop.contains(document.activeElement) || document.activeElement === document.body)) btn.focus({ preventScroll: true });
+    }
+    btn.setAttribute('aria-expanded', String(on));
+    document.body.classList.toggle('is-atmo-open', on);
+  }
+  btn.addEventListener('click', () => set(!open));
+  $('#atmo-close')?.addEventListener('click', () => set(false));
+  document.addEventListener('pointerdown', (e) => {
+    if (open && !pop.contains(e.target) && !btn.contains(e.target) && !e.target.closest?.('#atmo-open')) set(false, { focus: false });
+  });
+  // Esc closes the popover before main.js peels the place or the route
+  window.addEventListener(
+    'keydown',
+    (e) => {
+      if (open && e.key === 'Escape') {
+        e.stopPropagation();
+        set(false);
+      }
+    },
+    true,
+  );
+  window.addEventListener('resize', () => open && place());
+  return {
+    open: () => set(true),
+    close: () => set(false, { focus: false }),
+    get isOpen() {
+      return open;
+    },
+    sync,
+  };
+}
+
+// ------------------------------------------------------------ callout
+// The compact card next to the selected landmark (index.html #callout),
+// framed in azulejo tiles, with a leader line to the pin (#callout-leader).
+// main.js calls place() each frame with the pin's projected position.
+//   desktop: beside the pin, on the side with room (sticky, flips when
+//            the other side is the only one that fits), kept on screen;
+//   <= 900 px: docked at the bottom; the line rises to the pin.
+export function createCallout({ onMore, onClose, onPano }) {
+  const card = $('#callout');
+  const leader = $('#callout-leader');
+  if (!card || !leader) return { show() {}, hide() {}, place() {}, get open() { return false; } };
+  const line = leader.querySelector('line');
+  const ring = leader.querySelector('circle');
+  const fig = $('#callout-figure');
+  const img = $('#callout-img');
+  const pano = $('#callout-pano');
+  const walk = $('#callout-walk');
+  let shown = null;
+  let side = 1; // 1: card right of the pin, -1: left
+  let w = 0;
+  let h = 0;
+  let last = '';
+  const narrow = window.matchMedia(NARROW_Q);
+  img.addEventListener('load', () => fig.classList.remove('is-missing'));
+  img.addEventListener('error', () => fig.classList.add('is-missing'));
+  $('#callout-more').addEventListener('click', () => onMore?.());
+  $('#callout-close').addEventListener('click', () => onClose?.());
+  pano.addEventListener('click', (e) => shown?.panorama && onPano?.(shown.panorama, e.currentTarget));
+
+  function measure() {
+    w = card.offsetWidth;
+    h = card.offsetHeight;
+  }
+  new ResizeObserver(measure).observe(card);
+
+  function show(l) {
+    const same = shown === l;
+    shown = l;
+    if (!same) {
+      fig.classList.remove('is-missing');
+      if (l.image) img.src = assetUrl(l.image);
+      else {
+        img.removeAttribute('src');
+        fig.classList.add('is-missing');
+      }
+      img.alt = l.name;
+      $('#callout-meta').textContent = [categoryLabel(l.category), l.year].filter(Boolean).join(' · ');
+      $('#callout-title').textContent = l.name;
+      $('#callout-short').textContent = l.short || '';
+      $('#callout-short').hidden = !l.short;
+      const facts = (l.facts || []).slice(0, 3);
+      $('#callout-facts').replaceChildren(...facts.map((f) => el('li', '', f)));
+      $('#callout-facts').hidden = !facts.length;
+      pano.hidden = !l.panorama;
+      walk.href = `https://www.google.com/maps/dir/?api=1&destination=${l.lat},${l.lon}&travelmode=walking`;
+      walk.title = t('Пешком в Google Картах ↗');
+      side = 1;
+    }
+    card.hidden = false;
+    leader.removeAttribute('hidden');
+    document.body.classList.add('is-callout');
+    measure();
+    cancelAnimationFrame(card._raf || 0);
+    card._raf = requestAnimationFrame(() => card.classList.add('is-open'));
+  }
+
+  function hide() {
+    if (!shown && card.hidden) return;
+    shown = null;
+    cancelAnimationFrame(card._raf || 0);
+    card.classList.remove('is-open');
+    card.hidden = true;
+    leader.setAttribute('hidden', '');
+    document.body.classList.remove('is-callout');
+    last = '';
+  }
+
+  // pin: { x, y, on } in CSS px (on: in front of the camera and on screen);
+  // b: the free area { left, top, right, bottom } the card must stay in
+  function place(pin, b) {
+    if (!shown) return;
+    if (!w || !h) measure();
+    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), Math.max(lo, hi));
+    let x;
+    let y;
+    let ax;
+    let ay;
+    if (narrow.matches) {
+      // docked: CSS places it; the line leaves its top edge
+      const r = card.getBoundingClientRect();
+      x = r.left;
+      y = r.top;
+      ax = clamp(pin.x, r.left + 24, r.right - 24);
+      ay = r.top;
+    } else {
+      const gap = 64;
+      const fitsR = pin.x + gap + w <= b.right;
+      const fitsL = pin.x - gap - w >= b.left;
+      if (side > 0 && !fitsR && fitsL) side = -1;
+      else if (side < 0 && !fitsL && fitsR) side = 1;
+      x = clamp(side > 0 ? pin.x + gap : pin.x - gap - w, b.left, b.right - w);
+      y = clamp(pin.y - h * 0.42, b.top, b.bottom - h);
+      ax = side > 0 ? x : x + w;
+      ay = clamp(pin.y, y + 18, y + h - 18);
+      const key = `${Math.round(x)},${Math.round(y)}`;
+      if (key !== last) {
+        last = key;
+        card.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+      }
+    }
+    // no line when the pin is off screen, behind the camera or under the card
+    const under = pin.x > x - 6 && pin.x < x + w + 6 && pin.y > y - 6 && pin.y < y + h + 6;
+    const showLine = pin.on && !under && Math.hypot(pin.x - ax, pin.y - ay) > 20;
+    leader.classList.toggle('is-off', !showLine);
+    if (showLine) {
+      line.setAttribute('x1', ax.toFixed(1));
+      line.setAttribute('y1', ay.toFixed(1));
+      line.setAttribute('x2', pin.x.toFixed(1));
+      line.setAttribute('y2', pin.y.toFixed(1));
+      ring.setAttribute('cx', pin.x.toFixed(1));
+      ring.setAttribute('cy', pin.y.toFixed(1));
+    }
+  }
+
+  return {
+    show,
+    hide,
+    place,
+    measure,
+    get open() {
+      return !!shown;
+    },
+    get size() {
+      return { w, h };
+    },
+  };
 }
 
 // Compass rose and scale bar, bottom left of the map. The rose turns with

@@ -15,6 +15,71 @@ import { createStoneTextures, createAzulejoTexture } from './textures.js';
 import { shrinkCheck, SHRINK_MIN } from './fit.js';
 import { S } from './geo.js';
 
+// Far LOD (performance): far away a model draws a vertex-clustered copy of
+// itself, grid cell = bounding radius / LOD_K, about 23 % of the triangles
+// over all models. It switches only when a cell is below ~0.75 device px,
+// so the swap is invisible; the size stays 1:1. Built lazily, one model per
+// frame. The selected model always keeps its full geometry.
+const LOD_K = 60;
+const LOD_ON_PX = 0.75;
+const LOD_OFF_PX = 0.9;
+const TAN_HALF_FOV = Math.tan(THREE.MathUtils.degToRad(38 / 2)); // main.js camera
+
+// Vertex clustering of a non-indexed geometry: every vertex moves to the
+// mean position of its grid cell; triangles that collapse (two corners in
+// one cell) or repeat (same three cells) are dropped. The other attributes
+// (normal, colour, ids) are copied from the original corners.
+function clusterGeometry(g, cell) {
+  const pos = g.attributes.position.array;
+  const nV = pos.length / 3;
+  const keyOf = new Array(nV);
+  const sum = new Map();
+  for (let v = 0; v < nV; v++) {
+    const k = `${Math.round(pos[v * 3] / cell)},${Math.round(pos[v * 3 + 1] / cell)},${Math.round(pos[v * 3 + 2] / cell)}`;
+    keyOf[v] = k;
+    let s = sum.get(k);
+    if (!s) sum.set(k, (s = [0, 0, 0, 0]));
+    s[0] += pos[v * 3];
+    s[1] += pos[v * 3 + 1];
+    s[2] += pos[v * 3 + 2];
+    s[3]++;
+  }
+  const keep = [];
+  const seen = new Set();
+  for (let t = 0; t < nV / 3; t++) {
+    const a = keyOf[t * 3];
+    const b = keyOf[t * 3 + 1];
+    const c = keyOf[t * 3 + 2];
+    if (a === b || b === c || a === c) continue;
+    const id = a < b ? (b < c ? `${a}|${b}|${c}` : a < c ? `${a}|${c}|${b}` : `${c}|${a}|${b}`) : a < c ? `${b}|${a}|${c}` : b < c ? `${b}|${c}|${a}` : `${c}|${b}|${a}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    keep.push(t);
+  }
+  const out = new THREE.BufferGeometry();
+  for (const [name, attr] of Object.entries(g.attributes)) {
+    const n = attr.itemSize;
+    const src = attr.array;
+    const dst = new src.constructor(keep.length * 3 * n);
+    let o = 0;
+    for (const t of keep) {
+      for (let v = t * 3; v < t * 3 + 3; v++) {
+        if (name === 'position') {
+          const s = sum.get(keyOf[v]);
+          dst[o++] = s[0] / s[3];
+          dst[o++] = s[1] / s[3];
+          dst[o++] = s[2] / s[3];
+        } else for (let i = 0; i < n; i++) dst[o++] = src[v * n + i];
+      }
+    }
+    out.setAttribute(name, new THREE.BufferAttribute(dst, n, attr.normalized));
+  }
+  out.userData = g.userData;
+  out.computeBoundingBox();
+  out.boundingSphere = g.boundingSphere.clone();
+  return out;
+}
+
 const PIN_ANGLE = 0.018; // pin height / camera distance: about 24 px on a 900 px view
 const PIN_MIN = 0.05; // world units: in a close-up the pin stays small
 const OUTLINE_LIFT = 0.25;
@@ -432,7 +497,33 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
 
   // Pins keep a constant screen size (height = PIN_ANGLE x distance), so a
   // 10 m tower seen from the whole-city view is still a findable gold mark.
+  // far LOD (LOD_K above): device pixels per world unit at distance 1
+  let pxPerUnit = 900 / 2 / TAN_HALF_FOV;
+  function updateLod(camPos) {
+    let built = false;
+    for (const it of items) {
+      const mesh = it.meshes[0];
+      const L = (mesh.userData.lod ??= { full: mesh.geometry, far: null, r: 0 });
+      if (!L.r) {
+        if (!L.full.boundingSphere) L.full.computeBoundingSphere();
+        L.r = L.full.boundingSphere.radius;
+      }
+      const d = Math.max(1, camPos.distanceTo(it.center));
+      const cellPx = ((L.r / LOD_K) * pxPerUnit) / d;
+      const onFar = mesh.geometry !== L.full;
+      const want = it.index !== activeIndex && cellPx < (onFar ? LOD_OFF_PX : LOD_ON_PX);
+      if (want && !L.far) {
+        if (built) continue; // one build per frame
+        L.far = clusterGeometry(L.full, L.r / LOD_K);
+        built = true;
+      }
+      const geo = want ? L.far : L.full;
+      if (mesh.geometry !== geo) mesh.geometry = geo;
+    }
+  }
+
   function updatePins(time, animate, camPos) {
+    if (camPos) updateLod(camPos);
     for (const it of items) {
       const off = hidden.has(it.data.category);
       const active = it.index === activeIndex;
@@ -520,8 +611,14 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
     pick,
     shrink,
     realScale,
-    setResolution(w, h) {
+    // dpr: drawing-buffer pixels per CSS pixel, for the far LOD
+    setResolution(w, h, dpr = 1) {
       outlineMat.resolution.set(w, h);
+      pxPerUnit = (h * dpr) / 2 / TAN_HALF_FOV;
+    },
+    // for tests: how many models draw their far LOD now
+    get lodCount() {
+      return items.filter((it) => it.meshes[0].userData.lod && it.meshes[0].geometry !== it.meshes[0].userData.lod.full).length;
     },
   };
 }

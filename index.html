@@ -3,58 +3,76 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Брага — 3D-карта достопримечательностей</title>
-    <meta name="description" content="Интерактивная 3D-карта Браги: соборы, сады, площади и святилища на холмах." />
+    <title>Гимарайнш — 3D-карта достопримечательностей</title>
+    <meta name="description" content="Интерактивная 3D-карта Гимарайнша: замок, дворцы, средневековый центр и гора Пенья." />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3l7 13-7 13-7-13z' fill='%23e0a948'/%3E%3C/svg%3E" />
     <link rel="canonical" href="https://guimaraes-3d.vercel.app/" />
-    <meta name="theme-color" content="#14110d" />
+    <meta name="theme-color" content="#0f2a57" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Guimarães 3D" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Guimarães 3D" />
-    <meta property="og:title" content="Guimarães 3D · Castle, Ducal Palace, Penha and 15 more landmarks" />
-    <meta property="og:description" content="An interactive 3D map of Guimarães, the cradle of Portugal: castle, ducal palace, Penha cable car and the UNESCO old town. In Portuguese, English and Russian." />
+    <meta property="og:title" content="Guimarães 3D · the castle, the Dukes' Palace and 16 more landmarks" />
+    <meta property="og:description" content="An interactive 3D map of Guimarães: the cradle of Portugal, its medieval centre and the Penha mountain. In Portuguese, English and Russian." />
     <meta property="og:url" content="https://guimaraes-3d.vercel.app/" />
     <meta property="og:image" content="https://guimaraes-3d.vercel.app/og/guimaraes.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Guimarães in 3D at golden hour" />
+    <meta property="og:image:alt" content="Guimarães in 3D: the medieval castle on its granite hill" />
     <meta property="og:locale" content="pt_PT" />
     <meta property="og:locale:alternate" content="en_GB" />
     <meta property="og:locale:alternate" content="ru_RU" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Guimarães 3D · Castle, Ducal Palace, Penha and 15 more landmarks" />
-    <meta name="twitter:description" content="An interactive 3D map of Guimarães, the cradle of Portugal." />
+    <meta name="twitter:title" content="Guimarães 3D · the castle, the Dukes' Palace and 16 more landmarks" />
+    <meta name="twitter:description" content="An interactive 3D map of Guimarães: the cradle of Portugal, its medieval centre and the Penha mountain." />
     <meta name="twitter:image" content="https://guimaraes-3d.vercel.app/og/guimaraes.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Sans:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Roboto+Flex:opsz,wdth,wght@8..144,100..151,400..800&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     <div id="app">
-      <canvas id="scene" aria-label="Трёхмерная карта Браги"></canvas>
+      <canvas id="scene" aria-label="Трёхмерная карта Гимарайнша"></canvas>
       <div id="labels" aria-hidden="true"></div>
 
-      <header class="brand">
-        <h1>Брага</h1>
-        <p class="brand-sub">Интерактивная 3D-карта достопримечательностей</p>
-        <p class="brand-count" id="count" aria-live="polite"></p>
-      </header>
-
-      <!-- Header. Desktop: one row of tools (the sheet and its groups are
-           display: contents). Phones (<= 900 px): only «Кино» and «Меню»;
-           the groups live in the slide-up #tools-sheet. JS-created tools
-           go in with mountTool(el, group) from src/ui.js. -->
+      <!-- Header of five things: wordmark, search, «Сейчас» (with the
+           «Атмосфера» popover on its arrow), «Кино», «⋯» menu. Everything
+           else lives in the menu sheet (#tools-sheet): a drop-down panel on
+           desktop, a bottom sheet on phones. JS-created tools go in with
+           mountTool(el, group) from src/ui.js. -->
       <div class="topbar" id="topbar">
-        <div class="modes" role="group" aria-label="Режимы просмотра">
-          <button type="button" class="tool mode-btn" id="cinema-toggle" aria-controls="cinema" title="Фильм о Браге с утра до ночи"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" /></svg>Кино</button>
+        <header class="brand">
+          <span class="brand-tile" aria-hidden="true"><span><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M2 21V10h1.6V7h2.2v3h2.4V7h2.4v3h2.8V7h2.4v3h2.4V7h2.2v3H22v11h-5.6v-3.6a2.4 2.4 0 0 0-4.8 0V21z"/></svg></span></span>
+          <span class="brand-text">
+            <h1>Гимарайнш</h1>
+            <span class="brand-count" id="count" aria-live="polite"></span>
+          </span>
+        </header>
+        <div class="search" id="search" role="search">
+          <svg class="search-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="M12.8 12.8 17 17" /></svg>
+          <input id="search-input" class="search-input" type="search" autocomplete="off" spellcheck="false" enterkeyhint="go" role="combobox" aria-expanded="false" aria-controls="search-results" aria-autocomplete="list" aria-label="Поиск" />
+          <kbd class="search-kbd" aria-hidden="true">/</kbd>
+          <button type="button" class="search-close" id="search-close" aria-label="Закрыть поиск">×</button>
+          <div class="search-panel" id="search-panel" hidden>
+            <div class="search-filters">
+              <button type="button" class="search-chip" id="search-open-now" aria-pressed="false">Открыто сейчас</button>
+            </div>
+            <div class="search-results" id="search-results" role="listbox" aria-label="Результаты поиска"></div>
+          </div>
         </div>
-        <button type="button" class="tool tools-toggle" id="tools-toggle" aria-expanded="false" aria-controls="tools-sheet"><span class="tools-dots" aria-hidden="true">⋯</span> <span class="tools-toggle-label">Меню</span></button>
+        <div class="modes" role="group" aria-label="Режимы просмотра">
+          <div class="now-split">
+            <button type="button" class="hbtn now-btn" id="now-btn" aria-pressed="false" disabled><span class="now-dot" aria-hidden="true"></span><span class="hbtn-label">Сейчас</span></button>
+            <button type="button" class="hbtn atmo-btn" id="atmo-btn" aria-expanded="false" aria-controls="atmo" aria-label="Атмосфера" title="Атмосфера: время, сезон, погода"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.5 8 10l4-3.5" /></svg></button>
+          </div>
+          <button type="button" class="hbtn mode-btn" id="cinema-toggle" aria-controls="cinema" title="Фильм о Браге с утра до ночи"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" /></svg><span class="hbtn-label">Кино</span></button>
+        </div>
+        <button type="button" class="hbtn tools-toggle" id="tools-toggle" aria-expanded="false" aria-controls="tools-sheet" aria-label="Меню"><span class="tools-dots" aria-hidden="true">⋯</span></button>
         <div class="tools-sheet" id="tools-sheet" role="group" aria-label="Меню">
           <div class="tools-head">
             <p class="tools-title">Меню</p>
@@ -63,6 +81,11 @@
           <div class="tools-group" data-group="modes">
             <p class="tools-group-title">Режимы</p>
             <button type="button" class="tool mode-btn" id="story-toggle" aria-controls="story" title="2000 лет истории Браги" data-closes-tools><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h4.2c.5 0 .8.3.8.8v8.2c0-.6-.4-1-1-1H3zM13 3.5H8.8c-.5 0-.8.3-.8.8v8.2c0-.6.4-1 1-1h4z" /></svg><span class="mode-label">История</span></button>
+            <button type="button" class="tool mode-btn" id="routes-open" data-closes-tools><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 13.5a1.5 1.5 0 1 0 0-.01M12 2.5a1.5 1.5 0 1 0 0 .01M5.5 12.5h4a2.5 2.5 0 0 0 0-5h-3a2.5 2.5 0 0 1 0-5h4" /></svg><span class="mode-label">Маршруты</span></button>
+          </div>
+          <div class="tools-group" data-group="atmosphere">
+            <p class="tools-group-title">Атмосфера</p>
+            <button type="button" class="tool" id="atmo-open" data-closes-tools>Время, сезон, погода</button>
           </div>
           <div class="tools-group" data-group="language">
             <p class="tools-group-title">Язык</p>
@@ -115,6 +138,61 @@
           </div>
         </div>
       </div>
+
+      <!-- «Атмосфера»: one popover for the time of day, the season and the
+           weather. Its presets drive the original controls, which stay in
+           the hidden «sky» group of the menu (src/ui.js createAtmosphere). -->
+      <div class="atmo" id="atmo" role="dialog" aria-labelledby="atmo-title" hidden>
+        <div class="atmo-head">
+          <p class="atmo-title" id="atmo-title">Атмосфера</p>
+          <button type="button" class="atmo-close" id="atmo-close" aria-label="Закрыть">×</button>
+        </div>
+        <p class="atmo-h">Время</p>
+        <div class="atmo-row" role="group" aria-label="Время суток">
+          <button type="button" class="atmo-opt atmo-live" data-atmo="live" aria-pressed="false"><span class="now-dot" aria-hidden="true"></span>сейчас</button>
+          <button type="button" class="atmo-opt" data-atmo="time:morning" aria-pressed="false">утро</button>
+          <button type="button" class="atmo-opt" data-atmo="time:day" aria-pressed="false">день</button>
+          <button type="button" class="atmo-opt" data-atmo="time:sunset" aria-pressed="false">закат</button>
+          <button type="button" class="atmo-opt" data-atmo="time:night" aria-pressed="false">ночь</button>
+        </div>
+        <p class="atmo-h">Сезон</p>
+        <div class="atmo-row" role="group" aria-label="Сезон">
+          <button type="button" class="atmo-opt" data-atmo="season:spring" aria-pressed="false" disabled>весна</button>
+          <button type="button" class="atmo-opt" data-atmo="season:summer" aria-pressed="false" disabled>лето</button>
+          <button type="button" class="atmo-opt" data-atmo="season:fall" aria-pressed="false" disabled>осень</button>
+          <button type="button" class="atmo-opt" data-atmo="season:winter" aria-pressed="false" disabled>зима</button>
+        </div>
+        <p class="atmo-h">Погода</p>
+        <div class="atmo-row" role="group" aria-label="Погода">
+          <button type="button" class="atmo-opt" data-atmo="weather:clear" aria-pressed="false" disabled>ясно</button>
+          <button type="button" class="atmo-opt" data-atmo="weather:rain" aria-pressed="false" disabled>дождь</button>
+          <button type="button" class="atmo-opt" data-atmo="weather:fog" aria-pressed="false" disabled>туман</button>
+          <button type="button" class="atmo-opt atmo-minor" data-atmo="weather:partly" aria-pressed="false" disabled>облачно</button>
+          <button type="button" class="atmo-opt atmo-minor" data-atmo="weather:overcast" aria-pressed="false" disabled>пасмурно</button>
+        </div>
+      </div>
+
+      <!-- Callout card next to the selected landmark (C1), with a leader
+           line to its pin. src/ui.js createCallout; main.js positions it. -->
+      <svg class="callout-leader" id="callout-leader" aria-hidden="true" hidden><line /><circle r="11" /></svg>
+      <section class="callout" id="callout" aria-labelledby="callout-title" hidden>
+        <div class="callout-inner">
+          <figure class="callout-figure" id="callout-figure"><img id="callout-img" alt="" decoding="async" /></figure>
+          <div class="callout-body">
+            <p class="callout-meta" id="callout-meta"></p>
+            <h2 class="callout-title" id="callout-title"></h2>
+            <p class="callout-short" id="callout-short"></p>
+            <ul class="callout-facts" id="callout-facts"></ul>
+            <div class="callout-acts">
+              <button type="button" class="btn-primary" id="callout-more">Подробнее</button>
+              <button type="button" class="btn-ghost" id="callout-pano">360°</button>
+              <a class="btn-ghost" id="callout-walk" target="_blank" rel="noopener noreferrer">Дойти</a>
+            </div>
+          </div>
+          <button type="button" class="callout-close" id="callout-close" aria-label="Закрыть">×</button>
+        </div>
+      </section>
+      <div class="clusters" id="clusters" aria-hidden="true"></div>
 
       <nav class="side glass" aria-label="Места и маршруты">
         <div class="side-switch" id="side-switch" role="tablist" aria-label="Раздел" hidden>
@@ -239,7 +317,7 @@
       <div class="cinema" id="cinema" hidden>
         <div class="cinema-bar cinema-bar-top" aria-hidden="true"></div>
         <div class="cinema-bar cinema-bar-bottom" aria-hidden="true"></div>
-        <p class="cinema-brand" aria-hidden="true">Брага <span>·</span> <em>Кино</em> <span class="cinema-count" id="cinema-count"></span></p>
+        <p class="cinema-brand" aria-hidden="true">Гимарайнш <span>·</span> <em>Кино</em> <span class="cinema-count" id="cinema-count"></span></p>
         <figure class="cinema-photo" id="cinema-photo" aria-hidden="true">
           <div class="cinema-photo-frame"><img alt="" decoding="async" /></div>
           <figcaption></figcaption>
@@ -270,7 +348,7 @@
 
       <div class="loader" id="loader" role="progressbar" aria-label="Загрузка карты" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <div class="loader-inner">
-          <p class="loader-title">Брага</p>
+          <p class="loader-title">Гимарайнш</p>
           <div class="loader-track"><div class="loader-bar" id="loader-bar"></div></div>
           <p class="loader-text" id="loader-text">Загрузка</p>
         </div>

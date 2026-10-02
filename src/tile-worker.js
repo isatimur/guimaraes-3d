@@ -13,6 +13,18 @@
 import { ShapeUtils } from 'three';
 import { createProjection, S } from './geo.js';
 import { extrudeBuilding } from './buildings.js';
+import { setFacadeConfig } from './facades.js';
+
+const FAR = { far: true }; // extrudeBuilding: a flat box (far LOD)
+// tile format: optional `bx` = [[i, roof shape, roof colour, wall colour,
+// material, roof orientation], ...] for the buildings b[i] that carry OSM
+// roof or facade tags (scripts/fetch-tiles.mjs)
+function extrasOf(tile) {
+  const m = new Map();
+  if (!Array.isArray(tile.bx)) return m;
+  for (const r of tile.bx) if (Array.isArray(r)) m.set(r[0], { r: r[1] || null, rc: r[2] || null, wc: r[3] || null, m: r[4] || null, ro: r[5] || null });
+  return m;
+}
 
 let P = null; // projection
 let ground = null; // groundAt(x, z)
@@ -347,6 +359,7 @@ function buildTile(tile, key, lod, extras) {
   // far LOD: also the roof-only variant for the very far blocks (tiles.js VFAR_M)
   const Bv = near ? null : newT(true);
   const foot = []; // world footprints, for the rasters
+  const bx = extrasOf(tile);
   for (let i = 0; i < tile.b.length; i++) {
     const rec = tile.b[i];
     const f = footprint(decode(rec, 2, o));
@@ -354,8 +367,10 @@ function buildTile(tile, key, lod, extras) {
     foot.push(f.pts);
     if (!near && f.areaM2 < 20) continue;
     const pts = near ? f.pts : orientedBox(f.pts);
-    extrudeBuilding(B, pts, rec[0] / 10, K.b[rec[1]] || 'other', f.areaM2, seedBase + i, ground);
-    if (Bv) extrudeBuilding(Bv, pts, rec[0] / 10, K.b[rec[1]] || 'other', f.areaM2, seedBase + i, ground, true);
+    // near: roofs and facades from the tags; far: plain boxes, as before
+    const ex = near ? bx.get(i) || null : FAR;
+    extrudeBuilding(B, pts, rec[0] / 10, K.b[rec[1]] || 'other', f.areaM2, seedBase + i, ground, false, ex);
+    if (Bv) extrudeBuilding(Bv, pts, rec[0] / 10, K.b[rec[1]] || 'other', f.areaM2, seedBase + i, ground, true, bx.get(i) || null);
     stats.buildings++;
   }
 
@@ -548,6 +563,8 @@ self.onmessage = async (ev) => {
   const m = ev.data;
   if (m.type === 'init') {
     cfg = m;
+    // the facade zones and light mode, as the main thread has them (tiles.js)
+    if (m.facade) setFacadeConfig(m.facade);
     const t0 = performance.now();
     P = createProjection(m.origin, null, [], { ...m.grid, heights: Array.from(m.grid.heights) });
     // no landmark pads out here: the raw DEM, on the ground mesh's triangles

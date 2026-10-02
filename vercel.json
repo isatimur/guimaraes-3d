@@ -6,7 +6,8 @@
   "cleanUrls": true,
   "functions": {
     "api/adsb.js": { "maxDuration": 20, "includeFiles": "cities/*.json" },
-    "api/route.js": { "maxDuration": 10, "includeFiles": "cities/*.json" }
+    "api/route.js": { "maxDuration": 10, "includeFiles": "cities/*.json" },
+    "api/guide.js": { "maxDuration": 25, "includeFiles": "{cities/*.json,data/landmarks.json,data/routes.json,data/*/landmarks.json,data/*/routes.json,src/locales/*.js}" }
   },
   "headers": [
     {

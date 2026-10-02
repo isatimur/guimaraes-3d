@@ -74,7 +74,30 @@ export function shrinkCheck(fit) {
 //   heightRel: measure the height on the builder's 'height' group from its
 //           own floor (draped sites whose y carries the slope)
 //   note:   why the rule exists (goes into the report)
-export const FIT_RULES = {};
+// Per-landmark fit overrides. Without a rule the pad levels the terrain under
+// the whole model box; for a site whose OSM outline carries spread-out linear
+// features (a cable car, a wall, a park) that would flatten a huge plateau.
+// These rules level the ground under the building only, so the rest follows
+// the real slope.
+export const FIT_RULES = {
+  // the sanctuary stands on level ground; the cable (1.2 km of it), the pylons
+  // and the park follow the hill instead of being flattened into a mesa
+  penha: {
+    pad: { parts: [/Santuário/] },
+  },
+  // the Alfândega tower is levelled; the wall follows the ground
+  muralha: {
+    pad: { parts: [/Muralhas/] },
+  },
+  // the palace and its two auditoria are levelled; the garden follows suit
+  'vila-flor': {
+    pad: { parts: [/^(building|site)$/] },
+  },
+  // the pousada and church are levelled; the garden keeps the slope
+  'santa-marinha': {
+    pad: { parts: [/^(building|church)$/] },
+  },
+};
 
 export function dimsFor(id) {
   return DIMS[id] || null;

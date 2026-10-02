@@ -91,7 +91,7 @@ function writeHash(key, isDefault) {
   if (url !== location.pathname + location.search + location.hash) history.replaceState(null, '', url);
 }
 
-export function createSeasons({ renderer, scene, camera, atmosphere, nature, fx, weather, terrain, ui, reducedMotion = false, mobile = false, debug = {} }) {
+export function createSeasons({ renderer, scene, camera, atmosphere, nature, fx, weather, terrain, ui, reducedMotion = false, mobile = false, lite = false, debug = {} }) {
   const today = seasonForDate();
   const weights = [0, 1, 0, 0];
   let target = PRESETS.summer;
@@ -101,7 +101,7 @@ export function createSeasons({ renderer, scene, camera, atmosphere, nature, fx,
   SN.z = (SNOW_LINE_M - (terrain?.datum ?? 0)) * S;
 
   // ---- leaves and petals
-  const leaves = createLeaves({ field: nature?.leafField, capacity: mobile ? 500 : 1500 });
+  const leaves = createLeaves({ field: nature?.leafField, capacity: lite ? 375 : mobile ? 500 : 1500 }); // light mode: a quarter
   scene.add(leaves.mesh);
 
   // the visible sun drives the ray source and the glitter on the water

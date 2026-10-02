@@ -28,6 +28,7 @@ import { assetUrl } from './data.js';
 import { dataPath } from './city.js';
 import { groundAxes } from './scene.js';
 import { BUILDING_UNIFORMS, createBuildingMaterial, FADE_S, FADE_VERT_PARS, FADE_VERT, FADE_FRAG_PARS, FADE_FRAG } from './buildings.js';
+import { getFacadeConfig } from './facades.js';
 import { SURFACE, STRUCTURE_COLORS } from './roads.js';
 import { TREE_TABLES } from './nature.js';
 
@@ -190,6 +191,7 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
       grid: terrain.grid,
       axes: groundAxes(terrain),
       kinds: doc.kinds,
+      facade: getFacadeConfig(), // buildings.js set it while building the core
       roadWidths: ROAD_WIDTHS,
       roadColors: Object.fromEntries(Object.entries(ROAD_COLORS).map(([k, v]) => [k, linear(v)])),
       structureColors: Object.fromEntries(Object.entries(STRUCTURE_COLORS).map(([k, v]) => [k, linear(v)])),

@@ -28,6 +28,14 @@ import * as THREE from 'three';
 import { S } from './geo.js';
 
 const TAU = Math.PI * 2;
+
+// Light mode (main.js): one detail octave instead of the Gerstner sum and
+// two cross-faded octaves; no rain rings, no subsurface term. Set before
+// the first water material is made.
+let LITE = false;
+export function setWaterLite(on) {
+  LITE = !!on;
+}
 // [wavelength (world units), amplitude, heading offset from the wind (deg), steepness Q]
 // Wavelengths step by ~0.6 but not in simple ratios, headings spread, so
 // the crossings never lock into a lattice; slopes kA of 0.04 .. 0.05 keep
@@ -251,6 +259,14 @@ float wDist = length(wToCam);
 vec3 wV = wToCam / max(wDist, 1e-4);
 vec2 wFw = fwidth(wP.xz);
 float wFoot = max(wFw.x + wFw.y, 1e-4);
+#ifdef BRG_WATER_LITE
+vec3 wN = vec3(0.0, 1.0, 0.0);
+{
+  vec2 dA = texture2D(uWDetail, wP.xz / 4.8 - vFlow * uWTime * 0.08 + uWTime * vec2(0.011, 0.007)).xy * 2.0 - 1.0;
+  vec2 dn = dA * (0.4 * exp(-wDist / 160.0) + 0.08);
+  wN = normalize(wN + vec3(dn.x, 0.0, dn.y));
+}
+#else
 vec3 wDx, wDz;
 wGerstner(wP.xz, wFoot * 2.0, wDx, wDz);
 vec3 wN = normalize(cross(wDz, wDx));
@@ -273,6 +289,7 @@ vec3 wN = normalize(cross(wDz, wDx));
   #endif
   wN = normalize(wN + vec3(dn.x, 0.0, dn.y));
 }
+#endif
 normal = normalize(mat3(viewMatrix) * wN);
 `;
 
@@ -293,10 +310,14 @@ reflectedLight.directSpecular *= 0.0;
   #endif
   float fres = 0.02 + 0.98 * pow(1.0 - max(dot(wN, wV), 0.0), 5.0);
   vec3 glit = uWSunCol * (sheen + sparkle) * shade * (0.35 + 0.65 * fres) * (1.0 - wFoamK) * step(0.0, L.y);
+  #ifdef BRG_WATER_LITE
+  reflectedLight.indirectSpecular += glit;
+  #else
   // subsurface: the ripple faces toward a low sun let a little light through
   float toward = pow(max(dot(-normalize(vec2(wV.x, wV.z) + 1e-4), normalize(L.xz + 1e-4)), 0.0), 2.0);
   vec3 sss = uWShallow * uWSunCol * toward * clamp(1.0 - wN.y, 0.0, 1.0) * 0.35 * shade;
   reflectedLight.indirectSpecular += glit + sss;
+  #endif
 }
 `;
 
@@ -347,6 +368,7 @@ export function createWaterMaterial({ open = false } = {}) {
   mat.name = 'water';
   mat.defines = { BRG_WATER: '' };
   if (open) mat.defines.BRG_WATER_OPEN = '';
+  if (LITE) mat.defines.BRG_WATER_LITE = '';
   mat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, waterUniforms);
     sh.vertexShader = sh.vertexShader

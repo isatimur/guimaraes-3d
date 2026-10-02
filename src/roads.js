@@ -11,6 +11,11 @@
 //   - close range only: lane markings (dashed centre lines on two-way roads,
 //     lane lines and edge lines on the motorways), sidewalks in the centre,
 //     the islands of the roundabouts;
+//   - calçada portuguesa (streetscape.js calcadaMaterial): the pedestrian
+//     streets of the centre and the sidewalks are white limestone and black
+//     basalt cobbles, in the same meshes (no extra draw): a per-vertex
+//     pattern attribute picks waves, a diagonal net, a border band or
+//     plain stone; 0 keeps the vertex colour;
 //   - a LineSegments2 at a constant pixel width on top: the glowing line
 //     that keeps the network readable from far away, where a ribbon a few
 //     metres wide is thinner than a pixel. It runs on the decks; over a
@@ -23,6 +28,7 @@ import { S } from './geo.js';
 import { buildNetwork, surfaceOf } from './road-network.js';
 import { bridgeGeometry, portalGeometry, quad as embankmentQuad } from './road-structures.js';
 import { language } from './i18n.js';
+import { calcadaMaterial, calcadaPatternOf, CALCADA } from './streetscape.js';
 
 // Order is draw order (later draws on top). metres: fallback width; px: the
 // line's CSS pixel width (the floor); surface: ribbon tone of the colour.
@@ -52,19 +58,27 @@ const MARK = 0xe9e7e0;
 const SIDEWALK = 0x9f998f;
 const ISLAND = 0x5b7a3c;
 const KERB = 0xc4c0b8;
-const SIDEWALK_R = 470; // world units (1.9 km) around the centre
+export const SIDEWALK_R = 470; // world units (1.9 km) around the centre
+// the streets with sidewalks, and a sidewalk's width in metres (streetscape.js
+// walks people on them)
+export const WALKED = new Set(['primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street', 'primary_link', 'secondary_link', 'tertiary_link']);
+export const sidewalkM = (hw) => (hw === 'residential' || hw === 'living_street' ? 1.6 : 2.4);
 const ARCH = /Ponte (Romana|do Prado|de Prado|do Bico|Velha|Medieval|de São Claúdio)/i;
 
 const lin = (hex) => {
   const c = new THREE.Color(hex);
   return [c.r, c.g, c.b];
 };
-const newT = () => ({ pos: [], nor: [], col: [], idx: [], wall: null });
+// pat: also a calçada pattern per vertex (aPat: pattern, metres across the
+// strip from its middle, half width in metres); `cur` is the pattern of the
+// strips being added
+const newT = (pat = false) => ({ pos: [], nor: [], col: [], idx: [], wall: null, pat: pat ? [] : null, cur: 0 });
 function geometryOf(T) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(T.pos, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(T.nor, 3));
   g.setAttribute('color', new THREE.Float32BufferAttribute(T.col, 3));
+  if (T.pat) g.setAttribute('aPat', new THREE.Float32BufferAttribute(T.pat, 3));
   g.setIndex(T.pos.length / 3 > 65535 ? new THREE.Uint32BufferAttribute(T.idx, 1) : new THREE.Uint16BufferAttribute(T.idx, 1));
   g.computeBoundingSphere();
   return g;
@@ -104,6 +118,10 @@ function strip(T, net, i0, i1, off, h, lift, col, ext = h) {
       T.pos.push(p[0], p[1], p[2]);
       T.nor.push(0, 1, 0);
       T.col.push(col[0], col[1], col[2]);
+    }
+    if (T.pat) {
+      const hm = h / S;
+      T.pat.push(T.cur, hm, hm, T.cur, -hm, hm, T.cur, -hm, hm, T.cur, hm, hm);
     }
     // counter-clockwise from above
     const up = (c[1][2] - c[0][2]) * (c[2][0] - c[0][0]) - (c[1][0] - c[0][0]) * (c[2][2] - c[0][2]);
@@ -162,7 +180,11 @@ function dashes(T, net, w, off, halfM, dashM, gapM, lift, col) {
   }
 }
 
-export function buildRoads(roads, project, heightAt, { waterRibbon = true } = {}) {
+// lite (light mode, main.js): the markings, sidewalks and islands only
+// within 450 units instead of 900. (The main-street glow stays: one draw,
+// and the golden streets are the look.)
+export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite = false } = {}) {
+  const DETAIL_U = lite ? 450 : 900;
   const group = new THREE.Group();
   group.name = 'roads';
   const materials = [];
@@ -239,7 +261,9 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true } = {}
 
   // ---- street surfaces, one mesh per kind (draw order), vertex colours
   const ORDER = ['foot', 'minor', 'rail', 'secondary', 'primary'];
-  const surf = Object.fromEntries(ORDER.map((k) => [k, newT()]));
+  // the minor streets carry the pedestrian ones: calçada-capable
+  const surf = Object.fromEntries(ORDER.map((k) => [k, newT(k === 'minor')]));
+  let calcadaWays = 0;
   const colCache = new Map();
   const colOf = (hex) => {
     let c = colCache.get(hex);
@@ -253,6 +277,13 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true } = {}
     // (and not the crossings on a road deck: the deck is their surface)
     if (w.kind === 'foot' && (!w.bridge || w.onDeck)) continue;
     const h = (w.widthM / 2) * S;
+    if (T.pat) {
+      // pedestrian streets of the centre: calçada (by name: waves on the
+      // main squares, a diagonal net on the largos, a border on the ruas)
+      const m = w.start + (w.n >> 1);
+      T.cur = w.hw === 'pedestrian' && !w.tunnel && X[m] * X[m] + Z[m] * Z[m] < SIDEWALK_R * SIDEWALK_R ? calcadaPatternOf(w.t.name, 'street') : 0;
+      if (T.cur) calcadaWays++;
+    }
     strip(T, net, w.start, w.start + w.n - 1, 0, h, RIBBON_LIFT, colOf(surfaceOf(w.f)));
   }
   let ribbonTris = 0;
@@ -260,7 +291,9 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true } = {}
   ORDER.forEach((kind, k) => {
     const T = surf[kind];
     if (!T.idx.length) return;
-    const rm = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, metalness: 0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -3 - k });
+    const rm = T.pat
+      ? calcadaMaterial({ polygonOffsetUnits: -3 - k, roughness: 0.92, lite })
+      : new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, metalness: 0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -3 - k });
     materials.push(rm);
     const mesh = new THREE.Mesh(geometryOf(T), rm);
     mesh.name = `street-${kind}`;
@@ -470,19 +503,21 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true } = {}
       dashes(MT, net, w, -e, 0.08, 0, 0, MARK_LIFT, mk);
     }
   }
-  // sidewalks in the city: granite calçada both sides of the streets
-  const SW = newT();
+  // sidewalks in the city: calçada both sides of the streets (plain white
+  // limestone; the kerbs keep their granite colour)
+  const SW = newT(true);
   const swc = lin(SIDEWALK);
   const kerb = lin(KERB);
-  const WALKED = new Set(['primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street', 'primary_link', 'secondary_link', 'tertiary_link']);
   for (const w of net.ways) {
     if (!WALKED.has(w.hw) || w.tunnel || w.bridge) continue;
     const m = w.start + (w.n >> 1);
     if (X[m] * X[m] + Z[m] * Z[m] > SIDEWALK_R * SIDEWALK_R) continue;
     const half = (w.widthM / 2) * S;
-    const sw = (w.hw === 'residential' || w.hw === 'living_street' ? 1.6 : 2.4) * S;
+    const sw = sidewalkM(w.hw) * S;
     for (const sgn of [1, -1]) {
+      SW.cur = CALCADA.sidewalk;
       strip(SW, net, w.start, w.start + w.n - 1, sgn * (half + sw / 2 + 0.15 * S), sw / 2, RIBBON_LIFT + 0.02, swc, 0);
+      SW.cur = 0;
       strip(SW, net, w.start, w.start + w.n - 1, sgn * (half + 0.08 * S), 0.12 * S, RIBBON_LIFT + 0.03, kerb, 0);
     }
   }
@@ -529,7 +564,9 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true } = {}
   const detailMeshes = [];
   const addDetail = (T, name, units, color) => {
     if (!T.idx.length) return 0;
-    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: color ? 0.7 : 0.9, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: units });
+    const m = T.pat
+      ? calcadaMaterial({ polygonOffsetUnits: units, roughness: 0.9, lite })
+      : new THREE.MeshStandardMaterial({ vertexColors: true, roughness: color ? 0.7 : 0.9, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: units });
     materials.push(m);
     const mesh = new THREE.Mesh(geometryOf(T), m);
     mesh.name = name;
@@ -619,6 +656,7 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true } = {}
   counts.portalsDrawn = net.portals.length - portalsOpen;
   counts.roundabouts = rings.length;
   counts.tunnelHint = hintArr.length / 6;
+  counts.calcadaWays = calcadaWays;
 
   const lamps = streetLamps(net);
   if (lamps) group.add(lamps);
@@ -670,7 +708,7 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true } = {}
         lastFar = far;
         applyBloom();
       }
-      const on = d < 900;
+      const on = d < DETAIL_U;
       if (on !== detailOn) {
         detailOn = on;
         detail.visible = on;
@@ -773,9 +811,13 @@ function legendToggle(onChange) {
 
 // Street lamps along the main and secondary streets: one Points draw, warm
 // sodium glow, only at night. Every LAMP_M metres, alternating sides; on the
-// decks at the parapets; none in the tunnels.
+// decks at the parapets; none in the tunnels. streetscape.js stands a post
+// under each glow near the camera (lampSites), and adds the lanterns of the
+// pedestrian streets with the same glow (lampGlow).
 const LAMP_M = 34;
-function streetLamps(net) {
+export const LAMP_HEIGHT_M = 7;
+// [x, y, z, ...] world: the glow points, LAMP_HEIGHT_M over the surface
+export function lampSites(net) {
   const pos = [];
   const { X, Z, Y, C, HID } = net;
   for (const w of net.ways) {
@@ -795,12 +837,20 @@ function streetLamps(net) {
         const uz = (Z[i + 1] - Z[i]) / L;
         const x = X[i] + ux * (s - C[i]) - uz * half * side;
         const z = Z[i] + uz * (s - C[i]) + ux * half * side;
-        pos.push(x, Y[i] + (Y[i + 1] - Y[i]) * u + 7 * S, z);
+        pos.push(x, Y[i] + (Y[i + 1] - Y[i]) * u + LAMP_HEIGHT_M * S, z);
       }
       side = -side;
       s += step;
     }
   }
+  return pos;
+}
+function streetLamps(net) {
+  return lampGlow(lampSites(net));
+}
+// The warm glow of lamps at night: one Points draw. sizeU: the glow's size
+// in world units (2.4: about 10 m); name: the object's name.
+export function lampGlow(pos, { sizeU = 2.4, name = 'street-lamps', maxPx = 12 } = {}) {
   if (!pos.length) return null;
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
@@ -818,7 +868,7 @@ function streetLamps(net) {
         gl_Position = projectionMatrix * mv;
         float d = -mv.z;
         // a small glow in perspective (about 10 m), 1.5 .. 12 px
-        gl_PointSize = clamp(2.4 * projectionMatrix[1][1] * uHeight * 0.5 / d, 1.5, 12.0);
+        gl_PointSize = clamp(${sizeU.toFixed(2)} * projectionMatrix[1][1] * uHeight * 0.5 / d, 1.5, ${maxPx.toFixed(1)});
         vFade = 1.0 - smoothstep(2500.0, 6000.0, d);
       }`,
     fragmentShader: /* glsl */ `
@@ -836,7 +886,7 @@ function streetLamps(net) {
   });
   mat.toneMapped = false;
   const pts = new THREE.Points(geo, mat);
-  pts.name = 'street-lamps';
+  pts.name = name;
   // point sizes follow the real drawing buffer, whatever set the pixel
   // ratio (the 2x quality mode, a postcard capture)
   const _db = new THREE.Vector2();
