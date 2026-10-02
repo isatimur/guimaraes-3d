@@ -2,505 +2,2106 @@
   {
     "id": "castelo",
     "name_pt": "Castelo de Guimarães",
-    "name_ru": "Castelo de Guimarães",
+    "name_ru": "Замок Гимарайнш",
     "category": "civic",
     "lat": 41.44791,
     "lon": -8.29045,
-    "year": "",
-    "short_ru": "10th-c. castle, cradle of Portugal",
-    "long_ru": "",
+    "year": "X век",
+    "short_ru": "Замок X века на гранитном холме: «колыбель Португалии» и одно из семи чудес страны",
+    "long_ru": "Графиня Мумадона Диаш заложила замок около 958 года, чтобы защитить свой монастырь от мавров и норманнов. В конце XI века граф Генрих Бургундский перестроил его в свою резиденцию; по преданию, здесь родился первый король Португалии Афонсу Энрикеш. Стены в форме щита с зубчатыми башнями и донжон посередине — итог готической перестройки XIII века и реставрации 1937–1940 годов. Замок открыт для посещения, с боевого хода виден весь город.",
     "model": "castle",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/castelo.jpg",
+    "image_credit": {
+      "author": "Krzysztof Golik",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimaraes_(11).jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/castelo-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Донжон с флагом Португалии, вид со двора замка",
+        "credit": {
+          "author": "michell zappa",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Alca%C3%A7ova_do_Castelo_de_Guimar%C3%A3es.jpg"
+        }
+      },
+      {
+        "src": "assets/img/castelo-2.jpg",
+        "kind": "exterior",
+        "caption_ru": "Замок и парк с высоты птичьего полёта",
+        "credit": {
+          "author": "Luís Miguel Jorge Duarte",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:DJI_0136.castelo_guimar%C3%A3esJPG.jpg"
+        }
+      },
+      {
+        "src": "assets/img/castelo-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Подсвеченные стены замка ночью",
+        "credit": {
+          "author": "Luís A.A.F. Ribeiro",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimar%C3%A3es_(Foto_noturna).jpg"
+        }
+      },
+      {
+        "src": "assets/img/castelo-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Дорожка к главным воротам и башням",
+        "credit": {
+          "author": "Krzysztof Golik",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimaraes_(7).jpg"
+        }
+      },
+      {
+        "src": "assets/img/castelo-5.jpg",
+        "kind": "detail",
+        "caption_ru": "Памятная доска на гранитной скале у подножия стен",
+        "credit": {
+          "author": "Béria Lima de Rodríguez",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimar%C3%A3es_(Homenagem).JPG"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "NiuG5HGT5aU",
+        "title": "Castelo de Guimarães",
+        "channel": "Castelos",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "aqn_bC4iZg4",
+        "title": "Castelo de Guimarães – O Berço de Portugal e o Sonho de um Rei",
+        "channel": "Portugal Esquecido - Carlos Almeida - Mototurismo",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "rMI6pLIyBLs",
+        "title": "Castelo de Guimarães aereal view - by YO!",
+        "channel": "Yo portugal",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "В середине X века поселение Вимаранеш жило под угрозой набегов: с юга приходили мавры, с моря — норманны. Графиня Мумадона Диаш, вдова графа Эрменеджилду Гонсалвеша, основала в низине монастырь, а на вершине холма Монте-Ларгу велела построить замок-убежище. Дарственная 958 года уже упоминает эту крепость под именем Сан-Мамеде. Тогда это была, скорее всего, одна башня с оградой.\n\nВ конце XI века король Леона Альфонсо VI отдал земли графства Портукале Генриху Бургундскому. Граф Генрих и его жена Тереза сделали Гимарайнш своей резиденцией. Старую постройку снесли, подняли донжон и расширили ограду с двумя воротами: главными с запада и «воротами предательства» с востока. По преданию, здесь родился их сын Афонсу Энрикеш. В 1127 году он выдержал в этих стенах осаду Альфонсо VII, а 24 июня 1128 года на соседнем поле Сан-Мамеде разбил войско матери. Эту битву считают рождением Португалии.\n\nНынешний облик замок получил при короле Динише на рубеже XIII–XIV веков: план в форме щита, зубчатые башни, боевой ход по стенам. В 1322, 1369 и 1385 годах крепость снова осаждали. В 1389 году Жуан I объединил верхний и нижний посёлки в один город Гимарайнш; городская стена тогда тянулась на два километра с восемью башнями и восемью воротами.\n\nС XV века артиллерия сделала замок бесполезным. В XVI веке в нём разместили городскую тюрьму, в XVII — королевский сенник. В 1836 году совет города чуть не разобрал его на брусчатку: предложение отклонили с перевесом в один голос. В 1881 году замок первым в Минью получил статус исторического памятника первого класса, в 1908–1910 годах стал национальным памятником. В 1937–1940 годах его отреставрировали к 800-летию Португалии и открыли заново 4 июня 1940 года. В 2007 году замок вошёл в число семи чудес Португалии; в 2022 году его посетили 302 761 человек.",
+    "facts_ru": [
+      "Дарственная 958 года уже упоминает замок под именем Сан-Мамеде.",
+      "По преданию, в замке родился первый король Португалии Афонсу Энрикеш.",
+      "24 июня 1128 года у стен замка прошла битва при Сан-Мамеде.",
+      "В 1836 году предложение разобрать замок на брусчатку отклонили одним голосом.",
+      "Национальный памятник с 1910 года; в 2007 году — одно из семи чудес Португалии."
+    ],
+    "sources": [
+      {
+        "title": "Castelo de Guimarães — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Castelo_de_Guimar%C3%A3es"
+      },
+      {
+        "title": "Castle of Guimarães — Wikipedia (en)",
+        "url": "https://en.wikipedia.org/wiki/Castle_of_Guimar%C3%A3es"
+      },
+      {
+        "title": "Bilhética e horários — Paço dos Duques / Castelo de Guimarães",
+        "url": "https://pacodosduques.gov.pt/planear-visita/bilhetica-horarios/"
+      }
+    ],
+    "tip_ru": "Замок открыт ежедневно с 10:00 до 18:00, последний вход в 17:30. Билет — 5 €, вместе с дворцом герцогов — 8 €. Донжон закрыт для посещения, но по боевому ходу стен можно обойти весь замок. Между замком и дворцом стоит романская церковь Сан-Мигел, а у пандуса дворца — статуя Афонсу Энрикеша. Замок закрыт 1 января, в Пасху, 1 мая, 24 июня и 25 декабря.",
     "osm": {
       "type": "way",
       "id": 346365692,
       "height_m": 27,
       "height_source": "osm height tag"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "paco-duques",
     "name_pt": "Paço dos Duques de Bragança",
-    "name_ru": "Paço dos Duques de Bragança",
+    "name_ru": "Дворец герцогов Браганса",
     "category": "museum",
     "lat": 41.44646,
     "lon": -8.29101,
-    "year": "",
-    "short_ru": "15th-c. ducal palace, 39 chimneys",
-    "long_ru": "",
+    "year": "XV век",
+    "short_ru": "Дворец XV века с 39 кирпичными трубами и гобеленами; отстроен заново в 1937–1959 годах",
+    "long_ru": "Афонсу, граф Барселуш и будущий первый герцог Браганса, начал строить дворец около 1420 года, после женитьбы на Констансе де Норонье. Герцоги скоро переехали в Вила-Висозу; дворец разбирали на камень, а в XIX веке превратили в казарму. В 1937–1959 годах архитектор Рожериу де Азеведу отстроил его заново по образцу северных дворцов. Сегодня здесь музей с фламандскими гобеленами и северная резиденция президента республики.",
     "model": "ducal-palace",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/paco-duques.jpg",
+    "image_credit": {
+      "author": "Panegyrics of Granovetter",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:30902_Palace_Duques_de_Bragan%C3%A7a_(54869968560).jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/paco-duques-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Банкетный зал: деревянный свод, люстры и гобелены",
+        "credit": {
+          "author": "lumoplank",
+          "license": "CC0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_-_Guimaraes5958.jpg"
+        }
+      },
+      {
+        "src": "assets/img/paco-duques-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Капелла с витражами",
+        "credit": {
+          "author": "Gerd Eichmann",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-22-Kapelle-2011-gje.jpg"
+        }
+      },
+      {
+        "src": "assets/img/paco-duques-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Внутренний двор с аркадами и кирпичными трубами",
+        "credit": {
+          "author": "Gerd Eichmann",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-06-Patio-2011-gje.jpg"
+        }
+      },
+      {
+        "src": "assets/img/paco-duques-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Накрытый стол под фламандским гобеленом",
+        "credit": {
+          "author": "Gerd Eichmann",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-18-Tafel-2011-gje.jpg"
+        }
+      },
+      {
+        "src": "assets/img/paco-duques-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Дворец с высоты: четыре угловые башни и крутые крыши",
+        "credit": {
+          "author": "Luís Miguel Jorge Duarte",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:DJI_0156pa%C3%A7o_duques_bragan%C3%A7a.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "xOZLJYj3Ts4",
+        "title": "Visita guiada ao Paço dos Duques de Bragança",
+        "channel": "Mais Guimarães",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "NH_811wtA5c",
+        "title": "Paço dos Duques de Bragança - Porto Canal",
+        "channel": "DR Cultura Norte",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "3apC693HL5k",
+        "title": "Palace of the Dukes of Braganza, Guimarães",
+        "channel": "Travelling Scientist Kisshore",
+        "lang": "en"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Дворец заказал Афонсу, внебрачный сын короля Жуана I и восьмой граф Барселуш. Он вернулся из поездок по дворам Франции, Венеции, Арагона и Кастилии, женился вторым браком на Констансе де Норонье и около 1420 года начал строить в Гимарайнше резиденцию по бургундской моде. Почти квадратный план с четырьмя угловыми башнями напоминает дворец королей Майорки в Перпиньяне; над крутыми крышами поднимаются 39 кирпичных труб. В 1442 году Афонсу получил титул первого герцога Браганса. Он умер в 1461 году; вдова жила во дворце до 1480 года.\n\nНаследники предпочли Вила-Висозу на юге, и дворец опустел. В 1483 году король Жуан II казнил третьего герцога за измену и конфисковал имущество; в 1496 году его вернули семье, но в Гимарайнш герцоги не вернулись. В 1611 году клариссы, а в 1666 году капуцины получили разрешение брать отсюда камень для своих монастырей. В 1807 году, во время французского вторжения, во дворце разместили казарму; солдаты стояли здесь до 1935 года и разобрали двор с галереями под плац.\n\nВ 1933 году директор музея Алберту Сампайю Алфреду Гимарайнш показал руины Салазару. В 1937 году архитектор Рожериу де Азеведу начал реконструкцию. Он ездил в Брюссель, Антверпен и на Луару за образцами и восстанавливал не столько то, что было, сколько то, что могло быть: работу до сих пор называют спорной. Стройка шла до 1959 года. 25 июня 1959 года дворец стал северной резиденцией президента республики, 26 августа открылся как музей.\n\nВ музее на первом этаже — фламандские и французские гобелены, восточные ковры, мебель, китайский фарфор, картина «Пасхальный агнец», приписываемая Жозефе де Обидуш, и портрет Екатерины Браганской. Банкетный зал накрыт деревянным сводом, капеллу освещают витражи. Дворец — национальный памятник с 1910 года. В 2022 году его посетили 366 514 человек, в 2024-м — 376 331: это один из самых посещаемых памятников севера Португалии.",
+    "facts_ru": [
+      "Строительство началось около 1420 года, после второй женитьбы графа Афонсу.",
+      "Над крышами дворца — 39 кирпичных труб в бургундском духе.",
+      "С 1807 по 1935 год во дворце стояла казарма.",
+      "Реконструкция Рожериу де Азеведу шла с 1937 по 1959 год.",
+      "С 25 июня 1959 года — северная резиденция президента Португалии."
+    ],
+    "sources": [
+      {
+        "title": "Paço dos Duques de Bragança (Guimarães) — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Pa%C3%A7o_dos_Duques_de_Bragan%C3%A7a_(Guimar%C3%A3es)"
+      },
+      {
+        "title": "Palace of the Dukes of Braganza — Wikipedia (en)",
+        "url": "https://en.wikipedia.org/wiki/Palace_of_the_Dukes_of_Braganza"
+      },
+      {
+        "title": "História do Paço — pacodosduques.gov.pt",
+        "url": "https://pacodosduques.gov.pt/monumentos/paco-dos-duques/historia-paco/"
+      },
+      {
+        "title": "Paço dos Duques de Bragança — Câmara Municipal de Guimarães",
+        "url": "https://www.cm-guimaraes.pt/monumentos/poi/paco-dos-duques-de-braganca"
+      }
+    ],
+    "tip_ru": "Дворец открыт ежедневно с 10:00 до 18:00, последний вход в 17:30. Билет — 5 €, вместе с замком — 8 €, с музеем Алберту Сампайю — 13 €. Идёт ремонт: часть залов может быть закрыта. У пандуса перед фасадом стоит статуя Афонсу Энрикеша, а до замка — три минуты пешком через парк.",
     "osm": {
       "type": "relation",
       "id": 2433235,
       "height_m": 22,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "sao-miguel-castelo",
     "name_pt": "Igreja de São Miguel do Castelo",
-    "name_ru": "Igreja de São Miguel do Castelo",
+    "name_ru": "Церковь Сан-Мигел-ду-Каштелу",
     "category": "religious",
     "lat": 41.44726,
     "lon": -8.29099,
-    "year": "",
-    "short_ru": "Romanesque chapel, Afonso Henriques' baptism legend",
-    "long_ru": "",
+    "year": "1239",
+    "short_ru": "Романская капелла XIII века у замка, где, по преданию, крестили Афонсу Энрикеша",
+    "long_ru": "Маленькую гранитную церковь построила коллегиата Оливейры; архиепископ Браги Силвестре Годинью освятил её около 1239 года. Предание говорит, что в её купели крестили первого короля Португалии, хотя храм моложе короля на целый век. Пол выложен надгробными плитами рыцарей. В 1870-е годы церковь лежала в руинах; её спасло Общество Мартинша Сарменту.",
     "model": "chapel-romanesque",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/sao-miguel-castelo.jpg",
+    "image_credit": {
+      "author": "Gerd Eichmann",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-28-Capela_Sao_Miguel_do_Castelo-2011-gje.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/sao-miguel-castelo-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Неф под деревянной кровлей, вид к апсиде",
+        "credit": {
+          "author": "GFreihalter",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_S%C3%A3o_Miguel_do_Castelo_445.jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-miguel-castelo-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Плита у купели: «В этой купели был крещён король Афонсу Энрикеш»",
+        "credit": {
+          "author": "Joseolgon",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Igreja_de_S%C3%A3o_Miguel_do_Castelo_(1).jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-miguel-castelo-3.jpg",
+        "kind": "interior",
+        "caption_ru": "Надгробные плиты рыцарей на полу нефа",
+        "credit": {
+          "author": "Ray Swi-hymn",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:20200201_S.Miguel_4424_(49654318922).jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-miguel-castelo-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Аркосолий с резным архивольтом на северном фасаде",
+        "credit": {
+          "author": "Alice Rios",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Capela_de_Guimar%C3%A3es.jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-miguel-castelo-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Портал и окно-щель на западном фасаде",
+        "credit": {
+          "author": "Panegyrics of Granovetter",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:30901_Igreja_de_S%C3%A3o_Miguel_do_Castelo_(54868516129).jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "gciQfl0biD8",
+        "title": "Igreja de S. Miguel do Castelo",
+        "channel": "A memória do património 2019",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "isTDigsZra4",
+        "title": "Igreja São Miguel, Guimarães Portugal",
+        "channel": "Porta dos Fundadores",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "oDLm8Lxqnwg",
+        "title": "Visiting the Igreja De Sao Miguel do Castelo (Castle Church of St. Michael) in Guimares, Portugal",
+        "channel": "Gretzky Dog and Friends",
+        "lang": "en"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Церковь впервые упомянута в 1216 году в документе коллегиаты Гимарайнша. Каноники строили её в разгар спора с архиепископом Браги — храм появился в обход его воли, и, возможно, поэтому он так прост: глухие стены, узкие окна-щели, один неф и прямоугольная апсида. В описи короля Афонсу III назван каменщик Гарсия Петрариуш. Архиепископ Силвестре Годинью освятил церковь около 1239 года. Для романики это поздно: в деталях уже чувствуется готика.\n\nПредание связывает капеллу с Афонсу Энрикешем. Слева от входа стоит круглая гранитная купель за железной решёткой, а рядом — плита с надписью, что в ней в 1106 году крестили будущего короля. Историки в это не верят: церковь построена на век позже. Но легенда пережила века, а в XIX веке её укрепил романтический национализм.\n\nПол церкви вымощен гранитными плитами; многие из них — надгробия с именами и знаками рыцарей. Триумфальную арку украшает фриз из переплетённых лент. На северном фасаде по обе стороны двери — две аркосолии, ниши для погребений; одна из них с резным архивольтом.\n\nВ 1795 году приор коллегиаты заменил арку между нефом и апсидой. К 1870 году церковь перестала быть приходской и стояла в руинах. Комиссия горожан из Общества Мартинша Сарменту восстановила её в 1874–1880 годах и вернула на место первоначальную арку. 16 июня 1910 года церковь объявили национальным памятником вместе с замком и дворцом герцогов. В 1936 году с фасада сняли позднюю звонницу, в 1939-м сменили кровлю и двери, а в 1957 году ландшафтный архитектор Виана Баррету благоустроил площадку вокруг.",
+    "facts_ru": [
+      "Церковь впервые упомянута в 1216 году, освящена около 1239 года.",
+      "Плита у купели утверждает, что здесь в 1106 году крестили Афонсу Энрикеша.",
+      "Пол выложен надгробными плитами средневековых рыцарей.",
+      "Руины восстановило Общество Мартинша Сарменту в 1874–1880 годах.",
+      "Национальный памятник с 16 июня 1910 года."
+    ],
+    "sources": [
+      {
+        "title": "Igreja de São Miguel do Castelo — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Igreja_de_S%C3%A3o_Miguel_do_Castelo"
+      },
+      {
+        "title": "Church of São Miguel do Castelo — Wikipedia (en)",
+        "url": "https://en.wikipedia.org/wiki/Church_of_S%C3%A3o_Miguel_do_Castelo"
+      }
+    ],
+    "tip_ru": "Капелла стоит на «священном холме» между замком и дворцом герцогов; от любого из них — две минуты пешком. Внутри полутемно: дайте глазам привыкнуть и рассмотрите плиты пола и купель слева от входа. С площадки перед церковью открывается лучший вид на замок.",
     "osm": {
       "type": "way",
       "id": 104203858,
       "height_m": 9,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "oliveira",
-    "name_pt": "Igreja de Nossa Senhora da Oliveira + Largo da Oliveira",
-    "name_ru": "Igreja de Nossa Senhora da Oliveira + Largo da Oliveira",
+    "name_pt": "Igreja de Nossa Senhora da Oliveira",
+    "name_ru": "Церковь Богоматери Оливейры",
     "category": "religious",
     "lat": 41.44293,
     "lon": -8.29246,
-    "year": "",
-    "short_ru": "Gothic collegiate church, Padrão do Salado",
-    "long_ru": "",
+    "year": "1387",
+    "short_ru": "Готическая коллегиата на месте монастыря Мумадоны 949 года; перед ней — Падран-ду-Саладу",
+    "long_ru": "Графиня Мумадона Диаш основала здесь монастырь около 949 года, а в XII веке он стал богатой коллегиатой Санта-Мария. Король Жуан I после победы при Алжубарроте исполнил обет и в 1387–1413 годах перестроил церковь в готике; башню в мануэлинском стиле добавили около 1513 года. На площади перед храмом стоит готический балдахин Падран-ду-Саладу в память о битве 1340 года, а рядом растёт олива — символ чуда 1342 года, давшего церкви имя.",
     "model": "church",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/oliveira.jpg",
+    "image_credit": {
+      "author": "Palickap",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es,_Padr%C3%A3o_do_Salado_(1).jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/oliveira-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Три нефа на гранитных колоннах, вид к капелле-мор",
+        "credit": {
+          "author": "Josep Renalias",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_-_Nossa_Senhora_da_Oliveira_-_Interior.JPG"
+        }
+      },
+      {
+        "src": "assets/img/oliveira-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Капелла-мор с позолоченным ретабло и образом Богоматери Оливейры",
+        "credit": {
+          "author": "John Samuel",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Interior_of_Igreja_de_Nossa_Senhora_da_Oliveira_08.jpg"
+        }
+      },
+      {
+        "src": "assets/img/oliveira-3.jpg",
+        "kind": "interior",
+        "caption_ru": "Орган на хорах над входом",
+        "credit": {
+          "author": "Double Croche",
+          "license": "CC0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Orgel,_Igreja_de_Nossa_Senhora_da_Oliveira,_Guimar%C3%A3es,_Portugal.jpg"
+        }
+      },
+      {
+        "src": "assets/img/oliveira-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Капители Падран-ду-Саладу: рыцари в кольчугах",
+        "credit": {
+          "author": "Daniel Villafruela",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C4%81es-Padr%C3%A3o_da_batalha_de_Salado-Cavaleiros-20140912.jpg"
+        }
+      },
+      {
+        "src": "assets/img/oliveira-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Площадь Оливейры: балдахин Падран-ду-Саладу, олива и террасы кафе",
+        "credit": {
+          "author": "Feliciano Guimarães",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_@_36_MP_-_Largo_da_Oliveira_(35262143891).jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "ppw-6obEMHk",
+        "title": "Igreja de Nossa Senhora da Oliveira, Guimarães Portugal",
+        "channel": "Porta dos Fundadores",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "-ZYY2afr7iw",
+        "title": "Órgão Histórico na Paróquia de Nossa Senhora da Oliveira, Guimarães",
+        "channel": "Agência Ecclesia",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "OFXXmcMT23g",
+        "title": "Lenda da Nossa Senhora da Oliveira - Guimarães",
+        "channel": "Joana Silva",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Всё началось с монастыря. Около 949 года графиня Мумадона Диаш основала в низине Вимаранеша обитель во имя Спасителя, Девы Марии и апостолов — сначала двойную, для монахов и монахинь. В 1074–1075 годах папа Григорий VII запретил двойные монастыри, и к 1089 году обитель стала мужской. Около 1139 года монастырь превратили в коллегиату Санта-Мария-де-Гимарайнш — одну из богатейших церковных корпораций Португалии позднего Средневековья. От романской церкви XII века остались крыло клуатра, фасад зала капитула и капитель главного портала.\n\nВ XIV веке коллегиата стала центром паломничества к образу Святой Марии. Накануне битвы при Алжубарроте в 1385 году король Жуан I дал ей обет и в 1387 году оплатил перестройку храма. Проект приписывают придворному архитектору Жуану Гарсии де Толедо. Основные работы закончили к 1401 году, последние — в 1413-м. Три нефа с выступающим трансептом — обычная схема церквей нищенствующих орденов; большое окно фасада, устроенное как ретабло с Древом Иессеевым, — одна из лучших готических композиций Португалии. Около 1513 года над церковью подняли башню в мануэлинском стиле с зубцами.\n\nИмя церкви дала легенда. Готский король Вамба будто бы привёз из Иерусалима оливу и посадил её в Сан-Торкату; в XIV веке дерево пересадили на главную площадь, и оно засохло. В 1342 году купец Перу Эштевеш поставил рядом крест, привезённый, по преданию, из Нормандии, — и через три дня олива зазеленела. Горожане увидели в этом чудо, и Богоматерь Победы стала Богоматерью Оливейры. Крест и сегодня стоит под готическим балдахином Падран-ду-Саладу, который король Афонсу IV воздвиг в память о победе над маврами при Саладо в 1340 году. Олива росла на площади до 1870 года; в 1985 году, при реставрации площади, на её месте посадили новую.\n\nВ XVII–XVIII веках церковь переделали в духе времени: при Педру II углубили капеллу-мор, а интерьер украсили позолоченной резьбой. Реставрация XX века снова открыла средневековые гранитные стены и колонны. Коллегиату упразднили в 1911 году и восстановили в 1967-м. В бывшем клуатре работает музей Алберту Сампайю с сокровищницей коллегиаты. Церковь — национальный памятник с 1910 года и часть исторического центра, включённого в список ЮНЕСКО в 2001 году.",
+    "facts_ru": [
+      "Монастырь Мумадоны Диаш основан около 949 года.",
+      "Жуан I перестроил церковь в 1387–1413 годах по обету перед битвой при Алжубарроте.",
+      "Падран-ду-Саладу построил Афонсу IV в память о победе 1340 года.",
+      "Даты на ограде оливы — 1342, 1870 и 1985 — три жизни дерева.",
+      "Национальный памятник с 1910 года; часть объекта ЮНЕСКО с 2001 года."
+    ],
+    "sources": [
+      {
+        "title": "Igreja de Nossa Senhora da Oliveira (Guimarães) — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira_(Guimar%C3%A3es)"
+      },
+      {
+        "title": "Igreja de Nossa Senhora da Oliveira — Wikipedia (en)",
+        "url": "https://en.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira"
+      },
+      {
+        "title": "Igreja de Nossa Senhora da Oliveira — Câmara Municipal de Guimarães",
+        "url": "https://www.cm-guimaraes.pt/monumentos/poi/igreja-de-nossa-senhora-da-oliveira"
+      },
+      {
+        "title": "Padrão do Salado — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Padr%C3%A3o_do_Salado"
+      }
+    ],
+    "tip_ru": "Церковь открыта с понедельника по субботу с 8:30 до 12:00 и с 15:30 до 19:30, в воскресенье с 9:00 до 13:00 и с 17:00 до 20:00; вход свободный. Через готическую аркаду старой ратуши с площади Оливейры попадаете прямо на площадь Сантьяго. В клуатре за церковью — музей Алберту Сампайю; общий билет с замком и дворцом герцогов стоит 13 €.",
     "osm": {
       "type": "way",
       "id": 167517737,
       "height_m": 30,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "sao-tiago",
     "name_pt": "Praça de São Tiago",
-    "name_ru": "Praça de São Tiago",
+    "name_ru": "Площадь Сантьяго",
     "category": "street",
     "lat": 41.44337,
     "lon": -8.29318,
-    "year": "",
-    "short_ru": "medieval square, UNESCO core",
-    "long_ru": "",
+    "year": "Средневековье",
+    "short_ru": "Средневековая площадь с деревянными балконами и террасами кафе — сердце квартала ЮНЕСКО",
+    "long_ru": "По преданию, апостол Иаков принёс сюда образ Девы Марии и поставил его в языческом храме — отсюда имя площади. Вокруг неё селились франки, пришедшие с графом Генрихом. Дома XVII–XVIII веков с деревянными галереями окружают площадь, а готическая аркада старой ратуши ведёт на соседнюю площадь Оливейры. Сегодня это самая живая площадь старого города: кафе, террасы и праздники Николинаш.",
     "model": "plaza",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/sao-tiago.jpg",
+    "image_credit": {
+      "author": "Nelson Monteiro Magalhães",
+      "license": "CC BY-SA 3.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_31.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/sao-tiago-1.jpg",
+        "kind": "exterior",
+        "caption_ru": "Старая ратуша: готическая аркада и зубцы",
+        "credit": {
+          "author": "José Luis Filpo Cabana",
+          "license": "CC BY 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Antigos_Pa%C3%A7os_do_Concelho,_Guimar%C3%A3es.jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-tiago-2.jpg",
+        "kind": "detail",
+        "caption_ru": "Деревянные балконы с цветами",
+        "credit": {
+          "author": "K. Kendall",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Balconies_in_Pra%C3%A7a_de_Santiago,Guimaraes.jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-tiago-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Террасы кафе на площади",
+        "credit": {
+          "author": "Ray Swi-hymn",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:20200201_Guimar%C3%A3esOQ_4480_(49653584468).jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-tiago-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Дома XVII–XVIII веков с деревянными галереями",
+        "credit": {
+          "author": "Concierge.2C",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_-_Pra%C3%A7a_de_Santiago.jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-tiago-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Столики под деревом на краю площади",
+        "credit": {
+          "author": "Palickap",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es,_Largo_da_Oliveira_(1).jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "VHlsMPFYZBU",
+        "title": "Praça de Santiago, Guimarães",
+        "channel": "Ines Oliveira",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "ZIykwgyQ31g",
+        "title": "Praça são Tiago - Guimarães",
+        "channel": "A memória do património 2019",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "nMAaKljoE1M",
+        "title": "Guimaraes Praca de Santiago",
+        "channel": "Wolters World",
+        "lang": "en"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Легенда ведёт площадь к первым векам христианства: святой Иаков — по-португальски Сан-Тиагу — принёс сюда образ Девы Марии и поставил его в языческом храме. Документы упоминают площадь много веков подряд, и она сохранила средневековую планировку. Рядом с ней селились франки, которые пришли в Португалию вместе с графом Генрихом Бургундским.\n\nНа площади стояла часовня святого Иакова с крыльцом — здание начала XVII века на месте более старой, обветшавшей капеллы. Она была этапом пути в Сантьяго-де-Компостела. В июле 1882 года совет города решил выкупить и снести её ради расширения площади по проекту инженера Алмейды Рибейру 1860-х годов. Закон разрешил снос в мае 1886 года, и в январе 1887 года часовню разобрали, несмотря на протесты. Сегодня контур её плана выложен в мостовой.\n\nРомантичные сегодня дома с деревянными балконами когда-то считали трущобами. Площадь редко попадала на старые открытки: место считали «недостойным». В 1904 году совет утвердил расширение площади со сносом трёх домов, а в 1911 году читатель республиканской газеты требовал снести весь квартал целиком. Вместо этого в последней четверти XX века архитектор Фернанду Тавора бережно обновил площадь и символически вернул на неё часовню — линией её плана на мостовой.\n\nОдну сторону площади замыкает здание старой ратуши с готической аркадой в нижнем этаже: сквозь неё проходят на площадь Оливейры. Площадь входит в исторический центр Гимарайнша, объект Всемирного наследия ЮНЕСКО с 2001 года. Каждый год во время студенческих праздников Николинаш здесь проходят «Масанзиньяш» — обряд с яблоками, который собирает на площади весь город.",
+    "facts_ru": [
+      "По легенде, имя площади дал апостол Иаков, принёсший сюда образ Девы Марии.",
+      "Часовню святого Иакова разобрали в январе 1887 года; её план выложен в мостовой.",
+      "Аркада старой ратуши соединяет площадь с площадью Оливейры.",
+      "Реконструкцией площади в конце XX века руководил Фернанду Тавора.",
+      "Часть исторического центра Гимарайнша — объекта ЮНЕСКО с 2001 года."
+    ],
+    "sources": [
+      {
+        "title": "Santiago Square — Wikipedia (en)",
+        "url": "https://en.wikipedia.org/wiki/Santiago_Square"
+      },
+      {
+        "title": "Centro Histórico de Guimarães e Zona de Couros — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_e_Zona_de_Couros"
+      },
+      {
+        "title": "A Praça de S. Tiago (3) — Memórias de Araduca",
+        "url": "https://blog.araduca.pt/2011/08/praca-de-s-tiago-3.html"
+      }
+    ],
+    "tip_ru": "Лучшее время — вечер: террасы кафе занимают всю площадь. Найдите на мостовой линию, повторяющую план снесённой часовни. Через аркаду старой ратуши выходите на площадь Оливейры, а по улице Санта-Мария — наверх, к дворцу герцогов и замку.",
     "osm": {
       "type": "way",
       "id": 32501267,
       "height_m": 12.8,
       "height_source": "osm building:levels×3.2"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "toural",
     "name_pt": "Largo do Toural",
-    "name_ru": "Largo do Toural",
+    "name_ru": "Ларгу-ду-Турал",
     "category": "street",
     "lat": 41.44173,
     "lon": -8.29561,
-    "year": "",
-    "short_ru": "main square, 18th-c. façades",
-    "long_ru": "",
+    "year": "XVIII–XXI века",
+    "short_ru": "Главная площадь Гимарайнша: от скотного рынка за стенами до обновлённой в 2012 году «гостиной города»",
+    "long_ru": "Турал вырос из ярмарки скота, которая в XVII веке шумела за городскими стенами у главных ворот. В 1791 году управа сдала участок вдоль стены под застройку, и дома возвели по плану, вероятно присланному из Лиссабона: аркады в первом этаже, высокие окна, мансардные крыши и кованые балконы. В 1878 году на площади открылся Публичный сад с железной беседкой, а в центре позже встала статуя Афонсу Энрикеша. В 2011 году на площадь вернулся ренессансный фонтан XVI века, а в 2012-м, к культурной столице Европы, её реконструировали.",
     "model": "plaza",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/toural.jpg",
+    "image_credit": {
+      "author": "Krzysztof Golik",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Largo_do_Toural_in_Guimaraes.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/toural-1.jpg",
+        "kind": "exterior",
+        "caption_ru": "Старые дома вокруг площади, вид от фонтана",
+        "credit": {
+          "author": "Halley Oliveira",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Largo_do_Toural_em_Guimar%C3%A3es_(45801746665).jpg"
+        }
+      },
+      {
+        "src": "assets/img/toural-2.jpg",
+        "kind": "detail",
+        "caption_ru": "Ренессансный фонтан 1583 года, вернувшийся на площадь в 2011 году",
+        "credit": {
+          "author": "Halley Oliveira",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Chafariz_do_Largo_do_Toural_(39751648123).jpg"
+        }
+      },
+      {
+        "src": "assets/img/toural-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Площадь Турал ночью",
+        "credit": {
+          "author": "Feliciano Guimarães",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_-_Toural_%C3%A0_noite.jpg"
+        }
+      },
+      {
+        "src": "assets/img/toural-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Общий вид площади с аркадами домов",
+        "credit": {
+          "author": "Reis Quarteu",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Largo_do_Toural_-_01.jpg"
+        }
+      },
+      {
+        "src": "assets/img/toural-5.jpg",
+        "kind": "detail",
+        "caption_ru": "Гравюра 1864 года: Турал с прежней застройкой",
+        "credit": {
+          "author": "Pedrozo",
+          "license": "Public domain",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Toural_em_1864.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "ioi-LOx4VAM",
+        "title": "Guimarães toural",
+        "channel": "L.A.S.R.C",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Турал вырос за стенами. В XVII веке на этом месте, у главных ворот города, шумела ярмарка крупного рогатого скота и других товаров; площадь лежала вне укреплений, на пути к замку и к монастырю Оливейры, и служила одновременно рынком и местом встреч горожан.\n\nВ 1791 году городская управа сдала в аренду участок вдоль стены под застройку. Дома возвели по плану, присланному, вероятно, из Лиссабона; с этого времени началось медленное превращение ярмарочного пустыря в парадную площадь. Фасады получили аркады в первом этаже, огромные окна в два этажа, мансардные крыши и красивые кованые решётки балконов — тот облик, который и сегодня называют «гостиной города».\n\nВо второй половине XIX века на площади разбили Публичный сад, обнесённый железной оградой; он открылся в 1878 году. Тогда же появилась городская мебель в духе «новой архитектуры железа»: беседка-корету, писсуар, скамьи и фонари. С провозглашением Республики сад перенесли в другое место, а в центре перестроенного Турала поставили статую Афонсу Энрикеша — работа Соареша душ Рейша 1887 года. Позже её убрали в парк у замка, а на площади установили нарядный «Фонтан искусств».\n\nОтдельная страница — площадь и вода. Ренессансный фонтан с тремя чашами стоял здесь уже в XVI веке; в 1873 году его перенесли на площадь Мартинша Сарменту, и лишь в 2011 году он вернулся на Турал. В 2012 году, когда Гимарайнш был культурной столицей Европы, площадь реконструировали: убрали поздний фонтан, вернули старый и заново открыли пространство, связав его с Авенидой Алберту Сампайю.\n\nСегодня Турал — главный узел города. На него выходит неоклассическая базилика Святого Петра, а в двух шагах, между площадями Сантьягу и Оливейра, стоит старое здание ратуши (Antigos Paços do Concelho) с готической аркадой, где теперь размещается Музей примитивного современного искусства. Здесь начинаются Гвалтерианские праздники, отсюда удобнее всего начинать прогулку по историческому центру.\n\nИмя площади напоминает о её ярмарочном прошлом: португальское «toural» перекликается с touro, «бык», — здесь веками торговали скотом и другими товарами. В XIX веке, когда Гимарайнш указом королевы Марии II от 23 июня 1853 года получил статус города, а стены стали разбирать, Турал окончательно вошёл в городскую ткань: сюда вывели новые улицы, и старый рынок уступил место площади для гуляний, парадов и праздников. Аркады первых этажей и огромные окна с тех пор почти не менялись, и по ним до сих пор читается вкус XVIII века. Площадь пережила перенос сада, смену памятников и реконструкцию 2012 года, но осталась «гостиной города» — местом встреч и повседневной жизни вимаранцев. Здесь проходят Гвалтерианские праздники, городские ярмарки и рождественские огни; зимой на площади ставят ёлку и карусели, а летом кафе выносят столики под аркады.",
+    "facts_ru": [
+      "Площадь выросла из ярмарки скота, шумевшей здесь за городскими стенами в XVII веке.",
+      "В 1791 году управа сдала участок вдоль стены под застройку — дома возводили по плану, вероятно присланному из Лиссабона.",
+      "Публичный сад с железной беседкой-корету открылся на площади в 1878 году.",
+      "Ренессансный фонтан с тремя чашами вернулся на Турал в 2011 году, проведя на площади Мартинша Сарменту с 1873 года.",
+      "Статуя Афонсу Энрикеша стояла на Турале, прежде чем в 1940 году её перенесли к замку.",
+      "Площадь реконструировали в 2012 году, когда Гимарайнш был культурной столицей Европы."
+    ],
+    "sources": [
+      {
+        "title": "Largo do Toural — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Largo_do_Toural"
+      },
+      {
+        "title": "Guimarães — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Guimar%C3%A3es"
+      }
+    ],
+    "tip_ru": "Турал — открытая площадь, вход свободный. Удобно начать прогулку отсюда: на юг, к башне Алфандега с надписью «Aqui nasceu Portugal», и дальше через аркаду к площадям Сантьягу и Оливейра, на север — к дворцу герцогов и замку. На площади много кафе и ресторанов, а по выходным бывает рынок. Стоит вернуться сюда и вечером, когда подсвечены фонтан и старые фасады.",
     "osm": {
       "type": "way",
       "id": 591247671,
       "height_m": 20,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "penha",
-    "name_pt": "Santuário da Penha + Teleférico",
-    "name_ru": "Santuário da Penha + Teleférico",
+    "name_pt": "Santuário da Penha e Teleférico",
+    "name_ru": "Сантуариу-да-Пенья и канатная дорога",
     "category": "religious",
     "lat": 41.4318,
     "lon": -8.26985,
-    "year": "",
-    "short_ru": "granite boulders, 1947 sanctuary, cable car on real track",
-    "long_ru": "",
+    "year": "1947",
+    "short_ru": "Гранитный санктуарий 1947 года на скалах Пеньи и канатная дорога 1995 года, поднимающая к нему за 10 минут",
+    "long_ru": "Монте-да-Пенья — 60 гектаров леса и гранитных скал над городом, «зелёное лёгкое» Гимарайнша. Санктуарий Богоматери Кармельской построен по проекту архитектора Маркеша да Силвы: работы начались 6 августа 1930 года, почти всё — из местного гранита, линии прямые, в духе ар-деко 1930-х. Пожар 13 февраля 1939 года уничтожил образ Богоматери и резьбу главного алтаря и задержал стройку; храм освятили 14 сентября 1947 года. С 1995 года к вершине ведёт канатная дорога — первая пассажирская подвесная дорога Португалии: около 1600 м пути и 632 м подъёма за десять минут.",
     "model": "cable-car",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/penha.jpg",
+    "image_credit": {
+      "author": "Joseolgon",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Santu%C3%A1rio_da_Penha_(1).jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/penha-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Интерьер церкви Пеньи: широкий неф и алтарь",
+        "credit": {
+          "author": "LuisCosta",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Churchinnerpenha.jpg"
+        }
+      },
+      {
+        "src": "assets/img/penha-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Потолок церкви на горе Пенья",
+        "credit": {
+          "author": "Joseolgon",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Penha_Tecto.JPG"
+        }
+      },
+      {
+        "src": "assets/img/penha-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Канатная дорога Гимарайнша на склоне Пеньи",
+        "credit": {
+          "author": "Joseolgon",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Telef%C3%A9rico_de_Guimar%C3%A3es_2018_(1).jpg"
+        }
+      },
+      {
+        "src": "assets/img/penha-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Кабина канатной дороги, за ней — город Гимарайнш",
+        "credit": {
+          "author": "Diogo e Vitória Oliveira Pacheco",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Cabine_do_Telef%C3%A9rico_da_Penha_com_Guimar%C3%A3es_em_segundo_plano_01.jpg"
+        }
+      },
+      {
+        "src": "assets/img/penha-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Гора Пенья на закате",
+        "credit": {
+          "author": "Donald Judge from England",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:23.4.14_Penha_at_sunset_26_(14012975635).jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "5b6gvj6SS7c",
+        "title": "PENHA | Parque e Santuário | GUIMARÃES | 360portugal",
+        "channel": "360portugal",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "L1lXhL5Zh_M",
+        "title": "Teleférico da Penha até Guimarães | Entre a montanha sagrada e a cidade histórica",
+        "channel": "Rota Real Portugal!",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "9Xsz3FpoNTc",
+        "title": "Teleférico da PENHA 🚠🚡 em Guimarães",
+        "channel": "VagabondS",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Монте-да-Пенья поднимается над Гимарайншем на высоту около 600 метров. Его склоны покрыты лесом площадью 60 гектаров, среди гранитных глыб и пещер; здесь же находится древняя археологическая стоянка. Гора издавна была местом народного паломничества, и к началу XX века старая часовня уже не вмещала богомольцев.\n\nСтроительство нового санктуария началось 6 августа 1930 года по проекту архитектора Жозе Маркеша да Силвы, автора вокзала Сан-Бенту в Порту. Храм возводили почти целиком из гранита региона, чтобы он сливался с окружающим пейзажем. Для своего времени линии были современными: только прямые, без традиционных криволинейных форм, — характерный язык ар-деко 1930-х годов. 13 февраля 1939 года пожар уничтожил образ Богоматери Непорочного Зачатия и резьбу, украшавшую главный алтарь; это надолго задержало работы. Санктуарий освятили и открыли 14 сентября 1947 года, в день ежегодного паломничества; освящение совершил кардинал-патриарх Лиссабона Мануэл Гонсалвеш Сережейра, а сам Маркеш да Силва умер за три месяца до этого. В сентябре 1949 года закончили крест колокольной башни и консоль с ангелом, обращённым к городу. Рядом с башней устроена смотровая площадка: виден центр Гимарайнша, а в ясную погоду — и берег моря в 50 километрах.\n\nКанатная дорога появилась позже. Teleférico de Guimarães, известный также как Teleférico da Penha, был первым подвесным пассажирским транспортом, заработавшим в Португалии. Для публики он открылся 11 марта 1995 года, официальная инаугурация состоялась 24 июня 1995 года. Линия длиной около 1600 метров поднимается на 632 метра, опираясь на 14 опор; самая высокая из них, одиннадцатая, достигает 29,44 метра. В парке 40 кабин: 32 вмещают по шесть человек, ещё восемь приспособлены для перевозки велосипедов и берут по три. Дорогу эксплуатирует кооператив Turipenha; в 2022 году она перевезла 267 686 человек.\n\nСегодня Пенья — и святыня, и загородный парк: смотровые площадки, аллеи, кафе, кемпинг Campismo da Penha и трассы для горного велосипеда. Дорога служит не только туристам, но и жителям, которые поднимаются на гору пешком или на канатной дороге, а затем спускаются по тропам к городу.\n\nПолное имя святыни — Сантуариу-Эукаристику-и-Мариану-да-Пенья, то есть «евхаристический и марианский санктуарий Пеньи». Гора остаётся и местом паломничества: 14 сентября, в день освящения храма, сюда и сегодня поднимаются крестным ходом, а на большой эспланаде перед санктуарием проходят праздники и концерты. Вокруг разбросаны часовни, остановки Via-Sacra и смотровые площадки; у подножия и на вершине работают кафе, а на склонах проложены пешие и велосипедные маршруты. Канатная дорога сделала Пенью доступной круглый год и превратила гору в место воскресных прогулок горожан: подъём занимает около десяти минут, и многие спускаются обратно по тропам пешком, любуясь панорамой города и, в ясные дни, полосой океана на горизонте.",
+    "facts_ru": [
+      "Работы над санктуарием начались 6 августа 1930 года по проекту архитектора Маркеша да Силвы.",
+      "Храм построен почти целиком из местного гранита, в современных прямолинейных формах ар-деко.",
+      "Пожар 13 февраля 1939 года уничтожил образ Богоматери и резьбу главного алтаря.",
+      "Санктуарий освятили 14 сентября 1947 года, в день ежегодного паломничества.",
+      "Канатная дорога открылась 11 марта 1995 года — первой в Португалии среди подвесного пассажирского транспорта.",
+      "Линия длиной около 1600 м берёт 632 м подъёма на 14 опорах; в 2022 году перевезено 267 686 человек."
+    ],
+    "sources": [
+      {
+        "title": "Santuário da Penha — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Santu%C3%A1rio_da_Penha"
+      },
+      {
+        "title": "Teleférico de Guimarães — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Telef%C3%A9rico_de_Guimar%C3%A3es"
+      },
+      {
+        "title": "A Turipenha — história e dados do teleférico",
+        "url": "https://turipenha.pt/a-turipenha"
+      },
+      {
+        "title": "Santuário da Penha — Agenda Cultural de Guimarães",
+        "url": "https://em.guimaraes.pt/geo_artigo-28/santuario-da-penha"
+      }
+    ],
+    "tip_ru": "Канатная дорога работает ежедневно примерно с 10:00 до 18:30, касса закрывается за 15 минут до окончания; режим зависит от погоды и профилактики, лучше проверить на turipenha.pt. Вход в санктуарий свободный, подъём на машине или пешком вдоль троп тоже возможен. Совместите поездку со смотровой площадкой у башни, кемпингом и пешими маршрутами по горе. Из центра к нижней станции канатной дороги удобно дойти за 10–15 минут.",
     "osm": {
       "type": "way",
       "id": 342339768,
       "height_m": 26,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "santos-passos",
     "name_pt": "Igreja de Nossa Senhora da Consolação e Santos Passos",
-    "name_ru": "Igreja de Nossa Senhora da Consolação e Santos Passos",
+    "name_ru": "Церковь Богоматери Утешения и Святых Шагов",
     "category": "religious",
     "lat": 41.44086,
     "lon": -8.2897,
-    "year": "",
-    "short_ru": "baroque, Largo da República do Brasil axis",
-    "long_ru": "",
+    "year": "1769–1785",
+    "short_ru": "Барочная церковь Андре Соареша с двумя башнями XIX века и Via-Sacra на площади Республики Бразилии",
+    "long_ru": "Всё началось с часовни Богоматери Утешения, заложенной в марте 1576 года на Campo da Feira. В 1769 году братство заказало новую церковь архитектору Андре Соарешу (1720–1769) — вероятно, его последнюю работу: зодчий умер, не успев спроектировать интерьер. Храм достроили в октябре 1785 года. Две башни на фасад, лестницу и балюстраду добавили в XIX веке. Внутри — рокайльный алтарь и трибуна резчика Жозе Антониу да Куньи. Рядом стоят «Passos» — малые часовни Via-Sacra с раскрашенными деревянными фигурами Страстей.",
     "model": "basilica-twin",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/santos-passos.jpg",
+    "image_credit": {
+      "author": "John Samuel",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Exterior_view_of_Igreja_de_Nossa_Senhora_da_Consola%C3%A7%C3%A3o_e_Santos_Passos_01.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/santos-passos-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Неф и главный алтарь церкви Утешения",
+        "credit": {
+          "author": "John Samuel",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Interior_view_of_Igreja_de_Nossa_Senhora_da_Consola%C3%A7%C3%A3o_e_Santos_Passos_01.jpg"
+        }
+      },
+      {
+        "src": "assets/img/santos-passos-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Внутреннее убранство с позолоченной резьбой",
+        "credit": {
+          "author": "John Samuel",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Interior_view_of_Igreja_de_Nossa_Senhora_da_Consola%C3%A7%C3%A3o_e_Santos_Passos_05.jpg"
+        }
+      },
+      {
+        "src": "assets/img/santos-passos-3.jpg",
+        "kind": "detail",
+        "caption_ru": "Часы и две башни на главном фасаде",
+        "credit": {
+          "author": "amaianos from Galicia",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Rel%C3%B3gio_e_Torres_da_Igreja_de_Nossa_Senhora_da_Consola%C3%A7%C3%A3o.jpg"
+        }
+      },
+      {
+        "src": "assets/img/santos-passos-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Церковь со стороны площади",
+        "credit": {
+          "author": "Gerd Eichmann",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Igreja_dos_Santos-Passos-02-2011-gje.jpg"
+        }
+      },
+      {
+        "src": "assets/img/santos-passos-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Сад на площади Республики Бразилии перед церковью",
+        "credit": {
+          "author": "yuka HAYASHI from Osaka, JAPAN",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Jardim_do_Largo_da_Rep%C3%BAblica_do_Brasil_(14211873248).jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "sBEDHS7HGg8",
+        "title": "Igreja Nossa Senhora da Consolação e Santos Passos, uma das mais belas em Guimarães",
+        "channel": "Rota Real Portugal!",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Истоки церкви — в небольшой часовне, посвящённой Богоматери Утешения. Братство Nossa Senhora da Consolação заказало её постройку в марте 1576 года на Campo da Feira, ярмарочном поле к северо-западу от исторического центра, — там, где теперь Ларгу-да-Република-ду-Бразил.\n\nВ 1769 году то же братство поручило новую, куда более крупную церковь архитектору Андре Соарешу (1720–1769), одному из главных мастеров барокко в Браге и Гимарайнше. Это была, вероятно, последняя его работа: зодчий умер в том же году, не успев спроектировать интерьер. Согласно плану, храм имеет продольную однонефную композицию с вогнутыми углами и капелой-мор; фасад получил изогнутую форму, а башни — динамичный силуэт. Строительство завершили в октябре 1785 года.\n\nВ XIX веке облик церкви дополнили: на главном фасаде поднялись две башни, появились каменная лестница, балюстрада и скульптуры, дающие сильный сценографический эффект; тогда же построили Дом деспашу (Casa do Despacho). Интерьер сохраняет резной алтарь и трибуну работы мастера-резчика Жозе Антониу да Куньи, украшенные позолоченной резьбой в стиле рококо. Позднее в церковь перешло братство Святого Гвалтера, и здесь появился образ святого XIX века.\n\nОсобую часть ансамбля составляют Oratórios, или Passos, — малые часовни, образующие Via-Sacra. Внутри них видны раскрашенные деревянные фигуры, представляющие этапы Крестного пути Христа; отсюда и второе имя храма — «Святых Шагов». Церковь стоит на оси Ларгу-да-Република-ду-Бразил, рядом с садом и дорогой, ведущей к канатной дороге на Пенью.\n\nВ 1993 году храм и оратории были признаны Imóvel de Interesse Público (Decreto n.º 45/93, Diário da República, 30 ноября 1993 года).\n\nНеф замыкается капелой-мор, а вогнутые углы стен придают интерьеру динамику позднего барокко. Хотя интерьер проектировали уже после смерти Соареша, он следует его замыслу, и храм считают одним из самых выразительных образцов барочного пространства в Гимарайнше. Братство Богоматери Утешения и Святых Шагов, заказавшее церковь, веками устраивало здесь богослужения и процессии; в середине XIX века к нему присоединилось братство Святого Гвалтера, одного из самых почитаемых в городе святых. Оратории-«Passos» стояли в разных приходах как остановки Крестного пути, и их деревянные фигуры выносили во время Страстной недели. Сегодня церковь остаётся действующим приходским храмом и главным ориентиром Campo da Feira — старого ярмарочного поля, которое было воротами города со стороны Пеньи; в XIX веке здесь сложился ансамбль площади с садом, лестницами и балюстрадами, а две башни церкви стали видны с дальних подступов к городу. Каждый год в августе церковь становится одним из центров Гвалтерианских праздников, а её лестница и площадь служат сценой для горожан. Две башни и балюстрада придают её силуэту торжественность, типичную для португальского позднего барокко XVIII века.",
+    "facts_ru": [
+      "Истоки церкви восходят к часовне Богоматери Утешения, заказанной в марте 1576 года.",
+      "Новую церковь заказали в 1769 году; это, вероятно, последняя работа Андре Соареша (1720–1769).",
+      "Строительство завершили в октябре 1785 года; две башни, лестницу и балюстраду добавили в XIX веке.",
+      "Рокайльный алтарь и трибуну вырезал мастер Жозе Антониу да Кунья.",
+      "Oratórios (Passos) образуют Via-Sacra с раскрашенными деревянными фигурами Страстей.",
+      "Храм и оратории — Imóvel de Interesse Público с 30 ноября 1993 года (Decreto n.º 45/93)."
+    ],
+    "sources": [
+      {
+        "title": "Igreja e Oratórios de Nossa Senhora da Consolação e dos Santos Passos — Agenda Cultural de Guimarães",
+        "url": "https://em.guimaraes.pt/geo_artigo-28/igreja-e-oratorios-de-nossa-senhora-da-consolacao-e-dos-santos-passos"
+      },
+      {
+        "title": "Igreja de N. Sra. da Consolação e Santos Passos — Câmara Municipal de Guimarães",
+        "url": "https://www.cm-guimaraes.pt/monumentos/poi/igreja-de-n-sra-da-consolacao-e-santos-passos"
+      },
+      {
+        "title": "Igreja de Nossa Senhora da Consolação e Santos Passos — All About Portugal",
+        "url": "https://www.allaboutportugal.pt/pt/guimaraes/monumentos/igreja-de-nossa-senhora-da-consolacao-e-santos-passos"
+      },
+      {
+        "title": "Gualter (santo) — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Gualter_(santo)"
+      }
+    ],
+    "tip_ru": "Вход свободный, кроме времени богослужений. Церковь стоит на Ларгу-да-Република-ду-Бразил, перед ней — ухоженный сад; отсюда хорошо начать путь к нижней станции канатной дороги на Пенью. Совместите с прогулкой по Campo da Feira и историческому центру. В Страстную неделю здесь проходят процессии, а ландшафт площади — один из лучших в городе.",
     "osm": {
       "type": "way",
       "id": 166138931,
       "height_m": 30,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "sao-francisco",
     "name_pt": "Igreja de São Francisco",
-    "name_ru": "Igreja de São Francisco",
+    "name_ru": "Церковь Святого Франциска",
     "category": "religious",
     "lat": 41.44062,
     "lon": -8.29233,
-    "year": "",
-    "short_ru": "Gothic + azulejos",
-    "long_ru": "",
+    "year": "1400–XVIII век",
+    "short_ru": "Францисканский монастырь с готической апсидой XV века, перестроенным нефом-залом и усыпальницей Констансы де Норонья",
+    "long_ru": "Францисканцы пришли в Гимарайнш в 1217 году вместе с фраем Гвалтером, посланным самим Франциском Ассизским. Первый монастырь у городских стен снесли в 1325 году по приказу короля Диниша, чтобы он не мешал обороне города. Нынешний монастырь заложили в 1400 году по воле Жуана I; готическую апсиду закончили около 1461 года. В 1740-х годах неф превратили в единый зал, убрав колонны и арки, и украсили позолоченными алтарями. В церкви похоронена Констанса де Норонья, первая герцогиня Браганса.",
     "model": "convent",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/sao-francisco.jpg",
+    "image_credit": {
+      "author": "John Samuel",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Exterior_of_Igreja_de_S%C3%A3o_Francisco_(Guimar%C3%A3es)_05.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/sao-francisco-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Неф-зал церкви Святого Франциска после перестройки XVIII века",
+        "credit": {
+          "author": "Jl FilpoC",
+          "license": "CC BY 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Igreja_de_S%C3%A3o_Francisco,_Guimar%C3%A3es._Interior.jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-francisco-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Интерьер церкви с боковыми капеллами",
+        "credit": {
+          "author": "John Samuel",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Interior_of_Igreja_de_S%C3%A3o_Francisco_(Guimar%C3%A3es)_01.jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-francisco-3.jpg",
+        "kind": "interior",
+        "caption_ru": "Главный алтарь (капела-мор)",
+        "credit": {
+          "author": "José Luis Filpo Cabana",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Capela_maior_da_Igreja_de_S%C3%A3o_Francisco_(Guimar%C3%A3es).jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-francisco-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Готический главный портал церкви",
+        "credit": {
+          "author": "José Luis Filpo Cabana",
+          "license": "CC BY 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Igreja_de_S%C3%A3o_Francisco,_Guimar%C3%A3es._Portal.jpg"
+        }
+      },
+      {
+        "src": "assets/img/sao-francisco-5.jpg",
+        "kind": "interior",
+        "caption_ru": "Клуатр монастыря конца XVI века",
+        "credit": {
+          "author": "José Luis Filpo Cabana",
+          "license": "CC BY 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Convento_de_San_Francisco,_Guimar%C3%A3es._Claustro.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "VXyi6_eTqTc",
+        "title": "Convento de São Francisco #guimaraes #portugal #turismo #viagem #nortedeportugal #cultura",
+        "channel": "Nós na Europa",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "История францисканцев в Гимарайнше начинается в 1217 году, когда в Португалию прибыл фрай Гвалтер, посланный Франциском Ассизским, чтобы основать здесь орден меньших братьев. Гвалтер обосновался в Гимарайнше; после первых, очень бедных лет братья в 1271 году заняли богадельню у городских стен и построили при ней монастырь. С самого начала у них не складывались отношения с коллегиатой Гимарайнша, которая пыталась помешать ордену закрепиться в городе.\n\nМонастырь у стен просуществовал недолго: в 1325 году король Диниш велел его снести, потому что в случае осады укрепления ордена угрожали безопасности города. Братья перебрались во временные дома и оставались там до 1400 года, когда Жуан I распорядился выстроить монастырь заново — на том месте, где он стоит и сейчас. Работы заняли почти весь XV век; готическую апсиду закончили около 1461 года. В том же году в Третий орден Святого Франциска вступила Констанса де Норонья (1395–1480), первая герцогиня Браганса, и завещала похоронить себя в этой церкви. Её надгробие с лежащей фигурой можно видеть внутри и сегодня.\n\nОт конца XVI века сохранился клуатр в классическом, маньеристском духе — важная работа своего времени. Но главная перестройка Нового времени произошла в 1740-х годах: неф полностью изменили, убрав арки и колонны и создав единое пространство типа «igreja-salão». Три первоначальные арки между трансептом и нефом заменили одним монументальным сводом. Тогда же появился новый главный алтарь работы Мигела Франсишку да Силвы, выполненный Мануэлом да Кошта Андраде, и множество позолоченных боковых алтарей.\n\nОт средневековья сохранилась прежде всего алтарная часть: большая полигональная апсида в окружении двух меньших апсидиол. Окна апсиды с колонками и обрамлениями, а также резьба капителей выдают влияние монастыря Баталья. Внутри и главная капелла, и боковые части алтарной части перекрыты нервюрными сводами. Главный портал церкви и портал зала капитула в клуатр — тоже готические, хотя своей грубоватой простотой главный портал напоминает скорее романскую работу.\n\nОхрана памятника складывалась поэтапно: в 1940 году были классифицированы фрески, в 1953-м — апсида и апсидиолы, а в 1974-м под охрану взяли клуатр и барочное здание Третьего ордена вместе с сакристией XVIII века. В 2009 году в церкви монастыря были вновь обретены останки и реликвии Святого Гвалтера — они хранились внутри старого образа-ро́ки.\n\nГлавный портал, несмотря на готическую датировку, выглядит почти романским, а апсида с высокими окнами напоминает о влиянии Батальи; эти детали делают храм своего рода учебником португальской церковной архитектуры от готики до барокко. Монастырь и сегодня остаётся важным центром францисканской традиции в Гимарайнше: при нём действуют приход и Третий орден. Церковь пережила реставрации XX века, вернувшие интерьеру часть первоначальных черт, но сохранила и барочные алтари XVIII столетия. Рядом с ней лежит квартал кожевников Коуруш, вдоль ручья, где ремесленники выделывали кожи с XIII века; вместе церковь и Коуруш образуют один из самых цельных уголков старого города и часть объекта Всемирного наследия ЮНЕСКО.",
+    "facts_ru": [
+      "Францисканцы пришли в Гимарайнш в 1217 году с фраем Гвалтером, посланным Франциском Ассизским.",
+      "Первый монастырь у городских стен король Диниш велел снести в 1325 году ради безопасности города.",
+      "Нынешний монастырь отстроили с 1400 года по приказу Жуана I; готическую апсиду закончили около 1461 года.",
+      "В 1740-х годах из нефа убрали колонны и арки, превратив его в единый зал (igreja-salão).",
+      "В церкви похоронена Констанса де Норонья, первая герцогиня Браганса (надгробие с лежащей фигурой).",
+      "В 2009 году в церкви вновь обрели реликвии Святого Гвалтера, спрятанные внутри старого образа."
+    ],
+    "sources": [
+      {
+        "title": "Convento de São Francisco (Guimarães) — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Convento_de_S%C3%A3o_Francisco_(Guimar%C3%A3es)"
+      },
+      {
+        "title": "Gualter (santo) — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Gualter_(santo)"
+      },
+      {
+        "title": "Convento de São Francisco de Guimarães — página oficial",
+        "url": "http://www.ordemsaofrancisco.com/"
+      }
+    ],
+    "tip_ru": "Это действующая приходская церковь, вход обычно свободный, но в обеденный перерыв двери могут быть закрыты — сверьтесь с расписанием на месте. Осмотрите готическую апсиду снаружи, главный портал, барочный интерьер-зал и клуатр с залом капитула. Церковь стоит у Ларгу-де-Сан-Франсишку, рядом с кварталом кожевников Коуруш; удобно совместить с прогулкой по Зоне Коуруш и Авениде Алберту Сампайю.",
     "osm": {
       "type": "relation",
       "id": 2836771,
       "height_m": 24,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "alberto-sampaio",
     "name_pt": "Museu de Alberto Sampaio",
-    "name_ru": "Museu de Alberto Sampaio",
+    "name_ru": "Музей Алберту Сампайю",
     "category": "museum",
     "lat": 41.4429,
     "lon": -8.29228,
-    "year": "",
-    "short_ru": "cloister of the collegiate church",
-    "long_ru": "",
+    "year": "1928",
+    "short_ru": "Музей сакрального искусства в средневековом клуате Оливейры: лоудел Жуана I и триптих из Альжубарроты",
+    "long_ru": "Музей создан в 1928 году и открыт для публики в 1931-м, чтобы собрать наследие упразднённых религиозных учреждений региона, прежде всего старой коллегиаты Оливейры. Он занимает её бывшие строения: клуатр и зал капитула XIII века, дом капитула конца XVIII века, погребальную капеллу Сан-Браш 1419 года и дом приора XV века. Собрание превышает 2000 предметов сакрального искусства XIV–XVI веков; двенадцать из них признаны национальным достоянием. Главные реликвии — лоудел (воинское одеяние) Жуана I, надетый при Альжубарроте, и Триптих Рождества из позолоченного серебра, подаренный им Богоматери Оливейры.",
     "model": "museum",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/alberto-sampaio.jpg",
+    "image_credit": {
+      "author": "V.B.Speranza",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Museu_de_Alberto_Sampaio.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/alberto-sampaio-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Клуатр коллегиаты Оливейры XIII века, где размещён музей",
+        "credit": {
+          "author": "Halley Oliveira",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Claustro_Colegiada_de_Nossa_Senhora_da_Oliveira_(46131880441).jpg"
+        }
+      },
+      {
+        "src": "assets/img/alberto-sampaio-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Вход в один из выставочных залов музея",
+        "credit": {
+          "author": "Feliciano Guimarães from Guimarães, Portugal",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Sala_do_Museu_de_Alberto_Sampaio.jpg"
+        }
+      },
+      {
+        "src": "assets/img/alberto-sampaio-3.jpg",
+        "kind": "detail",
+        "caption_ru": "Триптих Оплакивания из собрания музея",
+        "credit": {
+          "author": "Joseolgon",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Museu_Alberto_Sampaio-Tr%C3%ADptico_da_Lamenta%C3%A7%C3%A3o.jpg"
+        }
+      },
+      {
+        "src": "assets/img/alberto-sampaio-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Статуя Иессея, XIII–XIV века",
+        "credit": {
+          "author": "Feliciano Guimarães from Guimarães, Portugal",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Est%C3%A1tua_de_Jess%C3%A9_no_Museu_de_Alberto_Sampaio.jpg"
+        }
+      },
+      {
+        "src": "assets/img/alberto-sampaio-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Здание музея при церкви Оливейры",
+        "credit": {
+          "author": "Mister No",
+          "license": "CC BY 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Museu_Alberto_Sampaio_-_panoramio.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "tefENqDiLrg",
+        "title": "Visita Guiada ao Museu de Alberto Sampaio, em Guimarães - Portugal",
+        "channel": "João Santos",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "uV3IjmtrSPo",
+        "title": "Fui em Guimarães: O Coração da História Portuguesa no Museu Alberto Sampaio.",
+        "channel": "Cabeça Facetada",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Музей был создан в 1928 году, когда возникла необходимость собрать и показать имущество упразднённых религиозных учреждений округи — и в первую очередь старой коллегиаты Гимарайнша. Для публики он открылся в 1931 году и носит имя Алберту Сампайю (1841–1908), известного вимаранского историка и экономиста, изучавшего средневековое общество Португалии.\n\nМузей размещается в строениях, которые прежде обслуживали коллегиату Носса-Сеньора-да-Оливейра: это дом капитула конца XVIII века, клуатр и зал капитула XIII века, погребальная капелла Сан-Браш 1419 года и дом приора XV века. Самое ценное в архитектурном отношении — клуатр с арками полного полукруга на капителях с растительным орнаментом и портал зала капитула; оба сильно отмечены мосарабским влиянием и остаются самыми узнаваемыми образами музея.\n\nСобрание состоит в основном из сакрального искусства: ювелирное дело, живопись, скульптура, текстиль и керамика. В общей сложности это более 2000 инвентаризированных предметов, среди которых важные вещи XIV, XV и XVI веков; двенадцать из них классифицированы Министерством культуры как национальное достояние. Жемчужины коллекции — лоудел, воинское одеяние, которое Жуан I надел в битве при Альжубарроте (1385), и Триптих Рождества из позолоченного серебра, принесённый королём в дар Богоматери Оливейры в благодарность за победу. Среди других известных вещей — серебряный алтарь, «Святые матери», «Бегство в Египет» XVIII века, «Санта-Мария Формоза» мастера Перу и образ Богоматери с Младенцем работы Антониу Ваша.\n\nАнсамбль старой коллегиаты — национальный памятник с 1910 года и объект Всемирного наследия ЮНЕСКО с 2001 года. В 2022 году музей принял 68 490 посетителей. В 2012–2014 годах, в рамках культурной столицы Европы, бывший медпункт на Праса-де-Сантьягу приспособили под расширение музея; новое пространство открылось 26 июня 2014 года. Летом музей работает и по вечерам — редкая для Португалии практика.\n\nОсобое значение собранию придаёт его происхождение: почти все предметы местные и сакральные, и они выставлены в тех самых стенах, для которых создавались. Жозе Сарамаго, посетивший музей во время «Путешествия по Португалии», писал, что здесь хранится одно из самых ценных собраний сакральной скульптуры в стране — не столько по количеству, сколько по высочайшему художественному уровню вещей. Среди разделов коллекции — скульптура XIII–XVIII веков, резьба, живопись и перенесённые фрески, азулежу и фаянс, литургические облачения и образцы тканей, а также ювелирное дело: чаши, дароносицы, кресты и реликварии XII–XIX веков. После расширения 2014 года музей получил новые залы на Праса-де-Сантьягу, а летом работает до полуночи, что редкость для Португалии. Музей подчинён организации Museus e Monumentos de Portugal и расположен в самом сердце исторического центра, включённого в список ЮНЕСКО. Его залы и клуатр входят в маршрут по объекту ЮНЕСКО и связаны с соседней церковью Оливейры и Падран-ду-Саладу.",
+    "facts_ru": [
+      "Музей создан в 1928 году, открыт для публики в 1931 году и носит имя историка Алберту Сампайю (1841–1908).",
+      "Он занимает клуатр и зал капитула XIII века коллегиаты Оливейры и прилегающие постройки.",
+      "Собрание превышает 2000 предметов; двенадцать признаны национальным достоянием.",
+      "В музее хранится лоудел, надетый Жуаном I в битве при Альжубарроте (1385).",
+      "Триптих Рождества из позолоченного серебра был подарен Жуаном I Богоматери Оливейры.",
+      "Бывший медпункт на Праса-де-Сантьягу стал расширением музея и открылся 26 июня 2014 года."
+    ],
+    "sources": [
+      {
+        "title": "Museu de Alberto Sampaio — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Museu_de_Alberto_Sampaio"
+      },
+      {
+        "title": "Museu de Alberto Sampaio — Museus e Monumentos de Portugal",
+        "url": "https://www.museusemonumentos.pt/pt/museus-e-monumentos/museu-de-alberto-sampaio"
+      },
+      {
+        "title": "Museu de Alberto Sampaio — página oficial",
+        "url": "https://www.museualbertosampaio.gov.pt"
+      }
+    ],
+    "tip_ru": "Билет стоит 5 €, действует на постоянную коллекцию и временные выставки. Музей открыт со вторника по воскресенье с 10:00 (в июле и августе — до полуночи); закрыт 1 января, в Пасхальное воскресенье, 1 мая и 25 декабря. Вход со стороны Руа-Алфреду-Гимарайнш, рядом с церковью Оливейры и Падран-ду-Саладу. Клуатр может быть закрыт на реставрационные работы по программе PRR — уточните на месте. Общий билет с замком и дворцом герцогов выгоднее.",
     "osm": {
       "type": "way",
       "id": 255483376,
       "height_m": 10,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "muralha",
     "name_pt": "Muralha e Torre da Alfândega («Aqui nasceu Portugal»)",
-    "name_ru": "Muralha e Torre da Alfândega («Aqui nasceu Portugal»)",
+    "name_ru": "Городская стена и башня Алфандега («Здесь родилась Португалия»)",
     "category": "archaeology",
     "lat": 41.44135,
     "lon": -8.29505,
-    "year": "",
-    "short_ru": "medieval wall stretch with the famous inscription",
-    "long_ru": "",
+    "year": "XIII–XIV века",
+    "short_ru": "Средневековая стена Гимарайнша и единственная уцелевшая башня Алфандега с надписью «Aqui nasceu Portugal»",
+    "long_ru": "В конце XII — начале XIII века король Саншу I, как считается, объехал верхний город, чтобы обозначить его границу, — вероятно, тогда Гимарайнш и обнесли стеной. Завершил пояс укреплений Диниш в 1318 году, соединив два прежде независимых посада в одну оборону с восемью воротами, шестью башнями и двумя угловыми башенками. Двойная стена выдержала осады 1322, 1369 и 1385 годов, а Жуан I велел снести внутреннюю стену между посадами. В XIX веке камень стены разбирали на стройки; уцелели два участка и башня Алфандега — единственная оставшаяся. На ней и высечено «Aqui nasceu Portugal».",
     "model": "city-wall",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/muralha.jpg",
+    "image_credit": {
+      "author": "Reis Quarteu",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Muralhas_de_Guimar%C3%A3es_-_01.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/muralha-1.jpg",
+        "kind": "detail",
+        "caption_ru": "Надпись «Aqui Nasceu Portugal» на стене башни Алфандега",
+        "credit": {
+          "author": "Halley Oliveira",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Aqui_Nasceu_Portugal_(45786115154).jpg"
+        }
+      },
+      {
+        "src": "assets/img/muralha-2.jpg",
+        "kind": "exterior",
+        "caption_ru": "Башня Алфандега рядом с площадью Турал",
+        "credit": {
+          "author": "Wagner",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Torre_do_%22Aqui_nasceu_Portugal%22_junto_ao_Toural.JPG"
+        }
+      },
+      {
+        "src": "assets/img/muralha-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Панно городской стены Диниша вдоль Авениды Алберту Сампайю",
+        "credit": {
+          "author": "Halley Oliveira",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Muralha_da_Cidade_de_Guimar%C3%A3es_(D._Denis)_(39761504503).jpg"
+        }
+      },
+      {
+        "src": "assets/img/muralha-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Старинные ворота в городской стене",
+        "credit": {
+          "author": "michell zappa",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Porta_nas_Muralhas_de_Guimar%C3%A3es.jpg"
+        }
+      },
+      {
+        "src": "assets/img/muralha-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Сохранившийся участок средневековой стены",
+        "credit": {
+          "author": "Reis Quarteu",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Muralhas_de_Guimar%C3%A3es_-_02.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "IaJkzMJ5mkw",
+        "title": "TORRE DA ALFÂNDEGA | Município de Guimarães",
+        "channel": "Município de Guimarães",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "MY8avV3hVnE",
+        "title": "Inscrição \"Aqui Nasceu Portugal\" surge renovada na Torre da Alfândega",
+        "channel": "GuimaraesDigital",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Между концом XII и началом XIII века король Саншу I, сын Афонсу Энрикеша, по преданию, объехал верхнюю часть города верхом, чтобы отметить её границы; вероятно, именно с этого времени вила начала обрастать стеной. Гимарайнш тогда состоял из двух независимых поселений, и в первые два века португальской государственности сильнее укрепляли верхний бургу — ядро у замка, — а не нижний, сложившийся вокруг коллегиаты Оливейры.\n\nВ XIII веке по инициативе короля Афонсу III началось строительство окончательного обвода стены, завершённое в 1318 году при короле Динише. Оба бургу Гимарайнша получили единую оборонительную структуру, сосредоточенную на замке, но охватившую и городскую общину, и главные религиозные учреждения. Восемь ворот, шесть башен и два кубелу (угловых бастиона) замыкали довольно протяжённый военный периметр.\n\nВ последующие годы двойная стена Гимарайнша выдержала три осады: в 1322 году, когда инфант Афонсу воевал против своего отца Диниша; в 1369-м, когда кастильские войска Энрике II вторглись в область Entre-Douro-e-Minho; и в 1385-м, когда Жуан I осадил сопротивлявшихся вимаранцев. Именно этот король приказал снести внутреннюю стену, разделявшую два бургу, объявив, что оба должны стать одним народом.\n\nВ XIX веке, как и с замком и дворцом герцогов Браганса, камни стены стали использовать как каменоломню для общественных и частных построек. Это привело к уничтожению почти всех башен и ворот к середине XX века; новые разрушения последовали при прокладке городских дорог. Сегодня сохранились два важных участка. Самый длинный тянется от Ларгу-да-Кондесса-Мунадона вдоль всей Авениды Алберту Сампайю; второй, чуть южнее, связан со старой башней Алфандега.\n\nTorre da Alfândega стоит в самом сердце города. Это единственная уцелевшая башня средневековой стены, остающаяся почти нетронутой с момента постройки в XIII веке; она объявлена национальным памятником и хранит настенное панно с надписью «Aqui Nasceu Portugal» — «Здесь родилась Португалия». Имя своё башня получила от таможни (alfândega), находившейся поблизости. После реставрации по проекту архитекторов Маргариды Мораиш и Мигела Мелу её открыли для публики 3 августа 2024 года: вход свободный, с 10:00 до 18:00, внутри предполагается создать центр интерпретации.\n\nВ 2019 году вдоль внутренней стороны самого длинного участка стены проложили пешеходный маршрут по боевому ходу — Percurso Pedonal do Adarve da Muralha. Один вход расположен рядом со входом в Музей Алберту Сампайю, выход — у Ларгу-да-Кондесса-Мунадона; вход свободный, зимой с 10:00 до 17:00, летом с 10:00 до 21:00.\n\nСтена и башня напоминают о том, что Гимарайнш был крепостью на границе молодого королевства: именно здесь, по преданию, родилась Португалия. Надпись «Aqui Nasceu Portugal» на башне Алфандега стала одним из символов города, а сам ансамбль — национальным памятником. Пешеходный маршрут по боевому ходу, открытый в 2019 году, вернул горожанам доступ к стене, с которой открывается панорама на замок, дворец герцогов и гору Пенья. Реставрация башни 2024 года продолжила эту работу: памятник снова открыт, вход свободный, и внутри планируют создать центр интерпретации истории городских укреплений.",
+    "facts_ru": [
+      "Окончательный обвод стены начали при Афонсу III и завершили в 1318 году при короле Динише.",
+      "Стена имела восемь ворот, шесть башен и два угловых бастиона (cubelos).",
+      "Двойная стена выдержала осады 1322, 1369 и 1385 годов.",
+      "Жуан I велел снести внутреннюю стену между двумя посадами, объединив их в один город.",
+      "Torre da Alfândega — единственная сохранившаяся башня средневековой стены Гимарайнша.",
+      "Башню снова открыли для публики 3 августа 2024 года; на ней высечено «Aqui Nasceu Portugal»."
+    ],
+    "sources": [
+      {
+        "title": "Torre da Alfândega, Muralha e Adarve — Turismo de Guimarães",
+        "url": "https://www.visitguimaraes.travel/torre-da-alfandega-muralha-e-adarve"
+      },
+      {
+        "title": "História de Guimarães — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Hist%C3%B3ria_de_Guimar%C3%A3es"
+      },
+      {
+        "title": "Torre da Alfândega - Aqui Nasceu Portugal — All About Portugal",
+        "url": "https://www.allaboutportugal.pt/pt/guimaraes/monumentos/torre-da-alfandega-aqui-nasceu-portugal"
+      },
+      {
+        "title": "Muralha organiza visita guiada à Torre da Alfândega — Mais Guimarães",
+        "url": "https://maisguimaraes.pt/muralha-organiza-visita-guiada-a-muralha-e-a-torre-da-alfandega/"
+      }
+    ],
+    "tip_ru": "Посещение бесплатное. Башня Алфандега открыта ежедневно с 10:00 до 18:00. Пешеходный маршрут по боевому ходу — Percurso do Adarve — свободный: зимой (23 сентября — 19 марта) с 10:00 до 17:00, летом с 10:00 до 21:00; вход рядом с музеем Алберту Сампайю, выход у Ларгу-да-Кондесса-Мунадона. Начните от Ларгу-да-Кондесса-Мунадона и пройдите вдоль Авениды Алберту Сампайю: со стены видны дворец герцогов, замок и Пенья. Совместите с музеем Алберту Сампайю и башней с надписью у площади Турал.",
     "osm": {
       "type": "relation",
       "id": 19901679,
       "height_m": 15,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "plataforma-artes",
     "name_pt": "Plataforma das Artes e da Criatividade",
-    "name_ru": "Plataforma das Artes e da Criatividade",
+    "name_ru": "Платформа искусств и творчества",
     "category": "museum",
     "lat": 41.443,
     "lon": -8.29765,
-    "year": "",
-    "short_ru": "2012 Pitágoras building, old market",
-    "long_ru": "",
+    "year": "2012",
+    "short_ru": "Комплекс Пифагорас 2012 года в старом городском рынке, где разместился музей Жозе де Гимарайнша",
+    "long_ru": "Платформа искусств и творчества — проект превращения старого городского рынка Гимарайнша на Авениде Конде Маргариде в многофункциональное пространство для творчества. Реконструкцию выполнило ателье Pitágoras Arquitetos; комплекс открыли 24 июня 2012 года, в год, когда Гимарайнш был культурной столицей Европы. Площадь застройки превышает десять тысяч квадратных метров, в здании тринадцать выставочных залов на трёх этажах, «чёрный зал» на 198 мест, конференц-зал, книжный магазин, климатизированные фонды и рабочие зоны. Здесь находится Центр международного искусства Жозе де Гимарайнша (CIAJG) с африканской, доколумбовой и древнекитайской коллекциями. Комплексом управляет организация «A Oficina».",
     "model": "arts-platform",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/plataforma-artes.jpg",
+    "image_credit": {
+      "author": "Vitor Oliveira from Torres Vedras, PORTUGAL",
+      "license": "CC BY-SA 2.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Plataforma_das_Artes_-_Guimar%C3%A3es_-_Portugal_(8244353917).jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/plataforma-artes-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Интерьер Центра международного искусства Жозе де Гимарайнша",
+        "credit": {
+          "author": "MTeresaSoares",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Interior_do_CIAJG.jpg"
+        }
+      },
+      {
+        "src": "assets/img/plataforma-artes-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Лестница в здании Платформы искусств",
+        "credit": {
+          "author": "MTeresaSoares",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Escadas_do_CIAJG.jpg"
+        }
+      },
+      {
+        "src": "assets/img/plataforma-artes-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Комплекс Платформы искусств на Авениде Конде Маргариде",
+        "credit": {
+          "author": "Valdemar Guimarães from Guimarães, Portugal",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Plataforma_das_Artes_(7433802344).jpg"
+        }
+      },
+      {
+        "src": "assets/img/plataforma-artes-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Фасад бывшего рынка, перестроенного в 2012 году",
+        "credit": {
+          "author": "Valdemar Guimarães from Guimarães, Portugal",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Plataforma_das_Artes_(7433822340).jpg"
+        }
+      },
+      {
+        "src": "assets/img/plataforma-artes-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Старый городской рынок, вид с Руа-Пайю-Галван",
+        "credit": {
+          "author": "Diogo e Vitória Oliveira Pacheco",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Antigo_mercado_municipal_visto_da_Rua_Paio_Galv%C3%A3o.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "9yBZZEC4FD0",
+        "title": "Plataforma das Artes CEC",
+        "channel": "Porto CanalAve",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "J3f7ukohyxo",
+        "title": "Plataforma das Artes- Guimarães",
+        "channel": "A memória do património 2019",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Платформа искусств и творчества (Plataforma das Artes e da Criatividade) — это инфраструктурный проект преобразования бывшего городского рынка Гимарайнша в многофункциональное пространство, посвящённое творческой деятельности. Комплекс стоит на Авениде Конде Маргариде, одной из главных улиц города, неподалёку от площади Турал и исторического центра, и занимает более десяти тысяч квадратных метров.\n\nАвтор проекта — архитектурное ателье Pitágoras Arquitetos. Центр международного искусства Жозе де Гимарайнша (CIAJG), ядро комплекса, открылся 24 июня 2012 года в рамках программы «Гимарайнш — культурная столица Европы 2012». Архитектура CIAJG — череда объёмов и контрастирующих поверхностей; она отвечает задаче создать пространства разного назначения: тринадцать выставочных залов распределены по трём этажам. Напряжение между объёмом здания и пространством площади разрешается в опыте выставок, концертов и разговоров, которые здесь проходят.\n\nВ основе музея — коллекция художника Жозе де Гимарайнша, собранная из предметов разных эпох, мест и контекстов и соединённая с работами современных авторов. Она организована в три ядра: африканское искусство, доколумбово искусство и древнекитайское искусство. Так музей предлагает своего рода «пересборку» истории искусства как череды отголосков и новое назначение музея — быть местом удивления и размышления.\n\nВ здании есть «чёрный зал» (Black Box) на 198 сидячих мест для спектаклей разного рода, конференц-зал, книжный магазин, специализированные климатизированные фонды и рабочие зоны. С момента открытия комплексом управляет и программирует его организация «A Oficina», которой принадлежат также Центр культуры Вила Флор и Дом памяти Гимарайнша. Проект отмечен премиями: Detail Prize Award 2012, Reddot Design Award «best of the best 2013», Prémio Nacional de Reabilitação Urbana 2013; он вошёл в финальный список 25 проектов премии Миса ван дер Роэ 2013 года и в Copper in Architecture Awards Европейского института меди.\n\nВажно не путать Платформу искусств с Центром культуры Вила Флор (Centro Cultural Vila Flor) — это разные объекты, хотя оба связаны с «A Oficina» и с культурной столицей Европы.\n\nСтарый рынок, на месте которого выросла Платформа, долго был торговым сердцем города; его железные конструкции и высокие кровли служили ориентиром у Авениды Конде Маргариде. Реконструкция не стёрла память места, а вписала новое здание в городскую ткань: проект связал площадь перед комплексом с улицами исторического центра и вернул в оборот целый квартал. Сегодня здесь проходят выставки, концерты, конференции и образовательные программы «A Oficina»; на первом этаже открыты книжный магазин и кафе. Коллекция Жозе де Гимарайнша включает предметы африканского, доколумбова и древнекитайского искусства, соединённые с работами современных авторов, и продолжает расти. Платформа стала одной из главных площадок культурной жизни Гимарайнша и заметной точкой современной архитектуры на карте города.",
+    "facts_ru": [
+      "CIAJG открылся 24 июня 2012 года, когда Гимарайнш был культурной столицей Европы.",
+      "Проект выполнило ателье Pitágoras Arquitetos, преобразовав старое здание городского рынка.",
+      "Площадь застройки превышает 10 000 м²; в здании тринадцать выставочных залов на трёх этажах.",
+      "«Чёрный зал» (Black Box) вмещает 198 сидячих мест.",
+      "Коллекция Жозе де Гимарайнша делится на три ядра: африканское, доколумбово и древнекитайское искусство.",
+      "Среди наград — Detail Prize 2012 и Red Dot «best of the best 2013»; комплексом управляет «A Oficina»."
+    ],
+    "sources": [
+      {
+        "title": "Arquitetura do CIAJG — Centro Internacional das Artes José de Guimarães",
+        "url": "https://www.ciajg.pt/arquitetura/"
+      },
+      {
+        "title": "Centro Internacional das Artes José de Guimarães — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Centro_Internacional_das_Artes_Jos%C3%A9_de_Guimar%C3%A3es"
+      },
+      {
+        "title": "A Oficina — instituição gestora",
+        "url": "https://www.aoficina.pt/"
+      }
+    ],
+    "tip_ru": "Билет CIAJG даёт доступ к постоянной коллекции и временным выставкам; часы работы стоит уточнить на ciajg.pt (обычно со вторника по воскресенье). Комплекс находится на Авениде Конде Маргариде, в 5–10 минутах от площади Турал и исторического центра. Не путайте его с Центром культуры Вила Флор — это отдельная площадка в другом конце города. После осмотра удобно вернуться к Туралу и башне Алфандега.",
     "osm": {
       "type": "way",
       "id": 454870532,
       "height_m": 16,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "couros",
     "name_pt": "Zona de Couros",
-    "name_ru": "Zona de Couros",
+    "name_ru": "Зона Коуруш",
     "category": "archaeology",
     "lat": 41.43986,
     "lon": -8.29316,
-    "year": "",
-    "short_ru": "medieval tanneries, granite tanks",
-    "long_ru": "",
+    "year": "XIII–XX века",
+    "short_ru": "Кожевенный квартал на ручье Коуруш: с XIII века здесь выделывали кожи, гранитные чаны сохранились до наших дней",
+    "long_ru": "Кожевенный квартал Коуруш лежит вдоль одноимённого ручья к западу от исторического центра Гимарайнша. Выделка кож известна здесь с XIII века: ремесленникам нужна была вода, а запахи вытесняли промысел за городские стены. В XIX веке квартал стал главным центром обработки кож на севере Португалии; здесь сохранились гранитные чаны для дубления, сушильни и кирпичные трубы бывших фабрик. В 1977 году Коуруш первым в стране был признан памятником промышленной археологии, а в 2023 году вошёл в объект ЮНЕСКО. Сегодня старые цеха занимают Институт дизайна, Дом науки и молодёжный хостел.",
     "model": "tannery",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/couros.jpg",
+    "image_credit": {
+      "author": "V.B.Speranza",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Couros_zone.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/couros-1.jpg",
+        "kind": "exterior",
+        "caption_ru": "Аэрофото квартала Коуруш, сшитое из снимков с воздушного шара",
+        "credit": {
+          "author": "Open City",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Couros_(7611846398).jpg"
+        }
+      },
+      {
+        "src": "assets/img/couros-2.jpg",
+        "kind": "detail",
+        "caption_ru": "Старые гранитные чаны для дубления кож, вид через проём в стене",
+        "credit": {
+          "author": "j6p6k6",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Couros_7_(54418401554).jpg"
+        }
+      },
+      {
+        "src": "assets/img/couros-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Узкий переулок Коуруша с нависающим верхним этажом",
+        "credit": {
+          "author": "j6p6k6",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Couros_1_(54418202516).jpg"
+        }
+      },
+      {
+        "src": "assets/img/couros-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Кирпичная труба бывшей фабрики над гранитной постройкой",
+        "credit": {
+          "author": "j6p6k6",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Couros_14_(54418600350).jpg"
+        }
+      },
+      {
+        "src": "assets/img/couros-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Остов разрушенного гранитного цеха с пустыми оконными проёмами",
+        "credit": {
+          "author": "j6p6k6",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Couros_3_(54418591815).jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "PQPLCUuV7IY",
+        "title": "Zona de Couros",
+        "channel": "Município de Guimarães",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "OBEXpn4gdiY",
+        "title": "Caminhos da História - 2024 - E19 - Zona De Couros, Guimarães",
+        "channel": "Cultura Archivist",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Выделка кож в Гимарайнше документирована с XIII века. Ремесло требовало обильной воды, и потому кожевники селились не в стенах города, а в низине вдоль ручья — там, где воды было вдоволь, а запахи не мешали горожанам. Ручьей, который прежде называли Рибейра-да-Коста, со временем получил имя Коуруш — от португальского couros, «кожи». Кожевники и дубильщики работали в ямах, чанах, давильнях и на скребковых досках; кора дуба, отдав таннин, шла на топливо и на удобрение окрестных полей.\n\nВ XIX веке нынешняя Зона Коуруш превратилась в привилегированный центр обработки кож: производство держалось на традиционной технике и ручном труде. Фабрики строили здесь с типичными сушильнями и гранитными чанами для дубления и крашения. Первые попытки механизации и модернизации появились лишь в начале XX века, и всё же промысел оставался живым до середины столетия, сделав Гимарайнш национальным ориентиром кожевенной отрасли.\n\nВ июле 1977 года Зона Коуруш была классифицирована как Imóvel de Interesse Público. Это была первая в Португалии законодательная инициатива такого рода в области промышленной археологии: она признала ценность кожевенного производства и помогла сохранить его материальные следы.\n\nК концу XX века производство угасло, квартал обеднел. В 2001 году Коуруш вошёл в буферную зону объекта Всемирного наследия ЮНЕСКО. Тогда же в одном из кварталов построили многофункциональный комплекс с молодёжным хостелом, киберцентром и социальной кооперативом «Фратерна». В 2006 году муниципалитет и Университет Минью запустили проект CampUrbis — программу возрождения десяти гектаров квартала. Отреставрированные фабрики получили новую жизнь: в них разместились молодёжный хостел, Институт дизайна, Центр последипломного образования и Центр науки.\n\nВ 2021 году был открыт процесс расширения границ Всемирного наследия на Зону Коуруш, а 19 сентября 2023 года ЮНЕСКО утвердила расширение и новое название объекта — «Исторический центр Гимарайнша и Зона Коуруш». Гранитные чаны и ручей по-прежнему остаются сердцем квартала.",
+    "facts_ru": [
+      "Выделка кож в Гимарайнше документирована с XIII века; ручей дал кварталу имя Коуруш.",
+      "В июле 1977 года Зона Коуруш стала первым в Португалии памятником промышленной археологии (Imóvel de Interesse Público).",
+      "В 2001 году квартал вошёл в буферную зону Всемирного наследия ЮНЕСКО.",
+      "19 сентября 2023 года ЮНЕСКО расширила объект и переименовала его в «Исторический центр Гимарайнша и Зона Коуруш».",
+      "В отреставрированных фабриках разместились Институт дизайна, Центр науки, молодёжный хостел и Центр последипломного образования."
+    ],
+    "sources": [
+      {
+        "title": "Ribeira da Costa / Couros — Enquadramento Histórico, Câmara Municipal de Guimarães",
+        "url": "https://www.cm-guimaraes.pt/areas-de-intervencao/ambiente-e-sustentabilidade/ambiente/ribeira-da-costa-couros/enquadramento-historico"
+      },
+      {
+        "title": "Zona de Couros — Agenda Cultural de Guimarães",
+        "url": "https://em.guimaraes.pt/geo_artigo-28/zona-de-couros"
+      },
+      {
+        "title": "Historic Centre of Guimarães and Couros Zone — UNESCO World Heritage",
+        "url": "https://whc.unesco.org/en/list/1031"
+      },
+      {
+        "title": "Centro Histórico de Guimarães e Zona de Couros — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_e_Zona_de_Couros"
+      }
+    ],
+    "tip_ru": "Коуруш — открытая городская зона, вход свободный. Идите из центра на запад по Rua de Couros вдоль ручья: чаны для дубления и старые фабрики разбросаны по обеим сторонам улицы. По пути осмотрите соседний монастырь Сан-Франсишку и загляните в Центр науки. Общество Мартинша Сарменту иногда проводит здесь тематический маршрут «от Сан-Криспина до старых кожевен». Удобно совместить с прогулкой в городской парк; часть участков ещё огорожена из-за регенерации.",
     "osm": {
       "type": "relation",
       "id": 19769884,
       "height_m": 1.2,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "santa-marinha",
-    "name_pt": "Mosteiro de Santa Marinha da Costa (Pousada)",
-    "name_ru": "Mosteiro de Santa Marinha da Costa (Pousada)",
+    "name_pt": "Mosteiro de Santa Marinha da Costa",
+    "name_ru": "Монастырь Санта-Маринья-да-Коста",
     "category": "religious",
     "lat": 41.44295,
     "lon": -8.2766,
-    "year": "",
-    "short_ru": "12th-c. monastery, Siza Vieira pousada",
-    "long_ru": "",
+    "year": "XII–XVIII века",
+    "short_ru": "Августинский монастырь XII века на склоне Пеньи, перестроенный в XVI–XVIII веках и ставший гостиницей-посадой",
+    "long_ru": "Монастырь Санта-Маринья-да-Коста стоит на склоне горы Пенья, над городом Гимарайнш. В XII веке его отдали августинским каноникам, которые за три с половиной столетия расширили церковь и выстроили четыре крыла вокруг клуатра. В 1528 году здесь учредили иеронимитскую коллегию, а в 1541 году король Дон Жуан III даровал ей право присуждать учёные степени. В XVII–XVIII веках обитель перестроили, в 1951 году её опустошил пожар, а в 1972 году государство выкупило здание. Проект превращения в гостиницу выполнил Фернанду Тавора, удостоенный за него Национальной архитектурной премии 1987 года.",
     "model": "monastery",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/santa-marinha.jpg",
+    "image_credit": {
+      "author": "Halley Pacheco de Oliveira",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Mosteiro_de_Santa_Marinha_da_Costa.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/santa-marinha-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Коридор посады с красной дорожкой в сводчатом монастырском переходе",
+        "credit": {
+          "author": "sohrabah",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Corredor_na_Pousada_De_Santa_Marinha.jpg"
+        }
+      },
+      {
+        "src": "assets/img/santa-marinha-2.jpg",
+        "kind": "exterior",
+        "caption_ru": "Белое крыло монастыря с террасой и столиками на фоне Пеньи",
+        "credit": {
+          "author": "Vitor Oliveira from Torres Vedras, PORTUGAL",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Pousada_de_Guimar%C3%A3es_-_Santa_Marinha_-_Portugal_(25160004698).jpg"
+        }
+      },
+      {
+        "src": "assets/img/santa-marinha-3.jpg",
+        "kind": "detail",
+        "caption_ru": "Дороманская мосарабская дверь в северо-западном углу клуатра",
+        "credit": {
+          "author": "Edna Winti",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mozarabic_door,_Monastery_of_Santa_Marinha_(14470857429).jpg"
+        }
+      },
+      {
+        "src": "assets/img/santa-marinha-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Фасад церкви в рождественской подсветке",
+        "credit": {
+          "author": "Eduarda7",
+          "license": "CC BY-SA 2.5 pt",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Sta_Marinha_da_Costa_-_Guimar%C3%A3es.jpg"
+        }
+      },
+      {
+        "src": "assets/img/santa-marinha-5.jpg",
+        "kind": "detail",
+        "caption_ru": "Барочный фасад церкви с двумя колокольнями и часами",
+        "credit": {
+          "author": "GFreihalter",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_Santa_Marinha_da_Costa_470.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "5o5YvRBS97w",
+        "title": "Pousada de Guimarães",
+        "channel": "Pestana Hotel Group",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "ApVCSCoofYk",
+        "title": "DJI Spark | 1min na Igreja de Santa Marinha da Costa",
+        "channel": "António Lencastre",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Монастырь стоит на месте, где, как считают, ещё в конце IX века существовал небольшой храм с одним нефом и апсидой, возведённый, в свою очередь, на римском поселении. Археологи находят здесь следы доримских и римских слоёв. Есть предположение, что именно здесь находились дворцы портукаленских графов, а монастырская церковь была их дворцовой капеллой.\n\nВ конце XI века это место стало монастырём, а в XII веке его передали регулярным каноникам Святого Августина. За триста пятьдесят лет их управления церковь расширили и выстроили четыре новых крыла вокруг нового клуатра. 27 января 1528 года по булле папы Климента VII здесь учредили орден Святого Иеронима и коллегию, где преподавали гуманитарные науки и искусства, а затем и богословие. В августе 1537 года коллегию посетил гуманист Николо Кленаро; он писал, что приор Диегу де Мурса держит в монастыре трёх преподавателей, один из которых учит риторике «сына короля, четырнадцати лет». В 1541 году указ Дона Жуана III позволил присуждать здесь степени бакалавра, лиценциата и доктора искусств, приравненные к коимбрским. Среди учеников были королевские сыновья; в церкви об этом напоминает плита. Тогда же, в XVI веке, обитель получила новый главный алтарь работы Фрея Карлуша, новый клуатр и переделанный фасад церкви.\n\nРаботы XVII–XVIII веков изменили монастырь сильнее всего: монастырские крылья перестроили, в 1713 году появилась новая капелла-мор, интерьер обновили, а вокруг обители оформили ограду.\n\nПосле упразднения мужских монашеских орденов монахов выселили, здание перешло государству и было продано с торгов частным владельцам. В 1951 году большой пожар уничтожил значительную часть постройки — в том числе азулежу на стенах у келий и каменную лестницу к залу капитула. С тех пор монастырь стоял в полном запустении.\n\nВ 1972 году здание выкупило государство, а пять лет спустя начались реставрационные работы с целью превратить его в гостиницу. Проект реконструкции и приспособления разработал архитектор Фернанду Тавора, получивший за эту работу Национальную архитектурную премию 1987 года. По оценке IPPAR, в ходе работ прошла одна из важнейших археологических кампаний в средневековых зданиях Португалии. Сохранили и сад с самшитовыми бордюрами, спускающийся по склону Пеньи; аллеи обсажены вековыми деревьями, через сад течёт ручей, питающий круглый водоём наверху, а у северо-западного угла клуатра уцелела основа башни с дороманской мосарабской дверью. Ещё в 1936 году монастырь и церковь были объявлены Imóvel de Interesse Público.\n\nСегодня это «Посада Мостейру де Гимарайнш» — исторический отель сети Pousadas de Portugal. В двухэтажном корпусе разместились 27 номеров, в бывших келиях — ещё 22 номера и 2 люкса; ресторан D. Mafalda занимает старые монастырские подвалы, бар — бывшую кухню. Сады площадью около девяти гектаров с архитектурными и ландшафтными элементами признаны объектом общественного интереса.",
+    "facts_ru": [
+      "Монастырь передан регулярным каноникам Святого Августина в XII веке; они владели им около 350 лет.",
+      "В 1528 году булла Климента VII учредила здесь иеронимитскую коллегию; в 1541 году Дон Жуан III даровал ей право присуждать учёные степени.",
+      "В 1936 году монастырь и церковь были объявлены Imóvel de Interesse Público.",
+      "Пожар 1951 года уничтожил азулежу у монашеских келий и каменную лестницу; здание десятилетиями стояло в запустении.",
+      "Проект превращения в посаду выполнил архитектор Фернанду Тавора, получивший за него Национальную архитектурную премию 1987 года."
+    ],
+    "sources": [
+      {
+        "title": "Mosteiro de Santa Marinha da Costa — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Mosteiro_de_Santa_Marinha_da_Costa"
+      },
+      {
+        "title": "Pousada Mosteiro Guimarães — Pousadas de Portugal",
+        "url": "https://www.pousadas.pt/en/hotel/pousada-guimaraes"
+      },
+      {
+        "title": "Gardens of the Mosteiro de Guimarães — Pousadas de Portugal",
+        "url": "https://www.pousadas.pt/en/hotel/pousada-guimaraes/gardens-mosteiro"
+      }
+    ],
+    "tip_ru": "Посада — действующий отель, но ресторан D. Mafalda в старых подвалах и бар в бывшей монастырской кухне открыты для гостей по брони. Сады и церковь можно осмотреть; парк спускается по склону Пеньи к городу. Удобнее всего приехать на машине — парковка бесплатная; можно также подняться на канатной дороге на Пенью и спуститься пешком. Совместите с замком и историческим центром: до них около десяти минут на машине.",
     "osm": {
       "type": "way",
       "id": 230976313,
       "height_m": 22,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "estadio-afonso-henriques",
     "name_pt": "Estádio D. Afonso Henriques",
-    "name_ru": "Estádio D. Afonso Henriques",
+    "name_ru": "Стадион Дона Афонсу Энрикеша",
     "category": "sport",
     "lat": 41.44589,
     "lon": -8.30099,
-    "year": "",
-    "short_ru": "Vitória SC, Euro 2004",
-    "long_ru": "",
+    "year": "1965; 2003",
+    "short_ru": "Домашний стадион «Витории» из Гимарайнша: открыт в 1965 году, реконструирован к Евро-2004 на 30 029 мест",
+    "long_ru": "Стадион Дона Афонсу Энрикеша — домашняя арена «Витории Спорт Клубе» в Гимарайнше. Первый стадион, построенный по проекту архитектора Мариу Бониту, открыли 3 января 1965 года; в первом матче «Витория» обыграла «Белененсеш» со счётом 2:1. К чемпионату мира среди молодёжи 1991 года арену впервые расширили, а 30 сентября 1995 года болельщики выбрали имя Дона Афонсу Энрикеша. К Евро-2004 стадион полностью перестроили в 2002–2003 годах: вместимость выросла до 30 029 мест, а сиденья сложились в средневековые узоры. Здесь прошли матчи Дания — Италия и Италия — Болгария.",
     "model": "stadium",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/estadio-afonso-henriques.jpg",
+    "image_credit": {
+      "author": "Vincenzo.togni",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:The_Est%C3%A1dio_D._Alfonso_Henriques_(2018).jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/estadio-afonso-henriques-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Команды на поле перед матчем Лиги Европы «Витория» — «Арсенал»",
+        "credit": {
+          "author": "Estevoaei",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Vit%C3%B3ria_SC_-_Arsenal_FC,_UEFA_Europa_League_08.jpg"
+        }
+      },
+      {
+        "src": "assets/img/estadio-afonso-henriques-2.jpg",
+        "kind": "interior",
+        "caption_ru": "Матч Евро-2004 Италия — Болгария: на табло 0:0",
+        "credit": {
+          "author": "Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Italia-Bulgaria.jpg"
+        }
+      },
+      {
+        "src": "assets/img/estadio-afonso-henriques-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Стадион с высоты башни замка Гимарайнш",
+        "credit": {
+          "author": "Wagner Bonifacio Leite",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Est%C3%A1dio_do_Vit%C3%B3ria_de_Guimar%C3%A3es_visto_da_torre_central_do_Castelo_de_Guimar%C3%A3es_02.jpg"
+        }
+      },
+      {
+        "src": "assets/img/estadio-afonso-henriques-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Статуя Дона Афонсу Энрикеша у стадиона",
+        "credit": {
+          "author": "V.B.Speranza",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Est%C3%A1tua_de_Dom_Afonso_Henriques_junto_ao_Est%C3%A1dio_Afonso_Henriques_1.jpg"
+        }
+      },
+      {
+        "src": "assets/img/estadio-afonso-henriques-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Стадион среди городской застройки, вид с Пеньи",
+        "credit": {
+          "author": "Vitor Oliveira from Torres Vedras, PORTUGAL",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Est%C3%A1dio_Dom_Afonso_Henriques_-_Guimar%C3%A3es_-_Portugal_(7911950596).jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "OrwR8OmY-0s",
+        "title": "Vitória SC Guimarães | Estádio D. Afonso Henriques | Portugal in 4K",
+        "channel": "Cidadão do Mundo",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "9zDH-EW--wI",
+        "title": "ESTÁDIO DOM AFONSO HENRIQUES - VITÓRIA SPORT CLUBE",
+        "channel": "VIAGEM JUNTOS!",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "До этого стадиона «Витория» играла на полях «Амороза», «Атоугия», «Жозе Минотеш», «Пердиш» и «Беньевай». В 1962 году объявили конкурс на новую трибуну, а вскоре Португальская футбольная федерация потребовала, чтобы все клубы первого дивизиона играли на травяном поле. 3 января 1965 года, хотя работы ещё не были закончены, торжественно открыли Муниципальный стадион Гимарайнша — авторства архитектора Мариу Бониту. Он вмещал около 15 тысяч зрителей, а стройка обошлась примерно в 8 500 конту. В первом матче «Витория» победила «Белененсеш» 2:1; на 9-й минуте воспитанник клуба Албертину Каштру забил первый гол на новом поле, а победный мяч в концовке провёл Инасиу.\n\n27 декабря 1989 года муниципальная ассамблея проголосовала за передачу стадиона клубу, и 21 сентября 1990 года нотариальный акт оформил продажу «Витории» за один миллион эскудо. К чемпионату мира среди молодёжи 1991 года, который принимала Португалия, арену впервые капитально перестроили: возвели северную трибуну и часть восточной.\n\n30 сентября 1995 года на общем собрании клуба решали, как назвать стадион. Среди вариантов были «Афонсу Энрикеш», «Витория Спорт Клубе», а также отброшенные «Амороза» и «Жозе Мария Каштру Родригеш». С перевесом 453 голоса против 358 победило имя Дона Афонсу Энрикеша — в честь первого короля Португалии, родившегося в Гимарайнше.\n\nВ 1998 году Гимарайнш выбрали одним из городов-хозяев Евро-2004, и муниципалитет с клубом подписали программу развития. С 11 марта 2002 по 25 июля 2003 года стадион пережил глубокую реконструкцию, сделавшую его одной из лучших футбольных арен страны. Проект выполнил местный архитектор Эдуарду Гимарайнш: новой южной трибуной он «закрыл» стадион, и с улицы та выглядит как обычное здание, а вокруг появились зелёные зоны и удобные подъезды. Муниципалитет взял на себя все расходы — около 34 миллионов евро; это была самая дешёвая из десяти арен Евро-2004 и единственная, где не случилось перерасхода. Раскладка сидений заставляет вспомнить средневековый турнир: на южном верху изображён Дон Афонсу Энрикеш, на остальных трибунах — цветные флаги. Стены баров и туалетов украшены азулежу с замком Гимарайнша, щитами, шлемами и мечами.\n\n25 июля 2003 года обновлённую арену торжественно передали «Витории» уже под именем «Стадион Дона Афонсу Энрикеша». Около 29 865 человек посмотрели мультимедийное шоу и матч с «Кайзерслаутерном», который хозяева выиграли 4:1; голы забили Афонсу Мартинш (открывший счёт на новом стадионе), Нуну Ассиш, Рубенш Жуниор и Гуга. На Евро-2004 здесь прошли два матча группы C: 14 июня Дания и Италия разошлись 0:0 при 29 595 зрителях, а 22 июня Италия обыграла Болгарию 2:1.\n\nВ 2015 году стадион отметил 50-летие. В 2019-м он принял два матча первого розыгрыша Лиги наций УЕФА, после чего муниципалитет выделил клубу 88 500 евро на замену конструкций фасадов западной и северной трибун и установку двух больших экранов. В 2021 году «Витория» начала поэтапную замену сидений на откидные и обустройство гостевого сектора безопасности.",
+    "facts_ru": [
+      "Стадион открыт 3 января 1965 года как Муниципальный стадион Гимарайнша; первый матч — «Витория» 2:1 «Белененсеш».",
+      "30 сентября 1995 года члены клуба выбрали имя Дона Афонсу Энрикеша: 453 голоса против 358.",
+      "Реконструкция к Евро-2004 шла с 11 марта 2002 по 25 июля 2003 года и обошлась примерно в 34 миллиона евро.",
+      "Вместимость — 30 029 мест; это самая дешёвая из десяти арен Евро-2004 и единственная без перерасхода.",
+      "На Евро-2004 здесь прошли матчи Дания — Италия (0:0) и Италия — Болгария (2:1)."
+    ],
+    "sources": [
+      {
+        "title": "Estádio D. Afonso Henriques — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_D._Afonso_Henriques"
+      },
+      {
+        "title": "UEFA Euro 2004 Group C — Wikipedia (en)",
+        "url": "https://en.wikipedia.org/wiki/UEFA_Euro_2004_Group_C"
+      },
+      {
+        "title": "Vitória Sport Clube — site oficial",
+        "url": "https://www.vitoriasc.pt/"
+      }
+    ],
+    "tip_ru": "Стадион стоит в центре города, примерно в 15 минутах пешком от исторического центра. Матчи «Витории» идут по календарю; вне игр внутрь не попасть, но фасады с азулежу и статуя Афонсу Энрикеша у входа доступны в любое время. Экскурсии по арене устраивают по запросу через клуб. Удобно совместить с замком и дворцом герцогов Браганса, до которых десять минут ходьбы.",
     "osm": {
       "type": "way",
       "id": 211693383,
       "height_m": 32,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "uminho-azurem",
     "name_pt": "Universidade do Minho – Campus de Azurém",
-    "name_ru": "Universidade do Minho – Campus de Azurém",
+    "name_ru": "Университет Минью — кампус Азурем",
     "category": "education",
     "lat": 41.45264,
     "lon": -8.28991,
-    "year": "",
-    "short_ru": "engineering campus",
-    "long_ru": "",
+    "year": "1973",
+    "short_ru": "Инженерный кампус Университета Минью в Гимарайнше: школа инженерии, архитектуры и дизайна у стен старого города",
+    "long_ru": "Кампус Азурем — университетский городок Университета Минью в Гимарайнше, в нескольких минутах от исторического центра. Университет основан в 1973 году, занятия начались в 1975/76 годах. Здесь находятся Школа инженерии, Школа архитектуры, искусства и дизайна и часть Школы наук. Планировочную ось кампуса заложил архитектор Бартоломеу Коста Кабрал в 1980-х годах; корпус Школы архитектуры (09) построили по проекту Фернанду Таворы и Жозе Бернарду Таворы и открыли в 2004 году. Библиотека в Азуреме специализируется на инженерии, архитектуре, географии и планировании; с территории кампуса открывается вид на замок Гимарайнш.",
     "model": "university",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/uminho-azurem.jpg",
+    "image_credit": {
+      "author": "a m",
+      "license": "CC BY 2.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Campus_de_Azur%C3%A9m_01.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/uminho-azurem-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Лестничный холл в одном из корпусов кампуса Азурем",
+        "credit": {
+          "author": "j6p6k6",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Azur%C3%A9m_14_(54418676655).jpg"
+        }
+      },
+      {
+        "src": "assets/img/uminho-azurem-2.jpg",
+        "kind": "exterior",
+        "caption_ru": "Бетонный корпус с криволинейным фасадом в кампусе",
+        "credit": {
+          "author": "a m",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Campus_de_Azur%C3%A9m_02.jpg"
+        }
+      },
+      {
+        "src": "assets/img/uminho-azurem-3.jpg",
+        "kind": "exterior",
+        "caption_ru": "Панорама кампуса Азурем с его протяжёнными корпусами",
+        "credit": {
+          "author": "a m",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Panoramica_do_Campus_de_Azurem.jpg"
+        }
+      },
+      {
+        "src": "assets/img/uminho-azurem-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Замок Гимарайнш, вид с территории кампуса Азурем",
+        "credit": {
+          "author": "a m",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Castelo_de_Guimar%C3%A3es_visto_de_Azur%C3%A9m.jpg"
+        }
+      },
+      {
+        "src": "assets/img/uminho-azurem-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Общий вид района Азурем с корпусами университета",
+        "credit": {
+          "author": "Diogo e Vitória Oliveira Pacheco",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Vistas_da_gerais_freguesia_de_Azur%C3%A9m.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "y5BPFLi4wck",
+        "title": "Campus de Azurém recebeu a \"Engenharia ao serviço da sociedade\"",
+        "channel": "Universidade do Minho",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "2jzfiLWlm_c",
+        "title": "A Nova Biblioteca da UMinho em Azurém",
+        "channel": "Universidade do Minho",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "rVi1K1tVClg",
+        "title": "Passeio pela Universidade do Minho | Campus Azurém - Mar/2021",
+        "channel": "João Paulo Fernandes",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Университет Минью — государственный университет, основанный в 1973 году и начавший занятия в 1975/76 учебном году. Он вошёл в число так называемых «новых университетов», изменивших облик высшего образования Португалии. К 2025 году в нём училось около 21 тысячи студентов. Университетские площадки делятся между Брагой и Гимарайншем; кампус Азурем — главный в Гимарайнше.\n\nКампус расположен у исторического центра города, что нетипично для современных студенческих городков. На Азуреме находятся Школа инженерии, где сосредоточена почти вся её учебная программа, Школа архитектуры, искусства и дизайна (EAAD), а также часть курсов Школы наук и Института социальных наук. Школа инженерии празднует свой день 7 октября в актовом зале кампуса Азурем.\n\nЗастройка кампуса складывалась десятилетиями. Начальную организующую ось заложил архитектор Бартоломеу Коста Кабрал в 1980-х годах. Корпус 09, в котором разместилась Школа архитектуры, искусства и дизайна, спроектировали архитекторы Фернанду Тавора и Жозе Бернарду Тавора; его открыли в 2004 году. Здание продолжает начальную ось кампуса и обращено к новым корпусам Школы наук, построенным бюро Atelier 15. Учебные корпуса — это в основном длинные светлые плиты среди зелени, разделённые пешеходными дорожками и садами.\n\nУниверситетская библиотека в Гимарайнше (BPG) также находится в Азуреме. Её фонд охватывает все области инженерии, историю народонаселения, географию и планирование и организован по Универсальной десятичной классификации. В последние годы в кампусе появилась и новая библиотека. Помимо учебных корпусов, здесь работают исследовательские центры, общежития и спортивные площадки; сам кампус занимает около 18 гектаров.\n\nКампус Азурем — не туристическая достопримечательность, а живая часть города. Но его открытая планировка, современные корпуса и вид на замок Гимарайнш делают его примечательной точкой на карте города, особенно для тех, кто интересуется современной португальской архитектурой школы Таворы.",
+    "facts_ru": [
+      "Университет Минью основан в 1973 году, занятия начались в 1975/76 году; к 2025 году в нём около 21 000 студентов.",
+      "Кампус Азурем расположен в Гимарайнше рядом с историческим центром города.",
+      "Здесь находятся Школа инженерии, Школа архитектуры, искусства и дизайна (EAAD) и часть Школы наук.",
+      "Корпус EAAD (09) по проекту Фернанду Таворы и Жозе Бернарду Таворы открыт в 2004 году.",
+      "Планировочную ось кампуса заложил архитектор Бартоломеу Коста Кабрал в 1980-х годах.",
+      "Библиотека BPG в Азуреме специализируется на инженерии, архитектуре, географии и планировании."
+    ],
+    "sources": [
+      {
+        "title": "Universidade do Minho — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Universidade_do_Minho"
+      },
+      {
+        "title": "Os campi — Universidade do Minho",
+        "url": "https://www.uminho.pt/PT/viver/os-campi/Paginas/Descricao.aspx"
+      },
+      {
+        "title": "Campus de Azurém — Escola de Arquitetura, Arte e Design, UMinho",
+        "url": "https://www.eaad.uminho.pt/pt/Escola/instalacoes/Paginas/Campus-de-Azurem.aspx"
+      },
+      {
+        "title": "Biblioteca da Universidade do Minho em Guimarães (BPG)",
+        "url": "https://www.usdb.uminho.pt/pt/Bibliotecas/BPG"
+      }
+    ],
+    "tip_ru": "Кампус открыт для прогулок; главный вход — с юго-запада, с Alameda da Universidade. В учебные корпуса можно попасть в часы занятий, библиотека открыта для читателей. От исторического центра идти пешком около 20 минут или проехать пару остановок на городском автобусе. Заодно посмотрите на замок Гимарайнш с территории кампуса — оттуда открывается необычный ракурс.",
     "osm": {
       "type": "way",
       "id": 182091438,
       "height_m": 16,
       "height_source": "osm building:levels×3.2"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "briteiros",
     "name_pt": "Citânia de Briteiros",
-    "name_ru": "Citânia de Briteiros",
+    "name_ru": "Ситания-де-Бритейруш",
     "category": "archaeology",
     "lat": 41.52813,
     "lon": -8.31639,
-    "year": "",
-    "short_ru": "Iron-Age hill fort, inside wide bbox (north)",
-    "long_ru": "",
+    "year": "II–I века до н. э.",
+    "short_ru": "Кельтское городище железного века на горе Сан-Роман, заново открытое Мартиншем Сарменту в 1874–1875 годах",
+    "long_ru": "Ситания-де-Бритейруш — крупное укреплённое поселение кельтской культуры кастров на горе Сан-Роман, в 15 километрах к северу от Гимарайнша. Городище занимает около 24 гектаров, для осмотра открыто примерно семь. Расцвет пришёлся на II–I века до н. э., после римского завоевания жизнь здесь угасла к II веку н. э. Первые раскопки в 1875 году начал Франсишку Мартинш Сарменту: он открыл акрополь и реконструировал два дома. Сохранились четыре линии стен, около сотни жилых комплексов, два бани с резной плитой Педра Формоза и зал совета. В 1910 году городище объявлено национальным памятником.",
     "model": "citania",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/briteiros.jpg",
+    "image_credit": {
+      "author": "Joseolgon",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Castro_de_Cit%C3%A2nia_de_Briteiros_au_Portugal.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/briteiros-1.jpg",
+        "kind": "exterior",
+        "caption_ru": "Круглые основания домов и мощёные дорожки городища",
+        "credit": {
+          "author": "jlrsousa",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Cit%C3%A2nia_de_Briteiros_-_conjunto_de_casas.jpg"
+        }
+      },
+      {
+        "src": "assets/img/briteiros-2.jpg",
+        "kind": "exterior",
+        "caption_ru": "Панорама холма с террасами стен, вид с юга",
+        "credit": {
+          "author": "Lansbricae",
+          "license": "CC BY-SA 3.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Castro_de_Briteiros.jpg"
+        }
+      },
+      {
+        "src": "assets/img/briteiros-3.jpg",
+        "kind": "detail",
+        "caption_ru": "Резная плита Педра Формоза с геометрическим орнаментом",
+        "credit": {
+          "author": "Turismo En Portugal",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Pedra_Formosa_Briteiros_(8806608036).jpg"
+        }
+      },
+      {
+        "src": "assets/img/briteiros-4.jpg",
+        "kind": "detail",
+        "caption_ru": "Северные бани с Педра Формоза и подводящим каналом",
+        "credit": {
+          "author": "Vitor Oliveira from Torres Vedras, PORTUGAL",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Balne%C3%A1rios_da_Cit%C3%A2nia_de_Briteiros_-_Portugal_(9472001156).jpg"
+        }
+      },
+      {
+        "src": "assets/img/briteiros-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Реконструированные круглые дома с соломенными крышами",
+        "credit": {
+          "author": "Joseolgon",
+          "license": "CC BY-SA 4.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Cit%C3%A2nia_de_Briteiros_(15).jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "KF_aUyEoS7w",
+        "title": "🌀 Citânia de Briteiros. Local expressivo da arqueologia em Portugal",
+        "channel": "Trilho Ensolarado",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "2FQx330RO_8",
+        "title": "Citânia de Briteiros - Destino Norte",
+        "channel": "Porto CanalAve",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Ситания-де-Бритейруш — укреплённое поселение, или кастро, культуры кастров, на вершине горы Сан-Роман (336 м) над рекой Аве. Холм был обитаем ещё в неолите и халколите, а в начале I тысячелетия до н. э. здесь оставили наскальные изображения эпохи атлантического бронзового века. Само кастро возникло позже: большинство видимых сегодня руин датируется второй эпохой железа, особенно последними двумя столетиями до н. э. Жителей считают кельтами.\n\nОколо I века н. э. поселение заняли римские колонисты. Об этом говорят находки монет — чаще всего Августа и Тиберия, реже республиканских, флавиевских и антониновских, — а также амфор и красной керамики. Романизация заметна в планировке улиц и построек восточного склона, но в целом римское влияние здесь слабое. С I века н. э. число находок падает: к II веку в стенах оставалось совсем мало жителей. В высоком Средневековье холм ненадолго вновь заселили и построили на акрополе часовню с кладбищем.\n\nХотя руины были известны как минимум с XVI века, научные раскопки начались лишь в 1870-х годах. В 1875 году португальский археолог Франсишку Мартинш Сарменту начал ежегодные кампании, разрабатывая методы археологических исследований и сохранения в Португалии. Он раскопал большую часть акрополя — самой высокой части поселения — и реконструировал два жилища. Находки заставили его купить землю, на которой стояло городище; её и свои материалы он завещал Обществу Мартинша Сарменту. С 1930-х по 1960-е годы новые раскопки вёл Мариу Кардозу: были открыты большая часть восточного склона и дополнительные участки акрополя. Дальнейшие исследования проходили в 1970-х, а также в 2002, 2005 и 2006 годах. В 2004 году стартовал проект Университета Минью совместно с Обществом Мартинша Сарменту, призванный объединить прежние исследования и улучшить сохранность памятника.\n\nВ 1910 году Ситания была классифицирована и взята под охрану как национальный памятник Португалии. Это одно из важнейших протоисторических поселений Пиренейского полуострова — благодаря размерам, мощи стен, архитектуре зданий и городской организации. Вместе с Ситанией-де-Санфинш, в Па́суш-де-Феррейра, это один из лучших памятников для изучения культуры кастров на северо-западе страны.\n\nВидимые руины образуют план огромных размеров с четырьмя линиями стен и приблизительно овальной формой. Главная площадка акрополя занимает 250 на 150 метров. Стены толщиной от одного до трёх метров и высотой менее двух сложены из сухого камня; один участок, восстановленный Мартиншем Сарменту, достигает почти четырёх метров. Ворота прорезаны в каждой линии стен, у некоторых сохранились пазы для частокола. Улицы, что необычно для кастров, образуют почти регулярную сетку. Внутри стен найдено около сотни жилых комплексов: каждый окружён каменной оградой и включает одну-три круглые каменные хижины, хозяйственные постройки и мощёный двор, где шла повседневная работа. Помимо домов, здесь были водоводы от родника, фонтаны, два общественных бани и большой зал собраний. Резная плита Педра Формоза площадью почти три квадратных метра — самая известная находка северных бань. Население акрополя оценивают примерно в 625 человек, а всего поселения — до 1500.",
+    "facts_ru": [
+      "Городище занимает около 24 гектаров, из них для посещения открыто примерно 7.",
+      "Расцвет пришёлся на II–I века до н. э.; после римского завоевания жизнь угасла к II веку н. э.",
+      "Франсишку Мартинш Сарменту начал первые раскопки в 1875 году и реконструировал два жилища.",
+      "Педра Формоза — резная плита площадью почти 3 м² из северных бань городища.",
+      "В 1910 году Ситания объявлена национальным памятником Португалии."
+    ],
+    "sources": [
+      {
+        "title": "Citânia de Briteiros — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Cit%C3%A2nia_de_Briteiros"
+      },
+      {
+        "title": "Citânia de Briteiros — Wikipedia (en)",
+        "url": "https://en.wikipedia.org/wiki/Cit%C3%A2nia_de_Briteiros"
+      },
+      {
+        "title": "Citânia de Briteiros — Portal do Arqueólogo, DGPC",
+        "url": "https://arqueologia.patrimoniocultural.pt/index.php?sid=sitios&subsid=47900"
+      }
+    ],
+    "tip_ru": "Ситания открыта для посетителей (обычно с 9:00 до 17:30, часы меняются по сезону), вход по небольшому билету. Добраться можно только на машине или такси: от Гимарайнша около 15 километров на север по EN101 и EN310, через Сан-Салвадор-де-Бритейруш. Возьмите воду и обувь по погоде — дорожки каменистые и открытые солнцу. По пути стоит заглянуть в музей Общества Мартинша Сарменту в Гимарайнше, где хранятся находки с городища.",
     "osm": {
       "type": "way",
       "id": 184819483,
       "height_m": 6,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   },
   {
     "id": "vila-flor",
     "name_pt": "Palácio e Centro Cultural Vila Flor",
-    "name_ru": "Palácio e Centro Cultural Vila Flor",
+    "name_ru": "Дворец и культурный центр Вила-Флор",
     "category": "civic",
     "lat": 41.43732,
     "lon": -8.29505,
-    "year": "",
-    "short_ru": "18th-c. palace, 2005 arts centre",
-    "long_ru": "",
+    "year": "XVIII век; 2005",
+    "short_ru": "Дворец XVIII века и культурный центр 2005 года по проекту Pitágoras Arquitectos с залом на 800 мест",
+    "long_ru": "Дворец Вила-Флор построен в XVIII веке по заказу Тадеу Луиша Антониу Лопеша де Карвалью де Фонсека и Камойнша; завершала стройку семья Жордан. В 1853 году здесь останавливалась королева Мария II, указом от 23 июня возведшая Гимарайнш в статус города, а в 1884 году прошла первая промышленная и торговая выставка. В 1976 году дворец купила мэрия. В 2005 году по конкурсу бюро Pitágoras Arquitectos отреставрировало дворец и сады и построило новый корпус: 17 сентября центр открыли концертом Madredeus. Большой зал вмещает около 800 человек, малый — 200, выставочная площадь — около 1000 м².",
     "model": "palace",
-    "image": null,
-    "image_credit": null,
-    "gallery": [],
-    "videos": [],
+    "image": "assets/img/vila-flor.jpg",
+    "image_credit": {
+      "author": "PauloPinto65",
+      "license": "CC BY-SA 4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Centro_Cultural_Vila_Flor_%C3%A0_noite.jpg"
+    },
+    "gallery": [
+      {
+        "src": "assets/img/vila-flor-1.jpg",
+        "kind": "interior",
+        "caption_ru": "Крытая галерея центра с деревянным потолком и стеклянной стеной",
+        "credit": {
+          "author": "Feliciano Guimarães",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Centro_Cultural_Vila_Flor_03.jpg"
+        }
+      },
+      {
+        "src": "assets/img/vila-flor-2.jpg",
+        "kind": "exterior",
+        "caption_ru": "Фасад дворца с рядом каменных статуй королей",
+        "credit": {
+          "author": "Vitor Oliveira from Torres Vedras, PORTUGAL",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Centro_Cultural_Vila_Flor_-_Guimar%C3%A3es_-_Portugal_(7701054916).jpg"
+        }
+      },
+      {
+        "src": "assets/img/vila-flor-3.jpg",
+        "kind": "detail",
+        "caption_ru": "Резные статуи на консолях фасада дворца",
+        "credit": {
+          "author": "Feliciano Guimarães",
+          "license": "CC BY 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Estatuas_no_Centro_Cultural_de_Vila_Flor.jpg"
+        }
+      },
+      {
+        "src": "assets/img/vila-flor-4.jpg",
+        "kind": "exterior",
+        "caption_ru": "Сад с фигурно подстриженными кустами и дворцом позади",
+        "credit": {
+          "author": "Vitor Oliveira from Torres Vedras, PORTUGAL",
+          "license": "CC BY-SA 2.0",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Centro_Cultural_Vila_Flor_-_Guimar%C3%A3es_-_Portugal_(27922240644).jpg"
+        }
+      },
+      {
+        "src": "assets/img/vila-flor-5.jpg",
+        "kind": "exterior",
+        "caption_ru": "Старый дворец и новый корпус центра 2005 года рядом",
+        "credit": {
+          "author": "User:Spicka",
+          "license": "CC BY-SA 2.5",
+          "source_url": "https://commons.wikimedia.org/wiki/File:C%C3%B3pia_de_Centro_Cultural_Vila_Flor_085.jpg"
+        }
+      }
+    ],
+    "videos": [
+      {
+        "youtube_id": "6FTxlfuFo_M",
+        "title": "O Centro Cultural Vila Flor",
+        "channel": "A Oficina",
+        "lang": "pt"
+      },
+      {
+        "youtube_id": "u8M4leSPOxE",
+        "title": "Centro cultural Vila Flor - Guimarães",
+        "channel": "COMBOIOS & COMPANHIA 🚂",
+        "lang": "pt"
+      }
+    ],
     "panorama": null,
-    "history_ru": "",
-    "facts_ru": [],
-    "sources": [],
-    "tip_ru": "",
+    "history_ru": "Дворец Вила-Флор был построен в XVIII веке по заказу Тадеу Луиша Антониу Лопеша де Карвалью де Фонсека и Камойнша; позже он перешёл к семье Жордан, которая завершила начатую стройку. Здание стало заметной вехой в истории города. В 1853 году во дворце останавливалась королева Мария II: указом от 23 июня того же года она возвела тогдашний посёлок Гимарайнш в статус города. В 1884 году здесь прошла первая промышленная и торговая выставка Гимарайнша.\n\nСамшитовые сады дворца с видом на город, Пасу-душ-Дукеш и замок были местом важных событий: ещё в 1750 году здесь праздновали провозглашение короля Жозе I. В 1976 году дворец приобрёл муниципалитет Гимарайнша, и здание стало служить городу: в нём разместились филиал Университета Минью, музыкальная академия, театральная мастерская и курсы профессиональной подготовки. Часть садов тогда использовали как городской питомник.\n\nЦентр культур Вила-Флор вырос из реставрации дворца и его садов и строительства нового здания для концертного зала. Работы мэрия передала по открытому конкурсу бюро Pitágoras Arquitectos. Новый театральный корпус больших размеров сочетается с дворцом в стиле барокко и его садами. Центр открылся 17 сентября 2005 года концертом группы Madredeus. В нём есть большой зал примерно на 800 мест и малый зал на 200 мест; в новом корпусе также работают ресторан, кафе-концерт и администрация. В отреставрированном дворце площадью около 1000 м² выставочных пространств заседает городская ассамблея.\n\nВосстановленные сады центра культур в 2006 году получили почётный отзыв в категории «Внешние пространства общественного пользования» Национальной премии по ландшафтной архитектуре. В 2012 году Гимарайнш был культурной столицей Европы; напоминанием об этом остаётся красное сердце-скульптура перед дворцом.\n\nСегодня Вила-Флор — главная культурная площадка города: здесь проходят концерты, театральные и танцевальные спектакли, выставки и фестивали. Управляет центром культурный кооператив A Oficina.",
+    "facts_ru": [
+      "Дворец построен в XVIII веке по заказу Тадеу Луиша Антониу Лопеша де Карвалью де Фонсека и Камойнша.",
+      "В 1853 году здесь останавливалась королева Мария II, указом от 23 июня возведшая Гимарайнш в статус города.",
+      "В 1884 году во дворце прошла первая промышленная и торговая выставка Гимарайнша.",
+      "В 1976 году дворец приобрёл муниципалитет; до 2000-х в нём размещался филиал Университета Минью и музыкальная академия.",
+      "Центр культур открыт 17 сентября 2005 года концертом Madredeus; большой зал рассчитан примерно на 800 мест.",
+      "В 2006 году сады центра получили почётный отзыв Национальной премии по ландшафтной архитектуре."
+    ],
+    "sources": [
+      {
+        "title": "Centro Cultural Vila Flor — Wikipédia (pt)",
+        "url": "https://pt.wikipedia.org/wiki/Centro_Cultural_Vila_Flor"
+      },
+      {
+        "title": "Centro Cultural Vila Flor — site oficial",
+        "url": "https://www.ccvf.pt/"
+      },
+      {
+        "title": "A Oficina — Centro Cultural Vila Flor",
+        "url": "https://www.aoficina.pt/"
+      }
+    ],
+    "tip_ru": "Центр стоит на Avenida D. Afonso Henriques, в десяти минутах пешком от исторического центра. Программу спектаклей и концертов смотрите на ccvf.pt; касса работает в дни представлений. Дворцовые залы и сады открыты в часы работы; перед дворцом установлено красное сердце «Guimarães 2012». Отсюда открывается вид на Пасу-душ-Дукеш и замок. Совместите с прогулкой по садам и площадью Турal.",
     "osm": {
       "type": "way",
       "id": 130533853,
       "height_m": 15,
       "height_source": "estimate"
-    },
-    "_provisional": true
+    }
   }
 ]

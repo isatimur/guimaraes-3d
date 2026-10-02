@@ -2,7 +2,7 @@
 //
 //   node scripts/<script>.mjs --city guimaraes     (or --city=guimaraes, or CITY=guimaraes)
 //
-// Default: braga. The config is cities/<id>.json; this module adds the
+// Default: guimaraes (this project's city). The config is cities/<id>.json;
 // derived values every script needs (data directory, tile grid, terrain
 // lattice, projection origin). geo-lib.mjs re-exports them as BBOX, ORIGIN,
 // TILE_GRID, TERRAIN_LATTICE, DATA_DIR, so a script that imports geo-lib
@@ -21,10 +21,10 @@ export function listCities() {
     .filter((id) => ID_RE.test(id));
 }
 
-// --city <id> | --city=<id> | CITY=<id> | braga. Also strips the flag from
-// `args` when an array is given (scripts with their own argv parsing).
+// --city <id> | --city=<id> | CITY=<id>, else guimaraes. Also strips the flag
+// from `args` when an array is given (scripts with their own argv parsing).
 export function cityArg(args = process.argv.slice(2)) {
-  let id = process.env.CITY || 'braga';
+  let id = process.env.CITY || 'guimaraes';
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === '--city' && args[i + 1]) {
