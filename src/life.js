@@ -1111,6 +1111,148 @@ function buildFountains({ project, heightAt, items, mobile }) {
 const NIGHT_WATER = new THREE.Color(0.5, 0.42, 0.3);
 
 // ------------------------------------------------------------ public
+// ------------------------------------------------------------ cable car
+// Teleférico de Guimarães (1995): two cabins on the real track
+// (data/life.json cablecar), counter-balanced — one climbing while the
+// other descends — over the city on the mapped lattice pylons. The cabins
+// hang from the cable a few metres below it.
+const CABLE_TRIP_S = 46;
+const CABLE_DWELL_S = 10;
+const CABLE_HANG_M = 2.6; // hanger arm below the cable
+const CABIN_M = 2.2; // cabin body height
+const CABLE_ARM_M = 1.1; // half the distance between the two cable runs
+
+function cabinGeometry() {
+  const parts = [
+    box(0.16, CABLE_HANG_M, 0.16, 0, -CABLE_HANG_M, 0, 0x2a2d30), // hanger
+    box(1.1, 0.35, 1.1, 0, 0.05, 0, 0x2a2d30), // wheel housing on the cable
+    box(2.5, CABIN_M, 2.7, 0, -(CABLE_HANG_M + CABIN_M), 0, 0xe9dcb4),
+    box(2.54, 0.85, 2.5, 0, -(CABLE_HANG_M + CABIN_M) + 0.7, 0, 0x27404f, 1), // windows
+    box(2.6, 0.12, 2.8, 0, -(CABLE_HANG_M + CABIN_M) - 0.02, 0, 0xb4544e), // roof
+  ];
+  const g = mergeGeometries(parts);
+  g.scale(S, S, S);
+  return g;
+}
+
+function buildCableCar({ project, heightAt }) {
+  const cc = LIFE?.cablecar;
+  if (!cc || !Array.isArray(cc.track) || cc.track.length < 2) return null;
+  const world = cc.track.map((q) => {
+    const p = project(q[0], q[1]);
+    return { x: p.x, z: p.z };
+  });
+  const n = world.length;
+  const cum = [0];
+  for (let i = 1; i < n; i++) cum.push(cum[i - 1] + Math.hypot(world[i].x - world[i - 1].x, world[i].z - world[i - 1].z));
+  const total = cum[n - 1];
+  const y0 = heightAt(world[0].x, world[0].z) + 20 * S;
+  const y1 = heightAt(world[n - 1].x, world[n - 1].z) + 20 * S;
+
+  function at(t) {
+    const s = t * total;
+    let i = 1;
+    while (i < n - 1 && cum[i] < s) i++;
+    const u = Math.min(1, Math.max(0, (s - cum[i - 1]) / Math.max(1e-6, cum[i] - cum[i - 1])));
+    const x = world[i - 1].x + (world[i].x - world[i - 1].x) * u;
+    const z = world[i - 1].z + (world[i].z - world[i - 1].z) * u;
+    const y = Math.max(y0 + (y1 - y0) * t, heightAt(x, z) + 5 * S);
+    return { x, z, y, dx: world[i].x - world[i - 1].x, dz: world[i].z - world[i - 1].z };
+  }
+
+  const group = new THREE.Group();
+  group.name = 'cablecar';
+
+  // pylons: a mast under the cable at each mapped pylon, with a cross arm
+  const pylonParts = [];
+  for (const q of cc.pylons || []) {
+    const p = project(q[0], q[1]);
+    // nearest track fraction for this pylon
+    let best = 0;
+    let bd = Infinity;
+    for (let i = 0; i < n; i++) {
+      const d = (world[i].x - p.x) ** 2 + (world[i].z - p.z) ** 2;
+      if (d < bd) { bd = d; best = i; }
+    }
+    const top = at(cum[best] / total).y;
+    const g = heightAt(p.x, p.z);
+    const h = Math.max(4 * S, top - g);
+    pylonParts.push(box(0.9 * 4 * S, h, 0.9 * 4 * S, p.x, g, p.z, 0x8a9099));
+    pylonParts.push(box(3.2 * 4 * S, 0.3 * 4 * S, 0.5 * 4 * S, p.x, top - 0.15 * 4 * S, p.z, 0x8a9099));
+  }
+  if (pylonParts.length) {
+    const pg = mergeGeometries(pylonParts);
+    const m = new THREE.Mesh(pg, lifeMaterial({ roughness: 0.75, metalness: 0.3 }));
+    m.castShadow = true;
+    group.add(m);
+  }
+
+  // the two cable runs, offset either side of the centreline
+  const cableMat = new THREE.MeshStandardMaterial({ color: 0x33373b, roughness: 0.6, metalness: 0.4 });
+  for (const side of [-1, 1]) {
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const t = cum[i] / total;
+      const a = at(t);
+      const len = Math.hypot(a.dx, a.dz) || 1;
+      const px = -a.dz / len;
+      const pz = a.dx / len;
+      pts.push(new THREE.Vector3(a.x + px * side * CABLE_ARM_M * S, a.y, a.z + pz * side * CABLE_ARM_M * S));
+    }
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const tube = new THREE.TubeGeometry(curve, Math.max(8, n * 3), 0.06 * S, 5, false);
+    group.add(new THREE.Mesh(tube, cableMat));
+  }
+
+  // two counter-balanced cabins
+  const cabinGeo = cabinGeometry();
+  const cabinMat = lifeMaterial({ roughness: 0.55, metalness: 0.1 });
+  const cabins = [new THREE.Mesh(cabinGeo, cabinMat), new THREE.Mesh(cabinGeo, cabinMat)];
+  for (const c of cabins) {
+    c.castShadow = true;
+    c.frustumCulled = false;
+    group.add(c);
+  }
+
+  const mid = at(0.5);
+  const centre = { x: mid.x, z: mid.z };
+  const A = 0.16;
+  const profile = (x) => (x < A ? (0.5 * x * x) / (A * (1 - A)) : x < 1 - A ? (x - A / 2) / (1 - A) : 1 - (0.5 * (1 - x) * (1 - x)) / (A * (1 - A)));
+  const P = 2 * (CABLE_TRIP_S + CABLE_DWELL_S);
+  function phaseU(t) {
+    const p = ((t % P) + P) % P;
+    if (p < CABLE_DWELL_S) return 0;
+    if (p < CABLE_DWELL_S + CABLE_TRIP_S) return profile((p - CABLE_DWELL_S) / CABLE_TRIP_S);
+    if (p < 2 * CABLE_DWELL_S + CABLE_TRIP_S) return 1;
+    return 1 - profile((p - 2 * CABLE_DWELL_S - CABLE_TRIP_S) / CABLE_TRIP_S);
+  }
+  function placeCabin(mesh, t, side) {
+    const a = at(t);
+    const len = Math.hypot(a.dx, a.dz) || 1;
+    const px = -a.dz / len;
+    const pz = a.dx / len;
+    mesh.position.set(a.x + px * side * CABLE_ARM_M * S, a.y, a.z + pz * side * CABLE_ARM_M * S);
+    mesh.rotation.y = Math.atan2(a.dx, a.dz);
+  }
+  let time = CABLE_TRIP_S * 0.3;
+  const _v = new THREE.Vector3();
+  function update(dt, camera) {
+    time += dt;
+    const hidden = camera.position.distanceToSquared(_v.set(centre.x, 0, centre.z)) > 3200 * 3200;
+    group.visible = !hidden;
+    if (hidden) return;
+    const u = phaseU(time);
+    placeCabin(cabins[0], u, -1);
+    placeCabin(cabins[1], 1 - u, 1);
+  }
+  update(0, { position: new THREE.Vector3(0, 0, 0) });
+  return {
+    object: group,
+    update,
+    stats: { pylons: (cc.pylons || []).length, length_m: Math.round(total / S) },
+  };
+}
+
 export function createLife(ctx) {
   const { renderer, scene, camera, atmosphere, project, heightAt, roads, items, nature, fx, reducedMotion = false, mobile = false, lite = false, debug = {}, setHash = () => {} } = ctx;
   // light mode (main.js): 150 cars at the peak, 10 birds
@@ -1138,6 +1280,7 @@ export function createLife(ctx) {
   );
 
   const funicular = safe('funicular', () => buildFunicular({ project, heightAt, items }));
+  const cablecar = safe('cablecar', () => buildCableCar({ project, heightAt }));
   const traffic = safe('traffic', () => buildTraffic({ roads, project, heightAt, mobile, model, N: carMax }));
   const birds = safe('birds', () => buildBirds({ items, heightAt, project, nature, mobile, lite }));
   const fountains = safe('fountains', () => buildFountains({ project, heightAt, items, mobile }));
@@ -1146,7 +1289,7 @@ export function createLife(ctx) {
   const street = safe('streetscape', () =>
     createStreetscape({ camera, roads, project, heightAt, items, outlines: ctx.outlines, footprints: ctx.footprints, lite, mobile, debug, model, fx, surfaceHeights }),
   );
-  for (const p of [funicular, traffic, birds, fountains, street]) if (p) group.add(p.object);
+  for (const p of [funicular, cablecar, traffic, birds, fountains, street]) if (p) group.add(p.object);
 
   const ctxLive = { scene, camera, renderer, project, heightAt, datumM, mobile, reducedMotion, live, model, atmosphere, group };
   // aircraft and buses: a separate chunk, loaded after the first frame
@@ -1168,6 +1311,7 @@ export function createLife(ctx) {
   const stats = {
     buildMs,
     funicular: funicular?.stats ?? null,
+    cablecar: cablecar?.stats ?? null,
     traffic: traffic?.stats ?? null,
     birds: birds?.stats ?? null,
     fountains: fountains?.stats ?? null,
@@ -1214,6 +1358,7 @@ export function createLife(ctx) {
     view.rain = weather.rainK;
     model?.update();
     funicular?.update(adt, camera);
+    cablecar?.update(adt, camera);
     traffic?.update(adt, camera, frustum, view);
     birds?.update(adt, camera, view);
     fountains?.update(camera, view);
