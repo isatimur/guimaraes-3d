@@ -140,6 +140,22 @@
     -8.285408
    ]
   ],
+  "station_info": [
+   {
+    "id": "penha",
+    "name": "Estação da Penha",
+    "role": "upper",
+    "lat": 41.431961,
+    "lon": -8.270922
+   },
+   {
+    "id": "hortas",
+    "name": "Estação das Hortas",
+    "role": "lower",
+    "lat": 41.441508,
+    "lon": -8.285408
+   }
+  ],
   "clearance_m": 20
  },
  "fountains": [

@@ -26,7 +26,7 @@ import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeome
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { S } from './geo.js';
 import { buildNetwork, surfaceOf } from './road-network.js';
-import { bridgeGeometry, portalGeometry, quad as embankmentQuad } from './road-structures.js';
+import { bridgeGeometry, portalGeometry, busStopGeometry, quad as embankmentQuad } from './road-structures.js';
 import { language } from './i18n.js';
 import { calcadaMaterial, calcadaPatternOf, CALCADA } from './streetscape.js';
 
@@ -177,6 +177,66 @@ function dashes(T, net, w, off, halfM, dashM, gapM, lift, col) {
       // left (+off) edge first, then the right one, then forward: faces up
       T.idx.push(v, v + 1, v + 2, v, v + 2, v + 3);
     }
+  }
+}
+
+const UP = (p) => (p[1][1] - p[0][1]) * (p[2][0] - p[0][0]) - (p[1][0] - p[0][0]) * (p[2][1] - p[0][1]);
+// a horizontal quad p0..p3 (each [x, z]) with a height per corner, facing up
+function paintQuad(T, p, y, col) {
+  const v = T.pos.length / 3;
+  for (let k = 0; k < 4; k++) {
+    T.pos.push(p[k][0], y[k], p[k][1]);
+    T.nor.push(0, 1, 0);
+    T.col.push(col[0], col[1], col[2]);
+  }
+  if (UP(p) >= 0) T.idx.push(v, v + 1, v + 2, v, v + 2, v + 3);
+  else T.idx.push(v, v + 2, v + 1, v, v + 3, v + 2);
+}
+// a horizontal triangle p0..p2, facing up
+function paintTri(T, p, y, col) {
+  const v = T.pos.length / 3;
+  for (let k = 0; k < 3; k++) {
+    T.pos.push(p[k][0], y[k], p[k][1]);
+    T.nor.push(0, 1, 0);
+    T.col.push(col[0], col[1], col[2]);
+  }
+  if (UP(p) >= 0) T.idx.push(v, v + 1, v + 2);
+  else T.idx.push(v, v + 2, v + 1);
+}
+// dashes around a closed loop of { x, z, rx, rz, y } (rx, rz: the unit radial
+// at the point, the dash width runs along it), dash/gap in metres
+function ringDashes(T, loop, halfW, dashM, gapM, lift, col) {
+  const dash = dashM * S;
+  const period = (dashM + gapM) * S;
+  const n = loop.length;
+  let s = 0;
+  for (let i = 0; i < n; i++) {
+    const a = loop[i];
+    const b = loop[(i + 1) % n];
+    const L = Math.hypot(b.x - a.x, b.z - a.z);
+    if (L < 1e-5) continue;
+    const ux = (b.x - a.x) / L;
+    const uz = (b.z - a.z) / L;
+    let rx = (a.rx + b.rx) / 2;
+    let rz = (a.rz + b.rz) / 2;
+    const rl = Math.hypot(rx, rz) || 1;
+    rx = (rx / rl) * halfW;
+    rz = (rz / rl) * halfW;
+    for (let k = Math.floor(s / period); k * period < s + L; k++) {
+      const d0 = Math.max(s, k * period + 1 * S);
+      const d1 = Math.min(s + L, k * period + 1 * S + dash);
+      if (d1 <= d0) continue;
+      const t0 = (d0 - s) / L;
+      const t1 = (d1 - s) / L;
+      const x0 = a.x + ux * (d0 - s);
+      const z0 = a.z + uz * (d0 - s);
+      const x1 = a.x + ux * (d1 - s);
+      const z1 = a.z + uz * (d1 - s);
+      const y0 = a.y + (b.y - a.y) * t0 + lift;
+      const y1 = a.y + (b.y - a.y) * t1 + lift;
+      paintQuad(T, [[x0 + rx, z0 + rz], [x0 - rx, z0 - rz], [x1 - rx, z1 - rz], [x1 + rx, z1 + rz]], [y0, y0, y1, y1], col);
+    }
+    s += L;
   }
 }
 
@@ -487,20 +547,152 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
     const lw = w.laneW;
     const fast = w.hw === 'motorway' || w.hw === 'trunk';
     const half = (w.widthM / 2) * S;
+    // the busiest axes carry a double centre line instead of the dashed one
+    const busy = w.ow === 0 && (w.hw === 'primary' || w.hw === 'trunk') && w.total >= 2;
+    const edgeLine = fast || /_link$/.test(w.hw) || w.hw === 'primary' || w.hw === 'secondary' || w.hw === 'tertiary';
     if (w.ow === 0) {
-      // the centre line: dashed, solid on the fast roads; lane lines too
-      if (w.total >= 2) dashes(MT, net, w, 0, 0.07, fast ? 0 : 3, fast ? 0 : 5, MARK_LIFT, mk);
+      if (busy) {
+        dashes(MT, net, w, 0.3 * S, 0.055, 0, 0, MARK_LIFT, mk);
+        dashes(MT, net, w, -0.3 * S, 0.055, 0, 0, MARK_LIFT, mk);
+      } else if (w.total >= 2) {
+        dashes(MT, net, w, 0, 0.07, 3, 5, MARK_LIFT, mk);
+      }
       for (let k = 1; k < w.fwd; k++) dashes(MT, net, w, -k * lw, 0.06, 3, 7, MARK_LIFT, mk);
       for (let k = 1; k < w.back; k++) dashes(MT, net, w, k * lw, 0.06, 3, 7, MARK_LIFT, mk);
     } else {
       // one carriageway: lane lines between its lanes
       for (let k = 1; k < w.total; k++) dashes(MT, net, w, (k - w.total / 2) * lw, 0.07, 4, 10, MARK_LIFT, mk);
     }
-    if (fast || /_link$/.test(w.hw)) {
+    if (edgeLine) {
       // edge lines
       const e = Math.min(half - 0.3 * S, (w.total / 2) * lw + 0.2 * S);
       dashes(MT, net, w, e, 0.08, 0, 0, MARK_LIFT, mk);
       dashes(MT, net, w, -e, 0.08, 0, 0, MARK_LIFT, mk);
+    }
+  }
+  // ---- zebra crossings and junction mouth markings. At every painted
+  // junction of the centre (and where a painted road meets a pedestrian
+  // street, the squares) an arm gets a crossing just off the node; a minor
+  // arm entering a much bigger road gets a stop line or give-way triangles.
+  const RANK = { motorway: 5, trunk: 4, primary: 3, secondary: 2, tertiary: 1, unclassified: 1, motorway_link: 3, trunk_link: 3, primary_link: 3, secondary_link: 2, tertiary_link: 2 };
+  const paintArm = (w) => w.car && PAINTED.has(w.hw) && !SETT.has(w.t.sf) && !w.t.jn;
+  const CROSS_OFF = 4.5;
+  const CROSS_D = 2.6;
+  const CROSS_R = 350;
+  const STRIPE = 0.5;
+  const STRIPE_GAP = 0.55;
+  const CROSS_LIFT = MARK_LIFT + 0.003;
+  let crossings = 0;
+  let mouths = 0;
+  for (let n = 0; n < net.nNodes; n++) {
+    const nw = net.nodeWays[n];
+    if (nw.length < 6) continue;
+    const p0 = nw[1];
+    if (HID[p0]) continue;
+    const jx = X[p0];
+    const jz = Z[p0];
+    if (jx * jx + jz * jz > CROSS_R * CROSS_R) continue;
+    const arms = [];
+    const seen = new Set();
+    let maxRank = -1;
+    let ped = false;
+    for (let k = 0; k < nw.length; k += 2) {
+      const wi = nw[k];
+      if (seen.has(wi)) continue;
+      seen.add(wi);
+      const w = net.ways[wi];
+      if (w.hw === 'pedestrian' || w.hw === 'living_street') ped = true;
+      if (!paintArm(w)) continue;
+      const rank = RANK[w.hw] ?? 0;
+      if (rank > maxRank) maxRank = rank;
+      arms.push({ w, pi: nw[k + 1], rank });
+    }
+    if (!arms.length || (arms.length < 3 && !ped)) continue;
+    // crossings on the main axes and by the squares, not on every lane
+    if (!ped && maxRank < 3) continue;
+    for (const { w, pi, rank } of arms) {
+      const s = w.start;
+      const e = w.start + w.n - 1;
+      const dirs = pi <= s ? [pi + 1] : pi >= e ? [pi - 1] : [pi - 1, pi + 1];
+      for (const j of dirs) {
+        if (j < s || j > e) continue;
+        let dx = X[j] - X[pi];
+        let dz = Z[j] - Z[pi];
+        const L = Math.hypot(dx, dz);
+        if (L < 1e-5) continue;
+        dx /= L;
+        dz /= L;
+        const off = Math.min(CROSS_OFF * S, L * 1.5);
+        const half = (w.widthM / 2) * S;
+        if (half < 0.6 * S) continue;
+        const u = off / L;
+        const yc = Y[pi] + (Y[j] - Y[pi]) * u;
+        const sl = net.SL[pi];
+        const yAt = (lat) => yc + sl * lat + CROSS_LIFT;
+        const lx = dz;
+        const lz = -dx;
+        const ax = X[pi] + dx * off;
+        const az = Z[pi] + dz * off;
+        const D = CROSS_D * S;
+        const swq = STRIPE * S;
+        const gapq = STRIPE_GAP * S;
+        if (ped || rank >= 3) {
+          for (let lat = -half + swq / 2; lat <= half - swq / 2 + 1e-6; lat += swq + gapq) {
+            const yy = yAt(lat);
+            paintQuad(
+              MT,
+              [
+                [ax + dx * (D / 2) + lx * (lat - swq / 2), az + dz * (D / 2) + lz * (lat - swq / 2)],
+                [ax - dx * (D / 2) + lx * (lat - swq / 2), az - dz * (D / 2) + lz * (lat - swq / 2)],
+                [ax - dx * (D / 2) + lx * (lat + swq / 2), az - dz * (D / 2) + lz * (lat + swq / 2)],
+                [ax + dx * (D / 2) + lx * (lat + swq / 2), az + dz * (D / 2) + lz * (lat + swq / 2)],
+              ],
+              [yy, yy, yy, yy],
+              mk,
+            );
+          }
+          crossings++;
+        }
+        // the mouth marking on the approaching half (right of travel in)
+        const diff = maxRank - rank;
+        const so = off - D / 2 - 0.3 * S;
+        const sx = X[pi] + dx * so;
+        const sz = Z[pi] + dz * so;
+        if (diff >= 2) {
+          const lwq = 0.16 * S;
+          const ym = yAt(half / 2) + 0.002;
+          paintQuad(
+            MT,
+            [
+              [sx + dx * (lwq / 2) + lx * 0, sz + dz * (lwq / 2) + lz * 0],
+              [sx + dx * (lwq / 2) + lx * half, sz + dz * (lwq / 2) + lz * half],
+              [sx - dx * (lwq / 2) + lx * half, sz - dz * (lwq / 2) + lz * half],
+              [sx - dx * (lwq / 2) + lx * 0, sz - dz * (lwq / 2) + lz * 0],
+            ],
+            [ym, ym, ym, ym],
+            mk,
+          );
+          mouths++;
+        } else if (diff === 1) {
+          // give-way triangles, apex toward the junction
+          const t = 0.45 * S;
+          const hgt = 0.7 * S;
+          for (let lat = t / 2; lat <= half - t / 2 + 1e-6; lat += t * 1.7) {
+            const ym = yAt(lat) + 0.002;
+            paintTri(
+              MT,
+              [
+                [sx + lx * (lat - t / 2), sz + lz * (lat - t / 2)],
+                [sx + lx * (lat + t / 2), sz + lz * (lat + t / 2)],
+                [sx - dx * hgt + lx * lat, sz - dz * hgt + lz * lat],
+              ],
+              [ym, ym, ym],
+              mk,
+            );
+            mouths++;
+          }
+        }
+      }
     }
   }
   // sidewalks in the city: calçada both sides of the streets (plain white
@@ -521,45 +713,78 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
       strip(SW, net, w.start, w.start + w.n - 1, sgn * (half + 0.08 * S), 0.12 * S, RIBBON_LIFT + 0.03, kerb, 0);
     }
   }
-  // roundabout islands: rings of roundabout ways (closed, or chained end to end)
+  // roundabouts: an aproned island (a paved apron ring around the green
+  // centre) and a dashed ring marking along the inner edge of the carriageway
   const IT = newT();
   const isl = lin(ISLAND);
+  const apron = lin(0x9a958b);
+  const APRON_M = 2.2;
   const rings = roundaboutRings(net);
   for (const ring of rings) {
     const pts = ring.pts;
     let cx = 0;
     let cz = 0;
-    let cy = 0;
     for (const i of pts) {
       cx += X[i];
       cz += Z[i];
-      cy += Y[i];
     }
     cx /= pts.length;
     cz /= pts.length;
-    cy /= pts.length;
-    const inset = (ring.halfM + 0.8) * S;
-    const v0 = IT.pos.length / 3;
-    IT.pos.push(cx, heightAt(cx, cz) + RIBBON_LIFT + 0.05, cz);
-    IT.nor.push(0, 1, 0);
-    IT.col.push(isl[0], isl[1], isl[2]);
-    let n = 0;
+    const cy = heightAt(cx, cz) + RIBBON_LIFT + 0.05;
+    const halfW = ring.halfM * S;
+    const innerR = (ring.halfM + APRON_M) * S;
+    const edge = [];
+    const islPts = [];
+    const loop = [];
     for (const i of pts) {
-      const dx = X[i] - cx;
-      const dz = Z[i] - cz;
-      const r = Math.hypot(dx, dz);
-      const k = r > inset ? (r - inset) / r : 0;
-      IT.pos.push(cx + dx * k, Y[i] + RIBBON_LIFT + 0.05, cz + dz * k);
-      IT.nor.push(0, 1, 0);
-      IT.col.push(isl[0], isl[1], isl[2]);
-      n++;
+      let dx = X[i] - cx;
+      let dz = Z[i] - cz;
+      const r = Math.hypot(dx, dz) || 1;
+      dx /= r;
+      dz /= r;
+      const y = Y[i] + RIBBON_LIFT + 0.05;
+      edge.push([cx + dx * Math.max(0.05, r - halfW), Y[i] + RIBBON_LIFT + 0.02, cz + dz * Math.max(0.05, r - halfW)]);
+      islPts.push([cx + dx * Math.max(0.03, r - innerR), y, cz + dz * Math.max(0.03, r - innerR)]);
+      loop.push({ x: cx + dx * Math.max(0.05, r - halfW), z: cz + dz * Math.max(0.05, r - halfW), rx: dx, rz: dz, y: Y[i] });
     }
+    const n = edge.length;
     for (let k = 0; k < n; k++) {
-      const a = v0 + 1 + k;
-      const b = v0 + 1 + ((k + 1) % n);
-      // anticlockwise rings (x east, z south): (c, b, a) faces up
-      IT.idx.push(v0, b, a, v0, a, b);
+      const a = edge[k];
+      const b = edge[(k + 1) % n];
+      const d = islPts[k];
+      const e = islPts[(k + 1) % n];
+      paintQuad(IT, [[a[0], a[2]], [b[0], b[2]], [e[0], e[2]], [d[0], d[2]]], [a[1], b[1], e[1], d[1]], apron);
+      paintTri(IT, [[cx, cz], [d[0], d[2]], [e[0], e[2]]], [cy, d[1], e[1]], isl);
     }
+    ringDashes(MT, loop, 0.07 * S, 1.2, 1.2, MARK_LIFT + 0.003, mk);
+  }
+  // ---- bus stops on the main axes: a shelter and a sign on the sidewalk,
+  // a handful, on the biggest primary/secondary ways of the centre
+  const BT = newT();
+  const BUS_R = 250;
+  const busWays = [];
+  for (const w of net.ways) {
+    if (w.hw !== 'primary' && w.hw !== 'secondary') continue;
+    if (w.tunnel || w.bridge || w.len < 60 * S) continue;
+    const m = w.start + (w.n >> 1);
+    if (X[m] * X[m] + Z[m] * Z[m] > BUS_R * BUS_R) continue;
+    busWays.push(w);
+  }
+  busWays.sort((a, b) => (b.cls.spawn || 0) - (a.cls.spawn || 0) || b.len - a.len);
+  let busStops = 0;
+  for (const w of busWays) {
+    if (busStops >= 8) break;
+    const i = Math.max(w.start, Math.min(w.start + w.n - 2, w.start + Math.floor(w.n * 0.45)));
+    if (HID[i]) continue;
+    const j = i + 1;
+    const dx = X[j] - X[i];
+    const dz = Z[j] - Z[i];
+    const L = Math.hypot(dx, dz) || 1;
+    const half = (w.widthM / 2) * S;
+    const sw = sidewalkM(w.hw) * S;
+    const lat = -(half + sw * 0.5);
+    busStopGeometry(BT, { x: X[i], z: Z[i], y: net.surfaceY(i, lat), dx: dx / L, dz: dz / L, side: -1, half, sw });
+    busStops++;
   }
   const detailMeshes = [];
   const addDetail = (T, name, units, color) => {
@@ -579,6 +804,9 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
   const swTris = addDetail(SW, 'sidewalks', -1.5, false);
   const mTris = addDetail(MT, 'lane-markings', -12, true);
   const iTris = addDetail(IT, 'roundabout-islands', -10, false);
+  const bTris = addDetail(BT, 'bus-stops', -13, true);
+  const busMesh = detail.getObjectByName('bus-stops');
+  if (busMesh) busMesh.castShadow = true;
 
   for (const [kind, st] of Object.entries(STYLE)) {
     const arr = buckets[kind];
@@ -647,7 +875,10 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
   }
   counts.ribbonTriangles = ribbonTris;
   counts.structureTriangles = structTris;
-  counts.detailTriangles = swTris + mTris + iTris;
+  counts.detailTriangles = swTris + mTris + iTris + bTris;
+  counts.crossings = crossings;
+  counts.mouthMarkings = mouths;
+  counts.busStops = busStops;
   counts.bridges = net.bridges.length;
   counts.archBridges = archBridges;
   counts.tunnels = net.tunnels.length;

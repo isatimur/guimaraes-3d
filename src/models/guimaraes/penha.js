@@ -140,6 +140,27 @@ function penha(k, { footprint, dims }) {
   k.prism([[-1.3, zdrop + 1.9], [1.3, zdrop + 1.9], [1.3, zdrop + 3.2], [-1.3, zdrop + 3.2]], -1.0, 0.45, D);
   k.prism([[-1.1, zdrop + 2.0], [1.1, zdrop + 2.0], [1.1, zdrop + 3.1], [-1.1, zdrop + 3.1]], -0.5, 0.18, 'water');
   for (const sx of [-1, 1]) k.box(0.5, 1.0, 0.5, L, sx * (stepW / 2 + 0.5), -1.0, zdrop + 2.4);
+
+  // --- the summit esplanade: the level granite terrace the sanctuary
+  // stands on, ringed by a low viewpoint parapet facing the city
+  const az0 = b.z0 - 0.2;
+  const az1 = 17.2;
+  const ax = b.x1 + 0.6;
+  k.prism([[-ax, az0], [ax, az0], [ax, az1], [-ax, az1]], y0 - 0.35, 0.35, L);
+  for (const sx of [-1, 1]) {
+    const px = sx * (b.x1 + 0.35);
+    k.box(0.5, 0.9, az1 - az0, L, px, y0 - 0.05, (az0 + az1) / 2);
+    k.box(0.72, 0.12, az1 - az0 + 0.24, G, px, y0 + 0.82, (az0 + az1) / 2);
+  }
+  k.box(b.x1 - b.x0 + 1.0, 0.9, 0.5, L, 0, y0 - 0.05, az0);
+  k.box(b.x1 - b.x0 + 1.2, 0.12, 0.72, G, 0, y0 + 0.82, az0);
+
+  // --- granite boulders cropping out of the terrace (the real Penha
+  // summit is a field of them); kept inside the terrace so the site box
+  // stays on the OSM outline
+  for (const [bx, bz, r] of [[-9.0, 12.0, 0.9], [8.8, 13.4, 1.1], [-8.5, -14.4, 1.2], [8.4, -13.6, 1.0], [-4.2, -15.6, 0.8], [5.0, -15.9, 0.95]]) {
+    k.ico(r, 0, G, bx, y0 - 0.2, bz, { sx: 1.25, sy: 0.7, sz: 1.0, ry: bx * 1.7 });
+  }
 }
 
 penha.metric = true;

@@ -223,6 +223,33 @@ export function bridgeGeometry(T, pts, opts) {
   return (T.idx.length - tris0) / 3;
 }
 
+// A bus stop on a sidewalk: a small shelter (posts, glass back wall, roof,
+// bench) plus a sign on a pole just past it. p: { x, z, y, dx, dz } at the
+// way's centreline (dx, dz unit along), side 1 left / -1 right, half: the
+// carriageway half width (world), sw: the sidewalk width (world).
+export function busStopGeometry(T, { x, z, y, dx, dz, side, half, sw }) {
+  const lx = dz;
+  const lz = -dx;
+  const lat = side * (half + sw * 0.5);
+  const cx = x + lx * lat;
+  const cz = z + lz * lat;
+  const GLASS = [0.24, 0.4, 0.5];
+  const FRAME = [0.05, 0.055, 0.06];
+  const ROOF = [0.42, 0.43, 0.44];
+  const SIGN = [0.03, 0.13, 0.3];
+  // back wall (outer edge), posts, roof
+  const bl = lat + side * (sw * 0.42);
+  orientedBox(T, x + lx * bl, z + lz * bl, y, y + 2.25 * M, dx, dz, 1.5 * M, 0.06 * M, GLASS);
+  for (const sgn of [-1, 1]) orientedBox(T, cx + dx * 1.45 * M * sgn, cz + dz * 1.45 * M * sgn, y, y + 2.3 * M, dx, dz, 0.05 * M, 0.05 * M, FRAME);
+  orientedBox(T, cx, cz, y + 2.3 * M, y + 2.42 * M, dx, dz, 1.7 * M, sw * 0.55, ROOF);
+  orientedBox(T, cx, cz, y + 0.42 * M, y + 0.5 * M, dx, dz, 1.15 * M, 0.22 * M, FRAME);
+  // sign on a pole, just past the shelter
+  const sx = cx + dx * 2.15 * M;
+  const sz = cz + dz * 2.15 * M;
+  orientedBox(T, sx, sz, y, y + 2.75 * M, dx, dz, 0.05 * M, 0.05 * M, FRAME);
+  orientedBox(T, sx, sz, y + 2.25 * M, y + 2.7 * M, dx, dz, 0.04 * M, 0.42 * M, SIGN);
+}
+
 // p: { x, z, y, dx, dz } portal on the road (y: road surface), d: into the
 // tunnel. opts: { halfW, col, dark, cap }
 export function portalGeometry(T, p, { halfW, col, dark = [0.01, 0.01, 0.012], cap = col, hoodM = 11 }) {

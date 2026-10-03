@@ -312,6 +312,218 @@ function rockCluster(seed) {
   return out;
 }
 
+// Merge boxes / coloured parts into one geometry (position, normal, color).
+function mergeColored(geos) {
+  let n = 0;
+  for (const g of geos) n += g.attributes.position.count;
+  const pos = new Float32Array(n * 3);
+  const nor = new Float32Array(n * 3);
+  const col = new Float32Array(n * 3);
+  let o = 0;
+  for (const g of geos) {
+    pos.set(g.attributes.position.array, o);
+    if (g.attributes.normal) nor.set(g.attributes.normal.array, o);
+    if (g.attributes.color) col.set(g.attributes.color.array, o);
+    o += g.attributes.position.count * 3;
+  }
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  out.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  out.computeBoundingSphere();
+  for (const g of geos) g.dispose();
+  return out;
+}
+
+function paint(g, color) {
+  const p = g.attributes.position;
+  const c = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) color.toArray(c, i * 3);
+  g.setAttribute('color', new THREE.BufferAttribute(c, 3));
+  return g;
+}
+
+// World height at (x, z) in world units; the gradient is unit rise over run.
+function slopeAt(x, z, heightAt, step = 2) {
+  const gx = heightAt(x + step, z) - heightAt(x - step, z);
+  const gz = heightAt(x, z + step) - heightAt(x, z - step);
+  return { gx, gz, slope: Math.hypot(gx, gz) / (2 * step) };
+}
+
+// Socalcos: the dry-stone terrace walls of the Minho hillside. A scatter of
+// small cultivated plots (lavradas) on the lower slopes below the sanctuary;
+// each plot is a fan of contour-following granite walls with a row of vines
+// between them. The plots are stamped into the occupancy mask so the wood
+// keeps off them and the terraces read.
+function buildTerraces({ hills, heightAt, blocked, oc, OCC }) {
+  if (!hills.length) return null;
+  const rnd = lcg(31337);
+  const Y0 = 16;
+  const Y1 = 58;
+  const MIN_SEP = 18;
+  const NPLOTS = 28;
+  const walls = [];
+  const rows = [];
+  const polys = [];
+  const seeds = [];
+  const gk = (i, j) => (i * 73856093) ^ (j * 19349663);
+  let tries = NPLOTS * 60;
+  while (seeds.length < NPLOTS && tries-- > 0) {
+    const h = hills[Math.floor(rnd() * hills.length)];
+    const a = rnd() * 6.283;
+    const rad = (0.22 + Math.sqrt(rnd()) * 0.62) * h.r;
+    const x = h.x + Math.cos(a) * rad;
+    const z = h.z + Math.sin(a) * rad;
+    const y = heightAt(x, z);
+    if (y < Y0 || y > Y1) continue;
+    const { gx, gz, slope } = slopeAt(x, z, heightAt);
+    if (slope < 0.12 || slope > 0.6) continue;
+    if (blocked(x, z)) continue;
+    let close = false;
+    for (const s of seeds) if (Math.hypot(s.x - x, s.z - z) < MIN_SEP) close = true;
+    if (close) continue;
+    seeds.push({ x, z, gx, gz });
+  }
+  // split a line along the contour (ux, uz), centred at (x, z), into short
+  // segments, each set on its own ground so the wall follows the contour
+  const line = (list, x, z, ux, uz, W, yOff, color) => {
+    const n = Math.max(1, Math.round(W / 4));
+    const step = W / n;
+    for (let i = 0; i < n; i++) {
+      const t = (i + 0.5 - n / 2) * step;
+      const px = x + ux * t;
+      const pz = z + uz * t;
+      const py = heightAt(px, pz);
+      list.push({ x: px, y: py + yOff, z: pz, ang: Math.atan2(-uz, ux), len: step * 0.98, color });
+    }
+  };
+  for (const s of seeds) {
+    const gl = Math.hypot(s.gx, s.gz) || 1;
+    const dx = -s.gx / gl; // downhill
+    const dz = -s.gz / gl;
+    const ux = -dz; // along the contour
+    const uz = dx;
+    const W = 10 + rnd() * 14;
+    const D = 7 + rnd() * 7;
+    const spacing = 1.7 + rnd() * 1.1;
+    const nW = Math.max(2, Math.round(D / spacing));
+    // the plot footprint, stamped out of the occupancy mask
+    const poly = [];
+    for (const [a, c] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+      const uo = (a * W) / 2;
+      const doff = (c * D) / 2;
+      poly.push({ x: s.x + ux * uo + dx * doff, z: s.z + uz * uo + dz * doff });
+    }
+    polys.push(poly);
+    for (let k = 0; k <= nW; k++) {
+      const off = (k - nW / 2) * spacing;
+      line(walls, s.x + dx * off, s.z + dz * off, ux, uz, W, 0.25, 0xc4bba6);
+      if (k < nW) line(rows, s.x + dx * (off + spacing / 2), s.z + dz * (off + spacing / 2), ux, uz, W * 0.94, 0.28, 0x6f9f45);
+    }
+  }
+  // clear the plots (and a margin) of trees
+  if (oc) {
+    oc.fillStyle = '#fff';
+    for (const p of polys) {
+      oc.beginPath();
+      p.forEach((q, i) => (i ? oc.lineTo(q.x, q.z) : oc.moveTo(q.x, q.z)));
+      oc.closePath();
+      oc.fill();
+    }
+  }
+  return { walls, rows };
+}
+
+// The terrace walls and vine rows of every plot, one merged mesh.
+function buildTerraceGeometry(terraces) {
+  if (!terraces) return null;
+  const geos = [];
+  const color = new THREE.Color();
+  for (const w of terraces.walls) {
+    const g = new THREE.BoxGeometry(w.len, 0.55, 0.34).toNonIndexed();
+    g.rotateY(w.ang);
+    g.translate(w.x, w.y, w.z);
+    geos.push(paint(g, color.setHex(w.color)));
+  }
+  for (const r of terraces.rows) {
+    const g = new THREE.BoxGeometry(r.len, 0.5, 0.42).toNonIndexed();
+    g.rotateY(r.ang);
+    g.translate(r.x, r.y, r.z);
+    geos.push(paint(g, color.setHex(r.color)));
+  }
+  if (!geos.length) return null;
+  const geometry = mergeColored(geos);
+  return { geometry, stats: { walls: terraces.walls.length, rows: terraces.rows.length, tris: Math.round(geometry.attributes.position.count / 3) } };
+}
+
+// The sanctuary boulder field: a dense ring of the big granite blocks the
+// Penha summit is known for, around the church box the app passes in avoid.
+function buildSanctuaryBoulders({ hills, heightAt, blocked, avoid }) {
+  if (!hills.length) return null;
+  const boxes = avoid?.boxes || [];
+  if (!boxes.length) return null;
+  let centre = null;
+  let best = Infinity;
+  for (const bx of boxes) {
+    const c = new THREE.Vector3();
+    bx.getCenter(c);
+    const d = Math.hypot(c.x - hills[0].x, c.z - hills[0].z);
+    if (d < best) {
+      best = d;
+      centre = c;
+    }
+  }
+  if (!centre || best > hills[0].r) return null;
+  const rnd = lcg(8080);
+  const spots = [];
+  const N = 44;
+  const minD = 2.6;
+  const grid = new Map();
+  const gk = (i, j) => (i * 73856093) ^ (j * 19349663);
+  let tries = N * 40;
+  while (spots.length < N && tries-- > 0) {
+    const a = rnd() * 6.283;
+    const rad = 7 + Math.sqrt(rnd()) * 26; // world units: 28..132 m from the church
+    const x = centre.x + Math.cos(a) * rad;
+    const z = centre.z + Math.sin(a) * rad;
+    if (blocked(x, z)) continue;
+    const gi = Math.floor(x / minD);
+    const gj = Math.floor(z / minD);
+    let close = false;
+    for (let di = -2; di <= 2 && !close; di++) {
+      for (let dj = -2; dj <= 2 && !close; dj++) {
+        const q = grid.get(gk(gi + di, gj + dj));
+        if (q && Math.hypot(q.x - x, q.z - z) < minD) close = true;
+      }
+    }
+    if (close) continue;
+    grid.set(gk(gi, gj), { x, z });
+    spots.push({ x, y: heightAt(x, z) - 0.2, z, rot: rnd() * 6.283, s: 1.5 + rnd() * 2.0, sy: 0.7 + rnd() * 0.4 });
+  }
+  if (!spots.length) return null;
+  const rockGeo = rockCluster(21);
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0, flatShading: true });
+  mat.name = 'sanctuary-boulders';
+  const mesh = new THREE.InstancedMesh(rockGeo, mat, spots.length);
+  const m = new THREE.Matrix4();
+  const q = new THREE.Quaternion();
+  const p = new THREE.Vector3();
+  const sc = new THREE.Vector3();
+  const up = new THREE.Vector3(0, 1, 0);
+  spots.forEach((o, i) => {
+    p.set(o.x, o.y, o.z);
+    q.setFromAxisAngle(up, o.rot);
+    sc.set(o.s, o.s * o.sy, o.s);
+    mesh.setMatrixAt(i, m.compose(p, q, sc));
+  });
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  mesh.name = 'sanctuary-boulders';
+  const tris = Math.round((rockGeo.attributes.position.count / 3) * spots.length);
+  return { mesh, stats: { count: spots.length, tris } };
+}
+
 // Billboard atlas: four cells (one per species), grey shading with alpha;
 // the instance tint colours it in the shader.
 function billboardAtlas() {
@@ -584,7 +796,7 @@ export function buildNature(opts) {
     });
     oc.stroke();
   }
-  const occ = oc.getImageData(0, 0, ow, oh).data;
+  let occ = oc.getImageData(0, 0, ow, oh).data;
   const blocked = (x, z) => {
     const i = Math.floor((x - rect.x0) * OCC);
     const j = Math.floor((z - rect.zN) * OCC);
@@ -592,8 +804,15 @@ export function buildNature(opts) {
     return occ[(j * ow + i) * 4] > 40;
   };
 
-  // ---- scatter
+  // ---- the wooded sanctuary hills (views: cities/<id>.json nature.hills)
   const hills = HILLS().map((h) => ({ ...project(h.lat, h.lon), r: h.r * S }));
+
+  // ---- socalcos: cultivated plots below the sanctuary, stamped into the
+  // occupancy mask before the trees scatter (they must not cover the plots)
+  const terraces = buildTerraces({ hills, heightAt, blocked, oc, OCC });
+  if (terraces) occ = oc.getImageData(0, 0, ow, oh).data;
+
+  // ---- scatter
   const boostAt = (x, z) => {
     let k = 1;
     for (const h of hills) {
@@ -794,6 +1013,26 @@ export function buildNature(opts) {
       group.add(rockMesh);
       stats.rocks = rocks.length;
       stats.rockTris = Math.round((rockGeo.attributes.position.count / 3) * rocks.length);
+    }
+  }
+
+  // ---- the sanctuary boulder field and the socalcos below it
+  if (hills.length) {
+    const boulders = buildSanctuaryBoulders({ hills, heightAt, blocked, avoid: opts.avoid });
+    if (boulders) {
+      group.add(boulders.mesh);
+      stats.boulders = boulders.stats;
+    }
+    const t = buildTerraceGeometry(terraces);
+    if (t) {
+      const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.96, metalness: 0, flatShading: true });
+      mat.name = 'socalcos';
+      const mesh = new THREE.Mesh(t.geometry, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.name = 'socalcos';
+      group.add(mesh);
+      stats.terraces = t.stats;
     }
   }
 

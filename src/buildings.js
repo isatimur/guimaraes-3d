@@ -129,7 +129,8 @@ export function extrudeBuilding(T, pts, h, k, areaM2, seedIndex, heightAt, roofO
     lastPlan.plan = plan; // tests (count the roof kinds)
     lastPlan.style = style;
     const sf = attrs?.sf;
-    extrudeRoofed(T, pts, plan, { base, gmin, top, footM, hM, wc, rc, w: seed, seed: seedIndex, style, areaM2, close: centreDist(cx, cz) <= RING_M, shop: sf && sf.size ? (i) => sf.has(i) : null });
+    const dist = centreDist(cx, cz);
+    extrudeRoofed(T, pts, plan, { base, gmin, top, footM, hM, wc, rc, w: seed, seed: seedIndex, style, areaM2, kind: k, dist, far: !!attrs?.far, close: dist <= RING_M, shop: sf && sf.size ? (i) => sf.has(i) : null });
     return top;
   }
 

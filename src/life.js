@@ -1147,6 +1147,9 @@ const CABLE_DWELL_S = 10;
 const CABLE_HANG_M = 2.6; // hanger arm below the cable
 const CABIN_M = 2.2; // cabin body height
 const CABLE_ARM_M = 1.1; // half the distance between the two cable runs
+const CABLE_STATION_LIFT = 2.5; // world units (~10 m) at the station, where the cabin docks
+const CABLE_MID_LIFT = 7; // extra lift mid-span (~28 m), so the line clears the woods
+const CABLE_CLEAR = 2.25; // minimum cable height over the terrain (9 m)
 
 function cabinGeometry() {
   const parts = [
@@ -1156,6 +1159,23 @@ function cabinGeometry() {
     box(2.54, 0.85, 2.5, 0, -(CABLE_HANG_M + CABIN_M) + 0.7, 0, 0x27404f, 1), // windows
     box(2.6, 0.12, 2.8, 0, -(CABLE_HANG_M + CABIN_M) - 0.02, 0, 0xb4544e), // roof
   ];
+  const g = mergeGeometries(parts);
+  g.scale(S, S, S);
+  return g;
+}
+
+// A small station hall at a track end: an open-fronted granite/glass box tall
+// enough for the cabin to dock inside, with the cable entering under the roof.
+function stationGeometry() {
+  const W = 5.2; // across the track
+  const D = 8.0; // along the track
+  const H = 2.9; // wall height, the cable enters under the roof
+  const parts = [box(W + 0.6, 0.25, D + 0.6, 0, 0, 0, 0x9d978a)]; // platform slab
+  parts.push(box(W, H, 0.22, 0, 0.25, -D / 2, 0xb9b3a6)); // back wall
+  for (const sx of [-1, 1]) parts.push(box(0.25, H, D, sx * (W / 2 - 0.12), 0.25, 0, 0xb9b3a6)); // side walls
+  parts.push(box(W - 0.5, 0.55, 0.22, 0, 2.05, D / 2, 0xb9b3a6)); // header over the open front
+  parts.push(box(W - 0.4, 0.7, D - 0.5, 0, 1.15, 0, 0x27404f, 1)); // glazed band
+  parts.push(box(W + 0.7, 0.28, D + 0.7, 0, H - 0.05, 0, 0xb4544e)); // roof
   const g = mergeGeometries(parts);
   g.scale(S, S, S);
   return g;
@@ -1172,8 +1192,7 @@ function buildCableCar({ project, heightAt }) {
   const cum = [0];
   for (let i = 1; i < n; i++) cum.push(cum[i - 1] + Math.hypot(world[i].x - world[i - 1].x, world[i].z - world[i - 1].z));
   const total = cum[n - 1];
-  const y0 = heightAt(world[0].x, world[0].z) + 20 * S;
-  const y1 = heightAt(world[n - 1].x, world[n - 1].z) + 20 * S;
+  const stationLift = (t) => CABLE_STATION_LIFT + CABLE_MID_LIFT * Math.sin(Math.PI * Math.min(1, Math.max(0, t))) ** 2;
 
   function at(t) {
     const s = t * total;
@@ -1182,7 +1201,10 @@ function buildCableCar({ project, heightAt }) {
     const u = Math.min(1, Math.max(0, (s - cum[i - 1]) / Math.max(1e-6, cum[i] - cum[i - 1])));
     const x = world[i - 1].x + (world[i].x - world[i - 1].x) * u;
     const z = world[i - 1].z + (world[i].z - world[i - 1].z) * u;
-    const y = Math.max(y0 + (y1 - y0) * t, heightAt(x, z) + 5 * S);
+    const ground = heightAt(x, z);
+    // the line runs a fixed lift above the terrain: low at the stations so a
+    // cabin can dock, high mid-span so it clears the woods on the slope
+    const y = ground + Math.max(CABLE_CLEAR, stationLift(t));
     return { x, z, y, dx: world[i].x - world[i - 1].x, dz: world[i].z - world[i - 1].z };
   }
 
@@ -1226,8 +1248,24 @@ function buildCableCar({ project, heightAt }) {
       pts.push(new THREE.Vector3(a.x + px * side * CABLE_ARM_M * S, a.y, a.z + pz * side * CABLE_ARM_M * S));
     }
     const curve = new THREE.CatmullRomCurve3(pts);
-    const tube = new THREE.TubeGeometry(curve, Math.max(8, n * 3), 0.06 * S, 5, false);
+    const tube = new THREE.TubeGeometry(curve, Math.max(8, n * 3), 0.14 * S, 5, false);
     group.add(new THREE.Mesh(tube, cableMat));
+  }
+
+  // the two stations at the track ends: small halls the cabins dock inside
+  const stationGeo = stationGeometry();
+  const stationMat = lifeMaterial({ roughness: 0.7, metalness: 0.2 });
+  let stationTris = 0;
+  for (const [ei, oi] of [[0, 1], [n - 1, n - 2]]) {
+    const p = world[ei];
+    const o = world[oi];
+    const m = new THREE.Mesh(stationGeo, stationMat);
+    m.position.set(p.x, heightAt(p.x, p.z), p.z);
+    m.rotation.y = Math.atan2(o.x - p.x, o.z - p.z); // open front toward the cable
+    m.castShadow = true;
+    m.receiveShadow = true;
+    group.add(m);
+    stationTris += stationGeo.attributes.position.count / 3;
   }
 
   // two counter-balanced cabins
@@ -1275,7 +1313,7 @@ function buildCableCar({ project, heightAt }) {
   return {
     object: group,
     update,
-    stats: { pylons: (cc.pylons || []).length, length_m: Math.round(total / S) },
+    stats: { pylons: (cc.pylons || []).length, stations: 2, stationTris: Math.round(stationTris), length_m: Math.round(total / S) },
   };
 }
 

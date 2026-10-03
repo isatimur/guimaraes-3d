@@ -75,6 +75,15 @@ const MATERIAL = { stone: 0xb0a898, brick: 0xa45c42, concrete: 0xbcb9b1, glass: 
 const TERRACOTTA = L([0xb4623f, 0xa85a3c, 0x9e5238, 0xbc6c48, 0x914d37, 0xab6649, 0xc1734e, 0x9a5a44]);
 const FLAT_ROOF = L([0x7d786f, 0x8f8a80, 0x6f6c66]);
 const CLUTTER = hexLinear(0xa5a39d);
+// street detail (balconies, shutters, awnings, arcades)
+const IRON = hexLinear(0x2a2c30);
+const SHUTTER = L([0x35513a, 0x6f4a2a, 0x9aa0a4, 0x2f4a55]);
+const CANVAS = L([0xa8473a, 0x2f5d50, 0x8a7a4a, 0x474268, 0xa8753c, 0x39506a, 0x8a4a52]);
+const SLAB_COL = hexLinear(0xb8b1a3);
+const SILL_COL = hexLinear(0xd4cec0);
+// detail vertices bypass the facade/roof shader branches (height 0, seed -1
+// hits the neutral "church" path: vertex colour, no window grid or tiles)
+const DET_ROW = [0, 0, 0, -1];
 
 // ------------------------------------------------------------ style
 // k: OSM kind (or 'ms'); hM: wall height (m); a: attrs ({ m, wc, ... })
@@ -494,6 +503,10 @@ export function extrudeRoofed(T, pts, plan, g) {
     run += LM;
   }
 
+  // street-level relief (balconies, shutters, awnings, arcades), close fabric
+  // only; into the near index block, so the mid/far LOD never draws it
+  if (g.close) streetDetail(T, IDX, pts, g);
+
   // cornice/eave and rooftop detail on the pitched roofs, into the same
   // buffers as the faceted roof (no extra draw calls)
   if (planes.length) {
@@ -675,7 +688,7 @@ function rectCorners(cx, cz, ux, uz, hu, hv) {
 
 // a quad: the geometric normal is forced to agree with (nx, ny, nz), so the
 // winding always faces out whatever order the corners come in
-function quadN(T, IDX, a, b, c, d, nx, ny, nz, col, w) {
+function quadN(T, IDX, a, b, c, d, nx, ny, nz, col, w, wallRow) {
   const ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
   const vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
   let gx = uy * vz - uz * vy, gy = uz * vx - ux * vz, gz = ux * vy - uy * vx;
@@ -684,11 +697,11 @@ function quadN(T, IDX, a, b, c, d, nx, ny, nz, col, w) {
   gx = (gx / gl) * s; gy = (gy / gl) * s; gz = (gz / gl) * s;
   const v0 = T.pos.length / 3;
   T.pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, d.x, d.y, d.z);
-  for (let i = 0; i < 4; i++) { T.nor.push(gx, gy, gz); T.col.push(col[0], col[1], col[2]); T.wall.push(0, -1, 0, w); }
+  for (let i = 0; i < 4; i++) { T.nor.push(gx, gy, gz); T.col.push(col[0], col[1], col[2]); T.wall.push(...(wallRow || [0, -1, 0, w])); }
   if (s > 0) IDX.push(v0, v0 + 1, v0 + 2, v0, v0 + 2, v0 + 3);
   else IDX.push(v0, v0 + 2, v0 + 1, v0, v0 + 3, v0 + 2);
 }
-function triN(T, IDX, a, b, c, nx, ny, nz, col, w) {
+function triN(T, IDX, a, b, c, nx, ny, nz, col, w, wallRow) {
   const ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
   const vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
   let gx = uy * vz - uz * vy, gy = uz * vx - ux * vz, gz = ux * vy - uy * vx;
@@ -697,20 +710,20 @@ function triN(T, IDX, a, b, c, nx, ny, nz, col, w) {
   gx = (gx / gl) * s; gy = (gy / gl) * s; gz = (gz / gl) * s;
   const v0 = T.pos.length / 3;
   T.pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
-  for (let i = 0; i < 3; i++) { T.nor.push(gx, gy, gz); T.col.push(col[0], col[1], col[2]); T.wall.push(0, -1, 0, w); }
+  for (let i = 0; i < 3; i++) { T.nor.push(gx, gy, gz); T.col.push(col[0], col[1], col[2]); T.wall.push(...(wallRow || [0, -1, 0, w])); }
   if (s > 0) IDX.push(v0, v0 + 1, v0 + 2);
   else IDX.push(v0, v0 + 2, v0 + 1);
 }
 // an axis-vertical box on four world corners (sides + top; the base is
 // embedded in the roof and never seen)
-function boxAt(T, IDX, cs, y0, y1, col, w) {
+function boxAt(T, IDX, cs, y0, y1, col, w, wallRow) {
   for (let i = 0; i < 4; i++) {
     const A = cs[i];
     const B = cs[(i + 1) % 4];
     const dx = B.x - A.x, dz = B.z - A.z, l = Math.hypot(dx, dz) || 1;
-    quadN(T, IDX, { x: A.x, y: y0, z: A.z }, { x: B.x, y: y0, z: B.z }, { x: B.x, y: y1, z: B.z }, { x: A.x, y: y1, z: A.z }, dz / l, 0, -dx / l, col, w);
+    quadN(T, IDX, { x: A.x, y: y0, z: A.z }, { x: B.x, y: y0, z: B.z }, { x: B.x, y: y1, z: B.z }, { x: A.x, y: y1, z: A.z }, dz / l, 0, -dx / l, col, w, wallRow);
   }
-  quadN(T, IDX, { x: cs[0].x, y: y1, z: cs[0].z }, { x: cs[1].x, y: y1, z: cs[1].z }, { x: cs[2].x, y: y1, z: cs[2].z }, { x: cs[3].x, y: y1, z: cs[3].z }, 0, 1, 0, col, w);
+  quadN(T, IDX, { x: cs[0].x, y: y1, z: cs[0].z }, { x: cs[1].x, y: y1, z: cs[1].z }, { x: cs[2].x, y: y1, z: cs[2].z }, { x: cs[3].x, y: y1, z: cs[3].z }, 0, 1, 0, col, w, wallRow);
 }
 
 // the eave/cornice line: a thin overhanging band around the wall head, so
@@ -830,6 +843,186 @@ function roofDetail(T, IDX, plan, g) {
   if (hist && g.close && g.areaM2 >= 250 && plan.poly && (plan.shape === 'gabled' || plan.shape === 'hipped')) {
     const rnd = fracRnd(g.seed ^ 0x2f13);
     if (rnd() < 0.55) dormer(T, IDX, plan, g, R, (u, v) => ({ x: u * R.ux - v * R.uz, z: u * R.uz + v * R.ux }));
+  }
+}
+
+// ------------------------------------------------------------ street detail
+// Real relief for the close fabric, pushed into the same near-LOD index
+// block as the walls and roofs, so a tile stays one draw call. Gated by
+// distance from the historic centre and by style: mid/far LOD (the roofs
+// buffer, or the flat boxes of the streamed far tiles) never carries it.
+// Mirrors the window-grid metrics of the fragment shader, so a balcony or
+// sill lands on a window bay.
+const DET_SEL = (a, b, c) => {
+  const v = Math.sin(a * 12.9898 + b * 78.233 + c * 0.017) * 43758.5453;
+  return v - Math.floor(v);
+};
+// [cw, fh, g0, wx0, wx1, wy0, wy1] metres, matching the shader per style
+function facadeMetrics(st, sd) {
+  if (st === 1 || st === 2) return [2.5 + 0.7 * sd, 3.3, 4.0, 0.31, 0.69, 0.1, 0.84];
+  if (st === 3) return [3.0 + 0.5 * sd, 3.1, 3.6, 0.3, 0.7, 0.22, 0.8];
+  return null;
+}
+
+// a wrought-iron balcony: a stone slab projecting from the wall under a
+// window, with vertical bars and a top rail
+function balcony(T, IDX, a, ux, uz, nx, nz, uc, yb, halfW, w) {
+  const D = 0.85 * S;
+  const halfH = 0.07 * S;
+  const railH = 0.95 * S;
+  const cx = a.x + ux * uc * S + nx * (D / 2);
+  const cz = a.z + uz * uc * S + nz * (D / 2);
+  boxAt(T, IDX, rectCorners(cx, cz, ux, uz, halfW * S, D / 2), yb - halfH, yb + halfH, SLAB_COL, w, DET_ROW);
+  const y0 = yb + halfH;
+  const y1 = y0 + railH;
+  const nb = Math.max(4, Math.min(7, Math.round((2 * halfW) / 0.18)));
+  const bw = 0.018 * S;
+  const ex = ux * bw;
+  const ez = uz * bw;
+  const oX = a.x + nx * D;
+  const oZ = a.z + nz * D;
+  for (let j = 0; j <= nb; j++) {
+    const du = uc + (-halfW + 2 * halfW * (j / nb));
+    const px = oX + ux * du * S;
+    const pz = oZ + uz * du * S;
+    quadN(T, IDX, { x: px - ex, y: y0, z: pz - ez }, { x: px + ex, y: y0, z: pz + ez }, { x: px + ex, y: y1, z: pz + ez }, { x: px - ex, y: y1, z: pz - ez }, nx, 0, nz, IRON, w, DET_ROW);
+  }
+  const rl = { x: oX + ux * (uc - halfW) * S, z: oZ + uz * (uc - halfW) * S };
+  const rr = { x: oX + ux * (uc + halfW) * S, z: oZ + uz * (uc + halfW) * S };
+  quadN(T, IDX, { x: rl.x, y: y1, z: rl.z }, { x: rr.x, y: y1, z: rr.z }, { x: rr.x, y: y1 + 0.05 * S, z: rr.z }, { x: rl.x, y: y1 + 0.05 * S, z: rl.z }, nx, 0, nz, IRON, w, DET_ROW);
+}
+
+// a stone sill under a window and (usually) a pair of open shutters
+function shutters(T, IDX, a, ux, uz, nx, nz, uc, y0, y1, ww, col, open, w) {
+  const sh = 0.09 * S; // sill projection
+  const st = 0.05 * S; // sill thickness
+  const A = { x: a.x + ux * (uc - ww - 0.14) * S, z: a.z + uz * (uc - ww - 0.14) * S };
+  const B = { x: a.x + ux * (uc + ww + 0.14) * S, z: a.z + uz * (uc + ww + 0.14) * S };
+  const oA = { x: A.x + nx * sh, z: A.z + nz * sh };
+  const oB = { x: B.x + nx * sh, z: B.z + nz * sh };
+  // sill: a top face and a front face
+  quadN(T, IDX, { x: A.x, y: y0, z: A.z }, { x: B.x, y: y0, z: B.z }, { x: oB.x, y: y0, z: oB.z }, { x: oA.x, y: y0, z: oA.z }, 0, 1, 0, SILL_COL, w, DET_ROW);
+  quadN(T, IDX, { x: oA.x, y: y0 - st, z: oA.z }, { x: oB.x, y: y0 - st, z: oB.z }, { x: oB.x, y: y0, z: oB.z }, { x: oA.x, y: y0, z: oA.z }, nx, 0, nz, SILL_COL, w, DET_ROW);
+  if (!open) return;
+  const pw = 0.42; // panel width (m)
+  const proud = 0.035 * S;
+  for (const s of [-1, 1]) {
+    const pu = uc + s * (ww + pw / 2 + 0.02);
+    const qa = { x: a.x + ux * (pu - pw / 2) * S + nx * proud, z: a.z + uz * (pu - pw / 2) * S + nz * proud };
+    const qb = { x: a.x + ux * (pu + pw / 2) * S + nx * proud, z: a.z + uz * (pu + pw / 2) * S + nz * proud };
+    quadN(T, IDX, { x: qa.x, y: y0, z: qa.z }, { x: qb.x, y: y0, z: qb.z }, { x: qb.x, y: y1, z: qb.z }, { x: qa.x, y: y1, z: qa.z }, nx, 0, nz, col, w, DET_ROW);
+  }
+}
+
+// a canvas awning over a commercial ground-floor bay, plus a sign band
+function awning(T, IDX, a, ux, uz, nx, nz, uc, halfWb, yb, col, w) {
+  const D = 1.0 * S;
+  const yIn = yb + 0.55 * S;
+  const yOut = yIn - 0.4 * S;
+  const wa = { x: a.x + ux * (uc - halfWb) * S, z: a.z + uz * (uc - halfWb) * S };
+  const wb = { x: a.x + ux * (uc + halfWb) * S, z: a.z + uz * (uc + halfWb) * S };
+  const oa = { x: wa.x + nx * D, z: wa.z + nz * D };
+  const ob = { x: wb.x + nx * D, z: wb.z + nz * D };
+  quadN(T, IDX, { x: wa.x, y: yIn, z: wa.z }, { x: wb.x, y: yIn, z: wb.z }, { x: ob.x, y: yOut, z: ob.z }, { x: oa.x, y: yOut, z: oa.z }, 0, 1, 0, col, w, DET_ROW);
+  quadN(T, IDX, { x: oa.x, y: yOut - 0.18 * S, z: oa.z }, { x: ob.x, y: yOut - 0.18 * S, z: ob.z }, { x: ob.x, y: yOut, z: ob.z }, { x: oa.x, y: yOut, z: oa.z }, nx, 0, nz, shade(col, 0.82), w, DET_ROW);
+  const sign = hexLinear(0x33322e);
+  quadN(T, IDX, { x: wa.x + nx * 0.04 * S, y: yIn + 0.28 * S, z: wa.z + nz * 0.04 * S }, { x: wb.x + nx * 0.04 * S, y: yIn + 0.28 * S, z: wb.z + nz * 0.04 * S }, { x: wb.x + nx * 0.04 * S, y: yIn + 0.62 * S, z: wb.z + nz * 0.04 * S }, { x: wa.x + nx * 0.04 * S, y: yIn + 0.62 * S, z: wa.z + nz * 0.04 * S }, nx, 0, nz, sign, w, DET_ROW);
+}
+
+// ground-floor piers and a shallow arch head, hinting an arcade front
+function arcade(T, IDX, a, ux, uz, nx, nz, run, LM, cw, g0, gmin, col, w) {
+  const openH = Math.min(3.0, g0 - 0.55) * S;
+  const y0 = gmin;
+  const y1 = gmin + openH;
+  const k0 = Math.floor(run / cw);
+  const k1 = Math.ceil((run + LM) / cw);
+  for (let k = k0; k <= k1; k++) {
+    const ub = k * cw - run;
+    if (ub < 0.05 * cw || ub > LM - 0.05 * cw) continue;
+    const px = a.x + ux * ub * S + nx * 0.12 * S;
+    const pz = a.z + uz * ub * S + nz * 0.12 * S;
+    boxAt(T, IDX, rectCorners(px, pz, ux, uz, 0.18 * S, 0.12 * S), y0, y1, col, w, DET_ROW);
+  }
+  for (let k = k0; k < k1; k++) {
+    const uL = k * cw - run + 0.22;
+    const uR = (k + 1) * cw - run - 0.22;
+    if (uR - uL < 0.6 || uL < 0 || uR > LM) continue;
+    const segs = 4;
+    let prev = null;
+    for (let s = 0; s <= segs; s++) {
+      const t = s / segs;
+      const u = uL + (uR - uL) * t;
+      const y = y1 + Math.sin(Math.PI * t) * 0.5 * S;
+      const p = { x: a.x + ux * u * S + nx * 0.16 * S, y, z: a.z + uz * u * S + nz * 0.16 * S };
+      if (prev) quadN(T, IDX, prev, p, { x: p.x, y: p.y + 0.24 * S, z: p.z }, { x: prev.x, y: prev.y + 0.24 * S, z: prev.z }, nx, 0, nz, col, w, DET_ROW);
+      prev = p;
+    }
+  }
+}
+
+function streetDetail(T, IDX, pts, g) {
+  if (g.far || !g.close) return;
+  const st = g.style;
+  const hist = st === 1 || st === 2;
+  const m = facadeMetrics(st, g.w - 2 * Math.floor(g.w * 0.5));
+  if (!m) return;
+  const [cw, fh, g0, wx0, wx1, wy0, wy1] = m;
+  const { gmin, hM, w: seed, kind, dist } = g;
+  const shop = (kind === 'commercial' || kind === 'public') && dist <= 1400;
+  const arc = hist && shop && g.areaM2 >= 500 && dist <= HIST_M && DET_SEL(g.seed, 7, 3) < 0.3;
+  if (!hist && st !== 3) return;
+  const floors = Math.floor((hM - g0) / fh);
+  const ww = 0.5 * (wx1 - wx0) * cw; // window half width (m)
+  const winY0 = (idy) => gmin + (g0 + idy * fh + wy0 * fh) * S;
+  const winY1 = (idy) => gmin + (g0 + idy * fh + wy1 * fh) * S;
+  // the two longest walls are the likely street fronts for balconies
+  const n = pts.length;
+  const lens = [];
+  for (let i = 0; i < n; i++) {
+    const a = pts[i];
+    const b = pts[(i + 1) % n];
+    lens.push(Math.hypot(b.x - a.x, b.z - a.z));
+  }
+  const longest = new Set(lens.map((l, i) => i).sort((p, q) => lens[q] - lens[p]).slice(0, Math.min(2, n)));
+  let run = 0;
+  for (let i = 0; i < n; i++) {
+    const a = pts[i];
+    const b = pts[(i + 1) % n];
+    const dx = b.x - a.x;
+    const dz = b.z - a.z;
+    const len = Math.hypot(dx, dz);
+    if (len < 1e-4) continue;
+    const ux = dx / len;
+    const uz = dz / len;
+    const nx = dz / len;
+    const nz = -dx / len;
+    const LM = len / S;
+    const near = hist && dist <= HIST_M;
+    const long = longest.has(i) && LM >= 1.3 * cw;
+    const k0 = Math.floor(run / cw);
+    const k1 = Math.ceil((run + LM) / cw);
+    for (let k = k0; k < k1; k++) {
+      const uc = (k + 0.5) * cw - run;
+      if (uc < 0.12 * cw || uc > LM - 0.12 * cw) continue;
+      // shutters + sill on one upper floor (historic and near-ring fabric)
+      if (long && dist <= 1100 && floors >= 1 && DET_SEL(i, k + 17, seed) < (hist ? 0.22 : 0.08)) {
+        const idy = DET_SEL(i, k + 41, seed) < 0.7 ? 0 : 1;
+        if (idy < floors) {
+          const open = DET_SEL(i, k + 29, seed) < 0.5;
+          shutters(T, IDX, a, ux, uz, nx, nz, uc, winY0(idy), winY1(idy), ww, SHUTTER[Math.floor(DET_SEL(k, i, seed + 5) * SHUTTER.length) % SHUTTER.length], open, seed);
+        }
+      }
+      // a balcony on the street walls of the historic centre, first floor
+      if (near && long && floors >= 1 && DET_SEL(i, k + 53, seed + 91) < 0.18) {
+        balcony(T, IDX, a, ux, uz, nx, nz, uc, winY0(0), ww + 0.16, seed);
+      }
+      // awning over a commercial ground-floor bay
+      if (long && shop && dist <= HIST_M && DET_SEL(i, k + 71, seed + 7) < 0.45) {
+        awning(T, IDX, a, ux, uz, nx, nz, uc, ww + 0.1, gmin + g0 * S, CANVAS[Math.floor(DET_SEL(k, i, seed + 13) * CANVAS.length) % CANVAS.length], seed);
+      }
+    }
+    if (arc && long) arcade(T, IDX, a, ux, uz, nx, nz, run, LM, cw, g0, gmin, SLAB_COL, seed);
+    run += LM;
   }
 }
 
