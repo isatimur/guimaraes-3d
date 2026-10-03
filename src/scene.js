@@ -1018,10 +1018,21 @@ const GROUND_COLOR = /* glsl */ `
   vec3 Ng = normalize(vTNormal);
   float slope = 1.0 - Ng.y;
   float hm = W.y * 4.0 + uDatum;
+  // detail noise at several scales: n1 / n2 are the broad relief fields,
+  // macro / dry add field patches and meadow break-up, grain is the finest
   vec4 nA = texture2D(tNoise, W.xz * 0.0045);
   vec4 nB = texture2D(tNoise, W.xz * 0.031);
+  vec4 nC = texture2D(tNoise, W.xz * 0.0016);
+  vec4 nD = texture2D(tNoise, W.xz * 0.011);
+  vec4 nE = texture2D(tNoise, W.xz * 0.0008 + 0.61);
   float n1 = nA.b;
   float n2 = nB.b;
+  // the fbm crowds around 0.5: stretch the patch fields so field blocks and
+  // dry meadows actually read instead of a near-constant wash
+  float macro = clamp((nC.b - 0.5) * 2.6 + 0.5, 0.0, 1.0);
+  float macro2 = clamp((nE.b - 0.5) * 2.8 + 0.5, 0.0, 1.0);
+  float dry = clamp((nD.b - 0.5) * 2.4 + 0.5, 0.0, 1.0);
+  float grain = nD.a;
   // season (src/seasons.js): grass fresh in spring, deep in summer,
   // olive-ochre in autumn, dull in winter; the woods follow the broadleaf
   // share of their crowns; fields turn to bare soil in winter
@@ -1036,11 +1047,26 @@ const GROUND_COLOR = /* glsl */ `
   vec3 lush = vec3(0.064, 0.122, 0.036) * gMul;
   vec3 upland = vec3(0.150, 0.145, 0.080);
   vec3 granite = vec3(0.300, 0.285, 0.255);
-  vec3 col = mix(valley, lush, smoothstep(0.35, 0.7, n1));
-  col = mix(col, upland, smoothstep(260.0, 470.0, hm + (n1 - 0.5) * 120.0) * 0.8);
+  // base green: the relief fields pick the patch, the macro field breaks it
+  // into broader meadow / forest-floor patches instead of one flat wash
+  float greenMix = smoothstep(0.34, 0.72, n1 * 0.55 + macro * 0.45);
+  vec3 col = mix(valley, lush, greenMix);
+  // very broad pasture / crop patches: coherent blocks, not pixel noise
+  vec3 pasture = vec3(0.112, 0.136, 0.048) * mix(vec3(1.0), gMul, 0.6);
+  col = mix(col, pasture, smoothstep(0.4, 0.78, macro2) * 0.45);
+  // sun-bleached dry meadow, patchier the flatter and lower the ground
+  vec3 dryGrass = vec3(0.152, 0.142, 0.066) * mix(vec3(1.0), gMul, 0.5);
+  float dryMask = smoothstep(0.46, 0.82, dry) * (1.0 - smoothstep(320.0, 470.0, hm));
+  col = mix(col, dryGrass * (0.86 + 0.26 * grain), dryMask * 0.55);
+  // bare earth where the cover thins between grass and worked fields
+  vec3 earth = vec3(0.132, 0.108, 0.068);
+  col = mix(col, earth * (0.82 + 0.32 * n2), smoothstep(0.62, 0.92, dry) * 0.38);
+  float uplandMix = smoothstep(260.0, 470.0, hm + (n1 - 0.5) * 120.0) * 0.8;
   float rock = smoothstep(0.045, 0.12, slope + (n2 - 0.5) * 0.06 + (n1 - 0.5) * 0.04);
   rock = max(rock, smoothstep(0.62, 0.8, n2) * smoothstep(420.0, 540.0, hm));
-  col = mix(col, granite * (0.8 + 0.4 * nB.a), rock * 0.85);
+  // Penha granite: patchy outcrops on the upper hill, broken by macro noise
+  float graniteN = texture2D(tNoise, W.xz * 0.0022 + 0.37).b;
+  rock = max(rock, smoothstep(0.5, 0.74, graniteN) * smoothstep(455.0, 555.0, hm) * 0.9);
   if (uHasLand + uHasLandW > 0.5) {
     vec2 luv = (W.xz - uLandRect.xy) * uLandRect.zw;
     // no clamped edge pixels smeared outward; the cover thins out over the
@@ -1056,22 +1082,41 @@ const GROUND_COLOR = /* glsl */ `
     }
     L.a = smoothstep(0.25, 0.8, L.a);
     float fine = nB.a;
-    // fields and vineyards: faint stripes across the parcel
-    float stripe = 0.5 + 0.5 * sin((W.x * 0.8 + W.z * 0.45) * (L.b > 0.5 ? 1.2 : 4.0));
-    vec3 field = mix(vec3(0.175, 0.150, 0.075), vec3(0.105, 0.125, 0.045) * gMul, stripe * 0.6 + n2 * 0.4);
+    // worked land: broad field stripes, tight vineyard rows, macro parcel
+    // soil variation; orchards get their own darker tree-row pattern
+    float isField = step(0.2, L.b);
+    float rowF = L.b > 0.5 ? 3.0 : 9.0;
+    float stripe = 0.5 + 0.5 * sin((W.x * 0.8 + W.z * 0.45) * rowF + macro * 6.0);
+    vec3 fieldA = vec3(0.178, 0.152, 0.076);
+    vec3 fieldB = vec3(0.104, 0.126, 0.044) * gMul;
+    vec3 field = mix(fieldA, fieldB, stripe * 0.6 + n2 * 0.4) * (0.85 + 0.3 * macro);
     field = mix(field, vec3(0.150, 0.112, 0.072) * (0.85 + 0.3 * n2), sW.w * 0.65 + sW.z * 0.25);
-    col = mix(col, field, step(0.2, L.b) * 0.7);
+    col = mix(col, field, isField * 0.7);
+    float orchard = smoothstep(0.2, 0.34, L.b) * (1.0 - smoothstep(0.4, 0.58, L.b));
+    float orow = 0.5 + 0.5 * sin((W.x - W.z) * 1.7 + n2 * 3.0);
+    col = mix(col, mix(vec3(0.072, 0.122, 0.040) * gMul, vec3(0.150, 0.140, 0.070), orow), orchard * 0.45);
     vec3 grass = vec3(0.085, 0.150, 0.035) * gMul * (0.85 + 0.3 * fine);
+    vec3 parched = vec3(0.140, 0.140, 0.062) * mix(vec3(1.0), gMul, 0.5);
+    grass = mix(grass, parched, smoothstep(0.5, 0.88, dry) * 0.55);
+    grass *= 0.82 + 0.36 * macro2;
     col = mix(col, grass, L.g * 0.85);
     vec3 urban = vec3(0.185, 0.175, 0.160) * (0.9 + 0.2 * n2);
     col = mix(col, urban, L.a * 0.8 * (1.0 - L.g * 0.6));
     // canopy: dark, mottled at crown scale so a wood reads as trees from afar
     float crowns = texture2D(tNoise, W.xz * 0.21).a;
     vec3 canopy = mix(vec3(0.022, 0.045, 0.018), vec3(0.060, 0.098, 0.034) * wMul, smoothstep(0.3, 0.75, crowns * 0.7 + n2 * 0.3));
+    canopy *= 0.84 + 0.32 * macro2;
     // autumn: the broadleaf crowns in the wood turn in patches
     canopy = mix(canopy, vec3(0.09, 0.06, 0.022), sW.z * 0.4 * smoothstep(0.55, 0.8, nB.b * 0.6 + crowns * 0.4));
     col = mix(col, canopy, L.r * 0.95);
   }
+  // upland heath and granite come after the cover: rock reads through the
+  // grass, fields and canopy on the steep, high Penha ground
+  col = mix(col, upland, uplandMix);
+  col = mix(col, granite * (0.8 + 0.4 * nB.a), rock * 0.85);
+  // slope form: steep faces fall into shade, rounded tops catch a little sky
+  col *= 1.0 - 0.10 * smoothstep(0.16, 0.62, slope);
+  col *= 1.0 + 0.06 * smoothstep(0.86, 1.0, Ng.y);
   // faint contour hint every 50 m, gone where it would alias
   float hc = hm / 50.0;
   float fw = fwidth(hc);

@@ -69,7 +69,7 @@ vec3 calcada(vec2 p, vec3 pat) {
     float d = abs(fract(w / P) - 0.5);
     float aa = 1.2 * px / P;
     m = 1.0 - smoothstep(0.2 - aa, 0.2 + aa, d);
-    avg = 0.4;
+    avg = 0.3;
   } else if (k < 2.5) {
     // a diagonal net of thin black lines
     P = 2.2;
@@ -87,8 +87,8 @@ vec3 calcada(vec2 p, vec3 pat) {
     float band = 1.0 - smoothstep(0.4 - px, 0.4 + px, e);
     m = max(m, mix(band, 0.4 / max(pat.z, 0.4) * 0.5, smoothstep(0.15, 0.5, px)));
   }
-  vec3 lime = vec3(0.56, 0.54, 0.48);
-  vec3 bas = vec3(0.075, 0.075, 0.08);
+  vec3 lime = vec3(0.6, 0.585, 0.52);
+  vec3 bas = vec3(0.12, 0.125, 0.135);
   // the sidewalks: a little greyer, worn
   if (k > 2.5 && k < 3.5) lime = vec3(0.47, 0.455, 0.41);
   vec3 col = mix(lime, bas, m);
@@ -446,6 +446,163 @@ const FURNITURE = {
 };
 const UMBRELLA_COLORS = [0xf3efe6, 0xb23a2e, 0x24452f, 0x23324f, 0xe7d9b0, 0x8a2433].map((h) => new THREE.Color(h));
 
+// ------------------------------------------------------------ the squares
+// The three historic squares (Largo do Toural, Praça de São Tiago, Largo da
+// Oliveira) carry an authored overlay (data/squares.json): the classic
+// main-square calçada pattern, the central fountain, Toural's 1878 iron
+// coreto, clipped tree rows, benches and café terraces. The overlay is
+// hand-authored in OSM lat/lon and draped here on the terrain (or on the
+// landmark's own paving) with the same heightAt as everything else.
+
+// Set the main-square calçada ("mar largo") on the areas an overlay names,
+// replacing the default diagonal net. Returns how many areas it touched.
+export function buildSquarePaving(areas, squares) {
+  if (!Array.isArray(squares)) return 0;
+  let n = 0;
+  for (const sq of squares) {
+    if (!sq || !sq.match) continue;
+    const pat = CALCADA[sq.pattern] || CALCADA.waves;
+    const re = new RegExp(sq.match, 'i');
+    for (const ar of areas) if (re.test(ar.name)) {
+      ar.pat = pat;
+      n++;
+    }
+  }
+  return n;
+}
+
+// A small fountain: an octagonal granite basin, a stone pillar and a jet.
+function buildFountainGeo(r = 1.5, h = 3.2) {
+  const stone = 0xbdb7a8;
+  const edge = 0xa39d90;
+  const water = 0x86b3bd;
+  const parts = [
+    cylG(r, r + 0.16, 0.62, 8, 0, 0, 0, edge),
+    cylG(r - 0.26, r - 0.22, 0.1, 8, 0, 0.5, 0, stone),
+    cylG(r - 0.26, r - 0.26, 0.5, 8, 0, 0.06, 0, water, 0.45),
+    cylG(0.34, 0.44, 0.7, 8, 0, 0.55, 0, stone),
+    cylG(0.17, 0.22, Math.max(0.6, h - 1.5), 8, 0, 1.2, 0, stone),
+    cylG(0.46, 0.3, 0.22, 8, 0, h - 0.5, 0, edge),
+    part(new THREE.SphereGeometry(0.26, 8, 6).translate(0, h - 0.3, 0), water, 0.5),
+    cylG(0.055, 0.09, 0.55, 6, 0, h - 0.25, 0, water, 0.9),
+  ];
+  return merged(parts);
+}
+
+// The 1878 cast-iron coreto: an octagonal platform, eight posts with a low
+// railing, a ring beam and an octagonal roof with a finial.
+function buildCoretoGeo(r = 3.1, postH = 3.1) {
+  const postBase = 0.43;
+  const postTop = postBase + postH;
+  const parts = [
+    cylG(r + 0.45, r + 0.65, 0.34, 8, 0, -0.05, 0, 0x9d978a),
+    cylG(r, r, 0.14, 8, 0, 0.29, 0, 0x8a5a36),
+  ];
+  const bar = (a0, a1, y) => {
+    const x0 = Math.cos(a0) * r * 0.88;
+    const z0 = Math.sin(a0) * r * 0.88;
+    const x1 = Math.cos(a1) * r * 0.88;
+    const z1 = Math.sin(a1) * r * 0.88;
+    const g = new THREE.BoxGeometry(Math.hypot(x1 - x0, z1 - z0), 0.055, 0.055);
+    g.rotateY(-Math.atan2(z1 - z0, x1 - x0));
+    return part(g.translate((x0 + x1) / 2, y, (z0 + z1) / 2), 0x33403a);
+  };
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    const x = Math.cos(a) * r * 0.88;
+    const z = Math.sin(a) * r * 0.88;
+    parts.push(cylG(0.075, 0.1, postH, 6, x, postBase, z, IRON));
+    parts.push(boxG(0.28, 0.1, 0.28, x, postTop, z, IRON));
+    parts.push(bar(a, a + Math.PI / 4, postBase + 0.45));
+    parts.push(bar(a, a + Math.PI / 4, postBase + 0.9));
+  }
+  parts.push(cylG(r * 0.95, r * 0.95, 0.16, 8, 0, postTop, 0, IRON));
+  parts.push(part(new THREE.ConeGeometry(r * 1.18, 1.5, 8, 1, true).translate(0, postTop + 0.16 + 0.75, 0), 0x3c4a42));
+  parts.push(cylG(0.05, 0.05, 0.5, 6, 0, postTop + 0.16 + 1.5, 0, IRON));
+  parts.push(part(new THREE.SphereGeometry(0.16, 7, 5).translate(0, postTop + 0.16 + 1.95, 0), IRON));
+  return merged(parts);
+}
+
+function triCount(g) {
+  return g.index ? g.index.count / 3 : g.attributes.position.count / 3;
+}
+
+// Clipped trees: authored rows (OSM lat/lon endpoints) sampled every ~9 m,
+// plus single authored trees, kept only where the ground is clear.
+function buildTreeRows({ rows, trees, project, heightAt, S, LIFT, put, okAt, rnd }) {
+  let n = 0;
+  const tree = (x, z, sc) => {
+    const y = heightAt(x, z) + LIFT - 0.05;
+    if (!okAt(x, z, y)) return;
+    put('tree', x, y, z, rnd() * 6.28, sc, Math.floor(rnd() * 4));
+    n++;
+  };
+  for (const t of trees || []) {
+    const p = project(t[0], t[1]);
+    tree(p.x, p.z, 0.85 + rnd() * 0.35);
+  }
+  for (const row of rows || []) {
+    if (!Array.isArray(row) || row.length < 2) continue;
+    const pts = row.map((q) => project(q[0], q[1]));
+    for (let i = 0; i < pts.length - 1; i++) {
+      const L = Math.hypot(pts[i + 1].x - pts[i].x, pts[i + 1].z - pts[i].z);
+      for (let s = 0; s <= L; s += 9 * S) {
+        const x = pts[i].x + ((pts[i + 1].x - pts[i].x) * s) / L;
+        const z = pts[i].z + ((pts[i + 1].z - pts[i].z) * s) / L;
+        tree(x, z, 0.85 + rnd() * 0.3);
+      }
+    }
+  }
+  return n;
+}
+
+// Benches at authored spots (OSM lat/lon, yaw in degrees: the way a sitter
+// looks, as in doc.benches).
+function buildBenches({ list, project, groundAt, okAt, benchSpot }) {
+  let n = 0;
+  for (const b of list || []) {
+    const p = project(b[0], b[1]);
+    const y = groundAt(p.x, p.z);
+    if (Number.isNaN(y) || !okAt(p.x, p.z, y)) continue;
+    benchSpot(p.x, y, p.z, b[2] != null ? (b[2] * Math.PI) / 180 : Math.atan2(-p.x, -p.z));
+    n++;
+  }
+  return n;
+}
+
+// Café terraces at authored spots: a row of tables along the façade, each
+// with an umbrella and two seated people, wired into the opening-hours path.
+function buildTerraces({ list, project, groundAt, okAt, put, spots, addSpot, terraces, rnd, S }) {
+  let tables = 0;
+  for (const t of list || []) {
+    const p = project(t[0], t[1]);
+    const yaw = ((t[2] ?? 0) * Math.PI) / 180;
+    const count = Math.max(1, Math.min(8, (t[3] | 0) || 3));
+    const tx = Math.cos(yaw);
+    const tz = -Math.sin(yaw);
+    const ti = terraces.length;
+    const ter = { poi: { kind: 'cafe', name: '' }, open: 1, seats: [] };
+    for (let k = 0; k < count; k++) {
+      const o = (k - (count - 1) / 2) * 2.6 * S;
+      const x = p.x + tx * o;
+      const z = p.z + tz * o;
+      const y = groundAt(x, z);
+      if (Number.isNaN(y) || !okAt(x, z, y)) continue;
+      put('table', x, y, z, yaw + Math.PI / 2);
+      put('umbrella', x, y, z, yaw + Math.PI / 2, 1, Math.floor(rnd() * UMBRELLA_COLORS.length));
+      tables++;
+      for (const sgn of [1, -1]) {
+        const sx = x + tz * sgn * 0.62 * S;
+        const sz = z - tx * sgn * 0.62 * S;
+        ter.seats.push(spots.x.length);
+        addSpot(sx, y, sz, Math.atan2(-tz * sgn, tx * sgn), 1, 1, ti);
+      }
+    }
+    if (ter.seats.length) terraces.push(ter);
+  }
+  return tables;
+}
+
 function furnitureMaterial(uniforms, key) {
   const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.72, metalness: 0.08 });
   mat.customProgramCacheKey = () => `street-furniture:${key}`;
@@ -468,6 +625,18 @@ async function fetchStreet() {
   return JSON.parse(await res.text());
 }
 
+// The hand-authored square overlay is optional: without it the squares keep
+// their OSM furniture only.
+async function fetchSquares() {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}${dataPath('squares.json')}`, { cache: 'no-cache' });
+    if (!res.ok || !(res.headers.get('content-type') || '').includes('json')) return null;
+    return JSON.parse(await res.text());
+  } catch {
+    return null;
+  }
+}
+
 const TERRACE_KINDS = new Set(['cafe', 'restaurant', 'bar', 'pub', 'ice_cream', 'pastry', 'bakery', 'fast_food']);
 // lane types and their weight for the spawning people
 const LANE = { pedestrian: 0, sidewalk: 1, square: 2, carfree: 3, path: 4 };
@@ -482,10 +651,10 @@ export function createStreetscape(ctx) {
   const stats = { status: 'loading' };
   let built = null;
   const t0 = performance.now();
-  Promise.all([fetchStreet(), loadPois()])
-    .then(([doc, pois]) => {
+  Promise.all([fetchStreet(), loadPois(), fetchSquares()])
+    .then(([doc, pois, squares]) => {
       try {
-        built = build(ctx, group, doc, pois, stats);
+        built = build(ctx, group, doc, pois, stats, squares);
         stats.status = 'ready';
         stats.buildMs = Math.round(performance.now() - t0);
       } catch (e) {
@@ -509,7 +678,7 @@ export function createStreetscape(ctx) {
   };
 }
 
-function build(ctx, group, doc, pois, stats) {
+function build(ctx, group, doc, pois, stats, squares) {
   const { camera, roads, project, heightAt, items = [], outlines = [], footprints = [], lite = false, model, fx, surfaceHeights } = ctx;
   const tb = performance.now();
   const rnd = lcg(20260623);
@@ -687,6 +856,8 @@ function build(ctx, group, doc, pois, stats) {
     if (cx * cx + cz * cz > SIDEWALK_R * SIDEWALK_R) continue;
     areas.push({ name: a.name || '', kind: a.k, poly, cx, cz, areaM: a.a || Math.abs(polyArea(poly)) / (S * S), pat: calcadaPatternOf(a.name, 'square') });
   }
+  // the three historic squares get the classic main-square pattern
+  const pavedSquares = buildSquarePaving(areas, squares?.squares);
   // calçada meshes: draped on the terrain, or laid on a landmark's paving
   const CT = { pos: [], pat: [], idx: [] };
   let carpets = 0;
@@ -1275,6 +1446,19 @@ function build(ctx, group, doc, pois, stats) {
     if (ter.seats.length) terraces.push(ter);
   }
 
+  // ---- the three historic squares: the authored overlay (data/squares.json)
+  let squareTrees = 0;
+  let squareBenches = 0;
+  let squareTables = 0;
+  if (squares?.squares?.length) {
+    const okAt = (x, z, y) => nearC(x, z) && !solidAt(x, z) && !blockedAt(x, z, y, 0.5 * S);
+    for (const sq of squares.squares) {
+      squareTrees += buildTreeRows({ rows: sq.treeRows, trees: sq.trees, project, heightAt, S, LIFT, put, okAt, rnd });
+      squareBenches += buildBenches({ list: sq.benches, project, groundAt, okAt, benchSpot });
+      squareTables += buildTerraces({ list: sq.terraces, project, groundAt, okAt, put, spots, addSpot, terraces, rnd, S });
+    }
+  }
+
   // ---- objects
   const uniforms = { uStNight: { value: 0 }, uStGlow: { value: 1 } };
   const layers = [];
@@ -1308,6 +1492,36 @@ function build(ctx, group, doc, pois, stats) {
     group.add(mesh);
     layers.push({ type, arr: Float32Array.from(arr), n, mesh, cap, grid, colored, shown: 0 });
   }
+
+  // ---- the squares' monuments: the fountains and Toural's iron coreto
+  let squareTris = 0;
+  const addMonument = (geo, x, z, rot, key) => {
+    const y = groundAt(x, z);
+    if (Number.isNaN(y) || !nearC(x, z) || solidAt(x, z)) return false;
+    const mesh = new THREE.Mesh(geo, furnitureMaterial(uniforms, key));
+    mesh.position.set(x, y, z);
+    mesh.rotation.y = rot;
+    mesh.name = `square-${key}`;
+    mesh.castShadow = !lite;
+    mesh.receiveShadow = !lite;
+    group.add(mesh);
+    squareTris += triCount(geo);
+    return true;
+  };
+  for (const sq of squares?.squares || []) {
+    for (const f of sq.fountains || []) {
+      const p = project(f.lat, f.lon);
+      addMonument(buildFountainGeo(f.r || 1.5, f.h || 3.2), p.x, p.z, f.rot || 0, `fountain-${sq.id}`);
+    }
+    if (sq.coreto) {
+      const p = project(sq.coreto.lat, sq.coreto.lon);
+      addMonument(buildCoretoGeo(sq.coreto.r || 3.1, sq.coreto.h || 3.1), p.x, p.z, sq.coreto.rot || 0, `coreto-${sq.id}`);
+    }
+  }
+  squareTris += squareTrees * triCount(FURNITURE.tree());
+  squareTris += squareBenches * triCount(FURNITURE.bench());
+  squareTris += squareTables * (triCount(FURNITURE.table()) + triCount(FURNITURE.umbrella()));
+
   const TREE_TINT = [0xffffff, 0xe6f0d8, 0xf3f0d6, 0xd9e6cf].map((h) => new THREE.Color(h));
   function fillLayer(L, fx, fz, R) {
     const { arr, mesh, cap, grid } = L;
@@ -1395,6 +1609,11 @@ function build(ctx, group, doc, pois, stats) {
     lanterns: lanternTotal,
     terraces: terraces.length,
     tables: tablesN,
+    squarePaving: pavedSquares,
+    squareTrees,
+    squareBenches,
+    squareTables,
+    squareTriangles: Math.round(squareTris),
     spots: spots.x.length,
     signs: signs.items.length,
     people: people?.stats ?? null,

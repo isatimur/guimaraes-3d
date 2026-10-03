@@ -31,7 +31,7 @@ const HILL_BOOST = 6;
 // species: 0 maritime pine, 1 eucalyptus, 2 broadleaf (oak, plane),
 // 3 shrub, 4 a patch of closed woodland canopy (seven crowns)
 const SPECIES = [
-  { h: [14, 22], w: 0.95, tint: 0x334221, trunk: 0x5a4030 },
+  { h: [14, 22], w: 0.55, tint: 0x334221, trunk: 0x5a4030 },
   { h: [20, 32], w: 0.7, tint: 0x4d5a3a, trunk: 0x8c806c },
   { h: [10, 18], w: 1.05, tint: 0x42592a, trunk: 0x54443a },
   { h: [2.5, 4.5], w: 1.7, tint: 0x4d5a2c, trunk: 0x4a3e30 },
@@ -54,14 +54,19 @@ const SEASON_CROWNS = [
   { pal: [0x52722c, 0x33491f, 0x86682e, 0x684824, 0x4f473b], share: 0.4, bare: 0.4, bloom: 0.12 },
 ];
 const MIX = {
-  forest: [0.14, 0.12, 0.04, 0, 0.7],
+  forest: [0.14, 0.12, 0.04, 0.08, 0.62],
   scrub: [0.04, 0.04, 0.12, 0.8, 0],
-  park: [0.18, 0.03, 0.6, 0, 0.19],
+  park: [0.18, 0.03, 0.55, 0.05, 0.19],
   garden: [0.15, 0, 0.7, 0.15, 0],
   orchard: [0, 0, 0.3, 0.7, 0],
   grass: [0.2, 0.1, 0.7, 0, 0],
   farmland: [0.1, 0.1, 0.8, 0, 0],
 };
+// On the upper Penha slopes the maritime pine takes over from the
+// broadleaves; PINE_Y is the world height (0 at the city centre) where the
+// switch starts. Rock outcrops sit higher still.
+const PINE_Y = 38;
+const ROCK_Y = 55;
 const CELLS = SPECIES.length; // billboard atlas cells
 
 function lcg(seed) {
@@ -139,6 +144,44 @@ function crown(geos, cx, cy, cz, rx, ry, seed, color) {
   geos.push(g);
 }
 
+// A conifer tier: an open cone, normals biased outward and up so the rings
+// shade like needles rather than a smooth lampshade. Same attribute set as a
+// crown so the season palette, the wind sway and the merge all apply.
+function cone(geos, cx, cy, cz, r, h, color, seed, seg = 8) {
+  const cg = new THREE.ConeGeometry(r, h, seg, 1, true);
+  const g = (cg.index ? cg.toNonIndexed() : cg);
+  g.translate(cx, cy, cz);
+  const rnd = lcg(seed);
+  const p = g.attributes.position;
+  const n = new Float32Array(p.count * 3);
+  const c = new Float32Array(p.count * 3);
+  const k = new Float32Array(p.count);
+  const ctr = new Float32Array(p.count * 4);
+  const cr = rnd();
+  const y0 = cy - h / 2;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i) - cx;
+    const y = p.getY(i);
+    const z = p.getZ(i) - cz;
+    const up = (y - y0) / h; // 0 base .. 1 tip
+    const l = Math.hypot(x, z) || 1;
+    n[i * 3] = (x / l) * 0.75;
+    n[i * 3 + 1] = 0.55 + 0.25 * up;
+    n[i * 3 + 2] = (z / l) * 0.75;
+    const shade = 0.6 + 0.5 * up; // darker at the skirt, lighter at the tip
+    c[i * 3] = color.r * shade;
+    c[i * 3 + 1] = color.g * shade;
+    c[i * 3 + 2] = color.b * shade;
+    k[i] = 1;
+    ctr.set([cx, cy, cz, cr], i * 4);
+  }
+  g.setAttribute('normal', new THREE.BufferAttribute(n, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(c, 3));
+  g.setAttribute('aCrown', new THREE.BufferAttribute(k, 1));
+  g.setAttribute('aCenter', new THREE.BufferAttribute(ctr, 4));
+  geos.push(g);
+}
+
 // Trunks reach 0.25 (a quarter of the clump height) below the base, so on a
 // hillside the downhill trunks of a clump still meet the ground.
 const TRUNK_FOOT = 0.25;
@@ -187,41 +230,86 @@ function clumpGeometry(species) {
   const bark = new THREE.Color(SPECIES[species].trunk);
   const r = lcg(101 + species * 17);
   if (species === 0) {
-    // maritime pine: tall bare trunks, umbrella crowns at the top
-    const spots = [[0, 0, 1], [0.26, 0.14, 0.84], [-0.18, -0.24, 0.9], [0.06, -0.34, 0.8]];
-    for (const [x, z, h] of spots) {
-      trunk(geos, x, z, h * 0.8, 0.022, bark);
-      crown(geos, x, h * 0.86, z, 0.2, 0.11, r() * 1e6, white);
-    }
+    // maritime pine: a bare trunk carrying conical, stacked crown tiers
+    trunk(geos, 0, 0, 0.62, 0.026, bark);
+    cone(geos, 0, 0.48, 0, 0.31, 0.42, white, r() * 1e6, 8);
+    cone(geos, 0, 0.70, 0, 0.25, 0.36, white, r() * 1e6, 8);
+    cone(geos, 0, 0.90, 0, 0.16, 0.30, white, r() * 1e6, 7);
   } else if (species === 1) {
-    // eucalyptus: slender trunks, tall loose crowns
-    const spots = [[0, 0, 1], [0.2, 0.12, 0.82], [-0.14, -0.18, 0.9], [0.1, -0.3, 0.76]];
+    // eucalyptus: slender trunks, tall loose layered crowns
+    const spots = [[0, 0, 1], [0.2, 0.12, 0.82], [-0.14, -0.18, 0.9]];
     for (const [x, z, h] of spots) {
-      trunk(geos, x, z, h * 0.5, 0.016, bark);
-      crown(geos, x, h * 0.72, z, 0.13, 0.28, r() * 1e6, white);
+      trunk(geos, x, z, h * 0.52, 0.016, bark);
+      crown(geos, x, h * 0.72, z, 0.13, 0.27, r() * 1e6, white);
     }
+    crown(geos, 0.06, 0.88, -0.04, 0.09, 0.17, r() * 1e6, white);
   } else if (species === 2) {
-    // broadleaf: short trunk, one broad crown and two smaller lobes
-    trunk(geos, 0, 0, 0.42, 0.035, bark);
-    crown(geos, 0, 0.62, 0, 0.42, 0.36, r() * 1e6, white);
-    crown(geos, 0.3, 0.5, 0.18, 0.26, 0.24, r() * 1e6, white);
-    crown(geos, -0.24, 0.48, -0.2, 0.24, 0.22, r() * 1e6, white);
+    // deciduous oak: a broad rounded crown built of stacked lobes
+    trunk(geos, 0, 0, 0.44, 0.036, bark);
+    crown(geos, 0, 0.54, 0, 0.44, 0.34, r() * 1e6, white);
+    crown(geos, 0.16, 0.70, 0.1, 0.30, 0.24, r() * 1e6, white);
+    crown(geos, -0.26, 0.52, -0.16, 0.26, 0.22, r() * 1e6, white);
+    crown(geos, 0.02, 0.84, -0.04, 0.18, 0.15, r() * 1e6, white);
   } else if (species === 3) {
-    // shrubs: three low blobs
-    crown(geos, 0, 0.45, 0, 0.5, 0.45, r() * 1e6, white);
-    crown(geos, 0.55, 0.32, 0.2, 0.36, 0.32, r() * 1e6, white);
-    crown(geos, -0.3, 0.3, -0.45, 0.34, 0.3, r() * 1e6, white);
+    // understory bush: low, layered rounded lobes
+    crown(geos, 0, 0.40, 0, 0.48, 0.42, r() * 1e6, white);
+    crown(geos, 0.42, 0.30, 0.16, 0.34, 0.30, r() * 1e6, white);
+    crown(geos, -0.3, 0.28, -0.36, 0.32, 0.28, r() * 1e6, white);
+    crown(geos, 0.12, 0.20, -0.16, 0.24, 0.22, r() * 1e6, white);
   } else {
-    // closed canopy: seven crowns of mixed height on a disc; the trunks
+    // closed woodland: a varied, layered canopy patch on a disc; the trunks
     // are hidden under it, two short ones show at the edge
-    const spots = [[0, 0, 1], [0.52, 0.18, 0.86], [-0.46, 0.3, 0.92], [0.12, 0.6, 0.8], [-0.2, -0.52, 0.9], [0.5, -0.4, 0.84], [-0.62, -0.18, 0.78]];
-    spots.forEach(([x, z, h], i) => {
-      if (i === 1 || i === 6) trunk(geos, x, z, h * 0.6, 0.024, bark);
-      const wide = i % 3 === 0;
-      crown(geos, x, h * (wide ? 0.74 : 0.7), z, wide ? 0.34 : 0.3, wide ? 0.26 : 0.3, r() * 1e6, white);
+    const spots = [[0, 0, 1, 0.34, 0.28], [0.5, 0.18, 0.88, 0.30, 0.24], [-0.44, 0.3, 0.94, 0.28, 0.26], [0.12, 0.58, 0.8, 0.26, 0.24], [-0.24, -0.5, 0.9, 0.30, 0.26]];
+    spots.forEach(([x, z, h, rx, ry], i) => {
+      if (i === 1 || i === 4) trunk(geos, x, z, h * 0.6, 0.024, bark);
+      crown(geos, x, h * 0.72, z, rx, ry, r() * 1e6, white);
+      if (i === 0) crown(geos, x, h * 0.92, z, rx * 0.6, ry * 0.7, r() * 1e6, white);
     });
   }
   return merge(geos);
+}
+
+// Granite outcrop: a small cluster of angular boulders, flat-shaded, vertex
+// colours only (no season tint). Placed on the upper Penha slopes.
+function rockCluster(seed) {
+  const geos = [];
+  const rnd = lcg(seed);
+  const count = 4 + Math.floor(rnd() * 3);
+  for (let i = 0; i < count; i++) {
+    const ig = new THREE.IcosahedronGeometry(0.36 + rnd() * 0.34, 0);
+    const g = (ig.index ? ig.toNonIndexed() : ig);
+    g.scale(0.8 + rnd() * 0.5, 0.5 + rnd() * 0.4, 0.8 + rnd() * 0.5);
+    g.rotateY(rnd() * 6.283);
+    g.translate((rnd() - 0.5) * 0.9, rnd() * 0.2, (rnd() - 0.5) * 0.9);
+    const shade = 0.30 + rnd() * 0.16;
+    const p = g.attributes.position;
+    const c = new Float32Array(p.count * 3);
+    for (let v = 0; v < p.count; v++) {
+      const t = 0.82 + 0.28 * (p.getY(v) + 0.8);
+      c[v * 3] = shade * t;
+      c[v * 3 + 1] = shade * t * 0.99;
+      c[v * 3 + 2] = shade * t * 0.94;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(c, 3));
+    geos.push(g);
+  }
+  let n = 0;
+  for (const g of geos) n += g.attributes.position.count;
+  const out = new THREE.BufferGeometry();
+  const pos = new Float32Array(n * 3);
+  const col = new Float32Array(n * 3);
+  let o = 0;
+  for (const g of geos) {
+    pos.set(g.attributes.position.array, o);
+    col.set(g.attributes.color.array, o);
+    o += g.attributes.position.count * 3;
+  }
+  out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  out.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  out.computeVertexNormals();
+  out.computeBoundingSphere();
+  for (const g of geos) g.dispose();
+  return out;
 }
 
 // Billboard atlas: four cells (one per species), grey shading with alpha;
@@ -257,6 +345,19 @@ function billboardAtlas() {
     ctx.fillStyle = `rgb(${shade},${shade},${shade})`;
     ctx.fillRect(x - w / 2, y1, w, y0 - y1);
   };
+  // a conifer tier: a shaded triangle from baseY up to baseY - h
+  const tri = (cx, baseY, w, h, shade) => {
+    const g = ctx.createLinearGradient(cx, baseY - h, cx, baseY);
+    g.addColorStop(0, `rgb(${Math.min(255, shade + 70)},${Math.min(255, shade + 70)},${Math.min(255, shade + 70)})`);
+    g.addColorStop(1, `rgb(${shade},${shade},${shade})`);
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(cx, baseY - h);
+    ctx.lineTo(cx + w, baseY);
+    ctx.lineTo(cx - w, baseY);
+    ctx.closePath();
+    ctx.fill();
+  };
   const cell = (i, draw) => {
     ctx.save();
     ctx.translate(i * W, 0);
@@ -265,10 +366,11 @@ function billboardAtlas() {
   };
   // y grows downward: the ground line is at H
   cell(0, () => {
-    for (const [x, h] of [[64, 1], [92, 0.84], [42, 0.9]]) {
-      stem(x, H, H - H * h * 0.82, 3, 120);
-      blob(x, H - H * h * 0.86, 22, 11);
-    }
+    // conical pine: stacked tiers up a bare trunk
+    stem(64, H, H * 0.42, 3, 115);
+    tri(64, H * 0.42, 30, H * 0.5, 110);
+    tri(64, H * 0.27, 24, H * 0.46, 145);
+    tri(64, H * 0.12, 17, H * 0.42, 180);
   });
   cell(1, () => {
     for (const [x, h] of [[64, 1], [86, 0.82], [46, 0.9]]) {
@@ -278,9 +380,12 @@ function billboardAtlas() {
     }
   });
   cell(2, () => {
-    stem(64, H, H - 50, 5, 110);
-    blob(64, H - 78, 46, 40);
-    blob(92, H - 62, 26, 26);
+    // deciduous oak: a broad rounded crown of stacked lobes
+    stem(64, H, H - 46, 5, 110);
+    blob(64, H - 76, 42, 34);
+    blob(58, H - 100, 26, 22);
+    blob(88, H - 62, 25, 25);
+    blob(40, H - 58, 22, 22);
   });
   cell(3, () => {
     blob(64, H - 34, 34, 30);
@@ -546,7 +651,13 @@ export function buildNature(opts) {
         }
       }
       if (close) continue;
-      const s = pickSpecies(mix, rnd());
+      let s = pickSpecies(mix, rnd());
+      const gy = heightAt(x, z);
+      // upper Penha: the pine takes over from broadleaf and closed canopy
+      if (gy > PINE_Y) {
+        const p = Math.min(0.8, (gy - PINE_Y) / 28);
+        if ((s === 1 || s === 2 || s === 4) && rnd() < p) s = 0;
+      }
       const sp = SPECIES[s];
       const hM = sp.h[0] + rnd() * (sp.h[1] - sp.h[0]);
       // the whole clump keeps clear, not only its centre
@@ -558,16 +669,20 @@ export function buildNature(opts) {
       grid.set(key(gi, gj), { x, z });
       tint.set(sp.tint).multiplyScalar(0.8 + rnd() * 0.4);
       tint.offsetHSL((rnd() - 0.5) * 0.03, 0, 0);
+      // per-instance squash: no two crowns share a width / height ratio
       trees.push({
         x,
         // sink the base a little: the trunk foot stays in the ground on a slope
-        y: heightAt(x, z) - Math.min(0.35, hM * S * 0.12),
+        y: gy - Math.min(0.35, hM * S * 0.12),
         z,
         h: hM * S,
         s,
         rot: rnd() * Math.PI * 2,
         tint: [tint.r, tint.g, tint.b],
         phase: rnd() * 6.283,
+        wx: 0.84 + rnd() * 0.32,
+        wz: 0.84 + rnd() * 0.32,
+        wy: 0.92 + rnd() * 0.16,
       });
       n--;
     }
@@ -595,7 +710,7 @@ export function buildNature(opts) {
     mesh.receiveShadow = true;
     mesh.name = `trees-${s}`;
     group.add(mesh);
-    return { mesh, list, stream: [], tintAttr };
+    return { mesh, list, stream: [], tintAttr, tris: geo.attributes.position.count / 3 };
   });
 
   const bbGeo = new THREE.InstancedBufferGeometry();
@@ -618,6 +733,70 @@ export function buildNature(opts) {
   billboards.name = 'tree-billboards';
   group.add(billboards);
 
+  // ---- granite outcrops on the upper Penha slopes
+  if (hills.length) {
+    const rRock = lcg(4242);
+    const rocks = [];
+    for (const h of hills) {
+      const N = opts.mobile ? 18 : 64;
+      let tries = N * 50;
+      let n = 0;
+      const minD = Math.max(3.5, h.r * 0.035);
+      const grid = new Map();
+      const gk = (i, j) => (i * 73856093) ^ (j * 19349663);
+      while (n < N && tries-- > 0) {
+        const a = rRock() * 6.283;
+        const rad = Math.sqrt(rRock()) * h.r * 0.9;
+        const x = h.x + Math.cos(a) * rad;
+        const z = h.z + Math.sin(a) * rad;
+        const y = heightAt(x, z);
+        if (y < ROCK_Y || blocked(x, z)) continue;
+        // favour exposed slopes over level ground
+        const gxp = heightAt(x + 4, z) - heightAt(x - 4, z);
+        const gzp = heightAt(x, z + 4) - heightAt(x, z - 4);
+        if (Math.hypot(gxp, gzp) < 0.7 && rRock() < 0.6) continue;
+        const gi = Math.floor(x / minD);
+        const gj = Math.floor(z / minD);
+        let close = false;
+        for (let di = -2; di <= 2 && !close; di++) {
+          for (let dj = -2; dj <= 2 && !close; dj++) {
+            const q = grid.get(gk(gi + di, gj + dj));
+            if (q && Math.hypot(q.x - x, q.z - z) < minD) close = true;
+          }
+        }
+        if (close) continue;
+        grid.set(gk(gi, gj), { x, z });
+        rocks.push({ x, y: y - 0.25, z, rot: rRock() * 6.283, s: 1.1 + rRock() * 1.7, sy: 0.8 + rRock() * 0.4 });
+        n++;
+      }
+    }
+    if (rocks.length) {
+      const rockGeo = rockCluster(7);
+      const rockMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0, flatShading: true });
+      rockMat.name = 'outcrops';
+      const rockMesh = new THREE.InstancedMesh(rockGeo, rockMat, rocks.length);
+      const rm = new THREE.Matrix4();
+      const rq = new THREE.Quaternion();
+      const rp = new THREE.Vector3();
+      const rs = new THREE.Vector3();
+      const rUp = new THREE.Vector3(0, 1, 0);
+      rocks.forEach((o, i) => {
+        rp.set(o.x, o.y, o.z);
+        rq.setFromAxisAngle(rUp, o.rot);
+        rs.set(o.s, o.s * o.sy, o.s);
+        rm.compose(rp, rq, rs);
+        rockMesh.setMatrixAt(i, rm);
+      });
+      rockMesh.instanceMatrix.needsUpdate = true;
+      rockMesh.castShadow = true;
+      rockMesh.receiveShadow = true;
+      rockMesh.name = 'outcrops';
+      group.add(rockMesh);
+      stats.rocks = rocks.length;
+      stats.rockTris = Math.round((rockGeo.attributes.position.count / 3) * rocks.length);
+    }
+  }
+
   const _m = new THREE.Matrix4();
   const _q = new THREE.Quaternion();
   const _p = new THREE.Vector3();
@@ -630,6 +809,7 @@ export function buildNature(opts) {
     const r2 = nearR * nearR;
     let far = 0;
     let nearCount = 0;
+    let nearTris = 0;
     for (let s = 0; s < near.length; s++) {
       const N = near[s];
       let k = 0;
@@ -642,14 +822,14 @@ export function buildNature(opts) {
         if (dx * dx + dy * dy + dz * dz < r2) {
           _p.set(t.x, t.y, t.z);
           _q.setFromAxisAngle(_up, t.rot);
-          _s.set(t.h, t.h, t.h);
+          _s.set(t.h * (t.wx || 1), t.h * (t.wy || 1), t.h * (t.wz || 1));
           _m.compose(_p, _q, _s);
           N.mesh.setMatrixAt(k, _m);
           N.tintAttr.setXYZ(k, t.tint[0], t.tint[1], t.tint[2]);
           k++;
         } else {
-          bbInst.setXYZW(far, t.x, t.y, t.z, t.h);
-          bbInfo.setXYZW(far, s, wr, t.phase, 0);
+          bbInst.setXYZW(far, t.x, t.y, t.z, t.h * (t.wy || 1));
+          bbInfo.setXYZW(far, s, wr * (t.wx || 1), t.phase, 0);
           bbTint.setXYZ(far, t.tint[0], t.tint[1], t.tint[2]);
           far++;
         }
@@ -658,6 +838,7 @@ export function buildNature(opts) {
       N.mesh.instanceMatrix.needsUpdate = true;
       N.tintAttr.needsUpdate = true;
       nearCount += k;
+      nearTris += k * N.tris;
     }
     bbGeo.instanceCount = far;
     bbInst.needsUpdate = true;
@@ -665,6 +846,7 @@ export function buildNature(opts) {
     bbTint.needsUpdate = true;
     stats.near = nearCount;
     stats.far = far;
+    stats.nearTris = Math.round(nearTris);
   }
 
   // ---- water: river ribbons and pond / reservoir polygons (src/water.js)

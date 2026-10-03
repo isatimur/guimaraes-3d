@@ -10,7 +10,7 @@
 // the facade shader live in src/facades.js.
 import * as THREE from 'three';
 import { S } from './geo.js';
-import { setFacadeConfig, facadeStyle, wallBase, roofBase, roofPlan, extrudeRoofed, STYLE, FACADE_VERT_PARS, FACADE_VERT, FACADE_FRAG_PARS, FACADE_FRAG } from './facades.js';
+import { setFacadeConfig, facadeStyle, wallBase, roofBase, roofPlan, extrudeRoofed, STYLE, RING_M, centreDist, FACADE_VERT_PARS, FACADE_VERT, FACADE_FRAG_PARS, FACADE_FRAG } from './facades.js';
 
 const TILE_M = 1000; // 1 km: about 60 draw calls for the city, not 230
 const MAX_TRIS = 1_500_000;
@@ -74,10 +74,15 @@ export function buildingColors(seed, k, areaM2, x = 0, z = 0, hM = 7, a = null) 
   const wb = church ? CHURCH_WALL : wallBase(style, h4, a);
   const wk = tint * WALL_DIM;
   const rb = roofBase(shed, h2, a);
-  const rk = 0.92 + h1 * 0.16;
+  // terracotta varies per building in value and, slightly, in hue
+  const rh = hash(seed + 5501) - 0.5;
+  const rk = 0.9 + h1 * 0.2;
+  const roof = shed
+    ? [rb[0] * rk, rb[1] * rk, rb[2] * rk]
+    : [rb[0] * rk * (1 + 0.09 * rh), rb[1] * rk * (1 + 0.02 * rh), rb[2] * rk * (1 - 0.08 * rh)];
   return {
     wc: [wb[0] * wk, wb[1] * wk, wb[2] * wk],
-    rc: [rb[0] * rk, rb[1] * rk, rb[2] * rk],
+    rc: roof,
     win: church ? -1 : style * 2 + Math.min(h1, 0.999),
     style,
     h1,
@@ -124,7 +129,7 @@ export function extrudeBuilding(T, pts, h, k, areaM2, seedIndex, heightAt, roofO
     lastPlan.plan = plan; // tests (count the roof kinds)
     lastPlan.style = style;
     const sf = attrs?.sf;
-    extrudeRoofed(T, pts, plan, { base, gmin, top, footM, hM, wc, rc, w: seed, seed: seedIndex, shop: sf && sf.size ? (i) => sf.has(i) : null });
+    extrudeRoofed(T, pts, plan, { base, gmin, top, footM, hM, wc, rc, w: seed, seed: seedIndex, style, areaM2, close: centreDist(cx, cz) <= RING_M, shop: sf && sf.size ? (i) => sf.has(i) : null });
     return top;
   }
 

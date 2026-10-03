@@ -294,7 +294,34 @@ export function roofPlan(pts, areaM2, k, hM, style, top, a, h2, h3) {
   }
   // a flat cap where a wide hip would rise above the ridge limit
   if (shape === 'hipped' && tanP * halfW > capU + 1e-6) planes.push({ ax: 0, az: 0, c: top + capU });
-  return { shape, planes, parapet: false, clutter: 0, poly: regular ? eaveRect(R) : null };
+  return { shape, planes, parapet: false, clutter: 0, poly: regular ? eaveRect(R) : null, rect: R, ridge: pitchedRidge(shape, R, top, sW, sL, H, capU, across) };
+}
+
+// The ridge line of a pitched roof in world units: { ax, az, bx, bz, y }
+// (a == b when the ridge is a point), or null when the roof has none (a
+// pyramidal apex, a skillion, or a hipped frustum with a flat cap). Used by
+// the ridge tiles and the chimneys in extrudeRoofed.
+function pitchedRidge(shape, R, top, sW, sL, H, capU, across) {
+  if (shape !== 'gabled' && shape !== 'hipped') return null;
+  const { ux, uz, u0, u1, v0, v1 } = R;
+  const at = (u, v) => ({ x: u * ux - v * uz, z: u * uz + v * ux });
+  const uc = (u0 + u1) / 2;
+  const vc = (v0 + v1) / 2;
+  const halfW = (v1 - v0) / 2;
+  const a = shape === 'gabled' && across ? at(uc, v0) : at(u0, vc);
+  const b = shape === 'gabled' && across ? at(uc, v1) : at(u1, vc);
+  if (shape === 'gabled') return { ax: a.x, az: a.z, bx: b.x, bz: b.z, y: top + H };
+  // hipped: a frustum with a flat cap has no ridge line
+  if (sW * halfW > capU + 1e-6) return null;
+  const inset = sL > 1e-9 ? (sW * halfW) / sL : halfW;
+  const y = top + sW * halfW;
+  if (u1 - u0 <= 2 * inset + 1e-6) {
+    const p = at(uc, vc);
+    return { ax: p.x, az: p.z, bx: p.x, bz: p.z, y };
+  }
+  const ra = at(u0 + inset, vc);
+  const rb = at(u1 - inset, vc);
+  return { ax: ra.x, az: ra.z, bx: rb.x, bz: rb.z, y };
 }
 
 // The rectangle grown by the eave overhang: the roof of a regular
@@ -420,6 +447,8 @@ export function extrudeRoofed(T, pts, plan, g) {
   const facets = plan.planes.length ? roofFacets(plan, pts) : null;
   if (facets === null && plan.planes.length) plan = FLAT_FALLBACK;
   const planes = plan.planes;
+  // pitched detail (roofs and, optionally, flat caps) goes here
+  const IDX = T.near || T.idx;
   const wallTo = plan.parapet ? top + PARAPET_M * S : top;
   let run = 0;
   for (let i = 0; i < n; i++) {
@@ -465,6 +494,13 @@ export function extrudeRoofed(T, pts, plan, g) {
     run += LM;
   }
 
+  // cornice/eave and rooftop detail on the pitched roofs, into the same
+  // buffers as the faceted roof (no extra draw calls)
+  if (planes.length) {
+    if (g.close) eaves(T, IDX, pts, top, wc, w);
+    roofDetail(T, IDX, plan, g);
+  }
+
   // roof
   if (!planes.length) {
     flatCap(T, pts, top, rc, w, T.idx);
@@ -474,7 +510,6 @@ export function extrudeRoofed(T, pts, plan, g) {
   // T.near / T.farCap (optional): the pitched facets go to T.near, and a
   // flat cap at the eaves to T.farCap, so a mesh can draw either (the
   // middle LOD of buildings.js); without them, the facets go to T.idx
-  const IDX = T.near || T.idx;
   if (T.farCap) flatCap(T, pts, top, rc, w, T.farCap);
   for (const { P, poly, faces } of facets) {
     let nx = -P.ax;
@@ -616,6 +651,185 @@ function clutter(T, pts, y, count, w, seed) {
     const up = (cs[1].z - cs[0].z) * (cs[2].x - cs[0].x) - (cs[1].x - cs[0].x) * (cs[2].z - cs[0].z);
     if (up >= 0) T.idx.push(v0, v0 + 1, v0 + 2, v0, v0 + 2, v0 + 3);
     else T.idx.push(v0, v0 + 2, v0 + 1, v0, v0 + 3, v0 + 2);
+  }
+}
+
+// ------------------------------------------------------------ roof detail
+// Everything below is pushed into the same vertex/index buffers as the walls
+// and the roof, so the whole fabric stays one draw call per tile.
+function fracRnd(seed) {
+  let r = frac(Math.sin(seed * 12.9898 + 4.1) * 43758.5453);
+  return () => (r = frac(r * 9301 + 0.4927 + Math.sin(r * 78.233) * 0.5));
+}
+const shade = (c, k) => [c[0] * k, c[1] * k, c[2] * k];
+// derive a cream cornice from the wall colour
+const corniceCol = (wc) => [wc[0] * 0.78 + 0.05, wc[1] * 0.76 + 0.05, wc[2] * 0.72 + 0.045];
+// chimney body: the wall colour pulled toward grey granite
+const chimneyCol = (wc) => [wc[0] * 0.62 + 0.09, wc[1] * 0.6 + 0.09, wc[2] * 0.56 + 0.085];
+
+// world corners of an oriented rectangle (counter-clockwise, positive area)
+function rectCorners(cx, cz, ux, uz, hu, hv) {
+  const o = (du, dv) => ({ x: cx + du * ux - dv * uz, z: cz + du * uz + dv * ux });
+  return [o(-hu, -hv), o(hu, -hv), o(hu, hv), o(-hu, hv)];
+}
+
+// a quad: the geometric normal is forced to agree with (nx, ny, nz), so the
+// winding always faces out whatever order the corners come in
+function quadN(T, IDX, a, b, c, d, nx, ny, nz, col, w) {
+  const ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
+  const vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
+  let gx = uy * vz - uz * vy, gy = uz * vx - ux * vz, gz = ux * vy - uy * vx;
+  const gl = Math.hypot(gx, gy, gz) || 1;
+  const s = gx * nx + gy * ny + gz * nz >= 0 ? 1 : -1;
+  gx = (gx / gl) * s; gy = (gy / gl) * s; gz = (gz / gl) * s;
+  const v0 = T.pos.length / 3;
+  T.pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, d.x, d.y, d.z);
+  for (let i = 0; i < 4; i++) { T.nor.push(gx, gy, gz); T.col.push(col[0], col[1], col[2]); T.wall.push(0, -1, 0, w); }
+  if (s > 0) IDX.push(v0, v0 + 1, v0 + 2, v0, v0 + 2, v0 + 3);
+  else IDX.push(v0, v0 + 2, v0 + 1, v0, v0 + 3, v0 + 2);
+}
+function triN(T, IDX, a, b, c, nx, ny, nz, col, w) {
+  const ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
+  const vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
+  let gx = uy * vz - uz * vy, gy = uz * vx - ux * vz, gz = ux * vy - uy * vx;
+  const gl = Math.hypot(gx, gy, gz) || 1;
+  const s = gx * nx + gy * ny + gz * nz >= 0 ? 1 : -1;
+  gx = (gx / gl) * s; gy = (gy / gl) * s; gz = (gz / gl) * s;
+  const v0 = T.pos.length / 3;
+  T.pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+  for (let i = 0; i < 3; i++) { T.nor.push(gx, gy, gz); T.col.push(col[0], col[1], col[2]); T.wall.push(0, -1, 0, w); }
+  if (s > 0) IDX.push(v0, v0 + 1, v0 + 2);
+  else IDX.push(v0, v0 + 2, v0 + 1);
+}
+// an axis-vertical box on four world corners (sides + top; the base is
+// embedded in the roof and never seen)
+function boxAt(T, IDX, cs, y0, y1, col, w) {
+  for (let i = 0; i < 4; i++) {
+    const A = cs[i];
+    const B = cs[(i + 1) % 4];
+    const dx = B.x - A.x, dz = B.z - A.z, l = Math.hypot(dx, dz) || 1;
+    quadN(T, IDX, { x: A.x, y: y0, z: A.z }, { x: B.x, y: y0, z: B.z }, { x: B.x, y: y1, z: B.z }, { x: A.x, y: y1, z: A.z }, dz / l, 0, -dx / l, col, w);
+  }
+  quadN(T, IDX, { x: cs[0].x, y: y1, z: cs[0].z }, { x: cs[1].x, y: y1, z: cs[1].z }, { x: cs[2].x, y: y1, z: cs[2].z }, { x: cs[3].x, y: y1, z: cs[3].z }, 0, 1, 0, col, w);
+}
+
+// the eave/cornice line: a thin overhanging band around the wall head, so
+// the roof edge reads from the street (fascia + top lip, 4 triangles a side)
+function eaves(T, IDX, pts, top, wc, w) {
+  const e = EAVE_M * S;
+  const yb = top - 0.2 * S;
+  const yt = top + 0.02 * S;
+  const col = corniceCol(wc);
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const a = pts[i];
+    const b = pts[(i + 1) % n];
+    const dx = b.x - a.x, dz = b.z - a.z;
+    const l = Math.hypot(dx, dz) || 1;
+    const nx = dz / l, nz = -dx / l;
+    const ex = (dx / l) * e, ez = (dz / l) * e;
+    const Oa = { x: a.x + nx * e - ex, z: a.z + nz * e - ez };
+    const Ob = { x: b.x + nx * e + ex, z: b.z + nz * e + ez };
+    quadN(T, IDX, { x: Oa.x, y: yb, z: Oa.z }, { x: Ob.x, y: yb, z: Ob.z }, { x: Ob.x, y: yt, z: Ob.z }, { x: Oa.x, y: yt, z: Oa.z }, nx, 0, nz, col, w);
+    quadN(T, IDX, { x: a.x, y: yt, z: a.z }, { x: b.x, y: yt, z: b.z }, { x: Ob.x, y: yt, z: Ob.z }, { x: Oa.x, y: yt, z: Oa.z }, 0, 1, 0, col, w);
+  }
+}
+
+// a gabled dormer on a long slope, historic centre, larger buildings only
+function dormer(T, IDX, plan, g, R, at) {
+  const { wc, w } = g;
+  const { ux, uz, u0, u1, v0, v1 } = R;
+  const halfW = (v1 - v0) / 2;
+  const rnd = fracRnd(g.seed ^ 0x7a11);
+  const low = rnd() < 0.5;
+  const vRidge = low ? v0 : v1;
+  const dirIn = low ? 1 : -1;
+  const nOut = -dirIn;
+  const uMid = u0 + (u1 - u0) * (0.35 + 0.3 * rnd());
+  const wd = (1.0 + 0.4 * rnd()) * S;
+  const depth = (1.1 + 0.4 * rnd()) * S;
+  const vf = vRidge + dirIn * (0.35 * halfW);
+  const vb = vf + dirIn * depth;
+  const cf = at(uMid, vf);
+  const yf = envelope(plan.planes, cf.x, cf.z);
+  const yb = yf - 1.0 * S;
+  const ye = yf + (0.8 + 0.25 * rnd()) * S;
+  const apex = ye + wd * 0.5;
+  const uL = uMid - wd / 2, uR = uMid + wd / 2;
+  const nvx = -nOut * uz, nvz = nOut * ux;
+  const col = [wc[0] * 0.95, wc[1] * 0.95, wc[2] * 0.95];
+  const P = (u, v, y) => ({ ...at(u, v), y });
+  // front gable: the wall, its triangle and a proud dark window
+  quadN(T, IDX, P(uL, vf, yb), P(uR, vf, yb), P(uR, vf, ye), P(uL, vf, ye), nvx, 0, nvz, col, w);
+  triN(T, IDX, P(uL, vf, ye), P(uR, vf, ye), P(uMid, vf, apex), nvx, 0, nvz, col, w);
+  const vw = vf + nOut * 0.04 * S;
+  quadN(T, IDX, P(uMid - wd * 0.26, vw, yb + 0.35 * S), P(uMid + wd * 0.26, vw, yb + 0.35 * S), P(uMid + wd * 0.26, vw, ye - 0.12 * S), P(uMid - wd * 0.26, vw, ye - 0.12 * S), nvx, 0, nvz, [0.03, 0.035, 0.042], w);
+  // cheeks
+  quadN(T, IDX, P(uL, vf, yb), P(uL, vb, yb), P(uL, vb, ye), P(uL, vf, ye), -ux, 0, -uz, col, w);
+  quadN(T, IDX, P(uR, vb, yb), P(uR, vf, yb), P(uR, vf, ye), P(uR, vb, ye), ux, 0, uz, col, w);
+  // back gable (buried in the main roof, closes the shell)
+  quadN(T, IDX, P(uR, vb, yb), P(uL, vb, yb), P(uL, vb, ye), P(uR, vb, ye), -nvx, 0, -nvz, col, w);
+  triN(T, IDX, P(uR, vb, ye), P(uL, vb, ye), P(uMid, vb, apex), -nvx, 0, -nvz, col, w);
+  // two roof planes off the little ridge
+  quadN(T, IDX, P(uMid, vf, apex), P(uL, vf, ye), P(uL, vb, ye), P(uMid, vb, apex), 0, 1, 0, col, w);
+  quadN(T, IDX, P(uR, vf, ye), P(uMid, vf, apex), P(uMid, vb, apex), P(uR, vb, ye), 0, 1, 0, col, w);
+}
+
+// ridge tiles, chimneys and (centre only) dormers on one pitched roof
+function roofDetail(T, IDX, plan, g) {
+  const { wc, rc, w } = g;
+  const R = plan.rect;
+  if (!R) return;
+  const ridge = plan.ridge;
+  if (ridge) {
+    const dx = ridge.bx - ridge.ax, dz = ridge.bz - ridge.az;
+    const len = Math.hypot(dx, dz);
+    if (len > 0.9 * S) {
+      const uxr = dx / len, uzr = dz / len;
+      const px = -uzr * 0.17 * S, pz = uxr * 0.17 * S;
+      const yt = ridge.y + 0.15 * S;
+      const yb = ridge.y - 0.05 * S;
+      const col = shade(rc, 0.82);
+      const A = (s) => ({ x: ridge.ax + px * s, z: ridge.az + pz * s });
+      const B = (s) => ({ x: ridge.bx + px * s, z: ridge.bz + pz * s });
+      const tA = { x: ridge.ax, y: yt, z: ridge.az };
+      const tB = { x: ridge.bx, y: yt, z: ridge.bz };
+      quadN(T, IDX, { ...A(1), y: yb }, { ...B(1), y: yb }, tB, tA, 0, 1, 0, col, w);
+      quadN(T, IDX, { ...B(-1), y: yb }, { ...A(-1), y: yb }, tA, tB, 0, 1, 0, col, w);
+      triN(T, IDX, { ...A(1), y: yb }, { ...A(-1), y: yb }, tA, 0, 1, 0, col, w);
+      triN(T, IDX, { ...B(-1), y: yb }, { ...B(1), y: yb }, tB, 0, 1, 0, col, w);
+    }
+  }
+  const style = g.style;
+  // chimneys on the older fabric (historic, ring and houses); modern blocks
+  // and sheds have none
+  const oldish = style === STYLE.HIST || style === STYLE.AZUL || style === STYLE.RING || style === STYLE.HOUSE;
+  if (!oldish) return;
+  if (ridge && g.close) {
+    const rnd = fracRnd(g.seed ^ 0x51ed);
+    const P0x = ridge.ax, P0z = ridge.az;
+    const rdx = ridge.bx - ridge.ax, rdz = ridge.bz - ridge.az;
+    const rlen = Math.hypot(rdx, rdz);
+    const count = g.areaM2 >= 200 ? 2 : 1;
+    const col = chimneyCol(wc);
+    const capCol = shade(rc, 0.7);
+    for (let c = 0; c < count; c++) {
+      const t = rlen > 0.5 * S ? (count === 1 ? 0.34 + 0.32 * rnd() : 0.26 + 0.48 * c + 0.08 * rnd()) : 0.5;
+      const px = P0x + rdx * t, pz = P0z + rdz * t;
+      const bx = rlen > 0.5 * S ? rdx / rlen : R.ux;
+      const bz = rlen > 0.5 * S ? rdz / rlen : R.uz;
+      const bw = (0.32 + 0.14 * rnd()) * S;
+      const bh = bw * (0.85 + 0.35 * rnd());
+      const y0 = ridge.y - 1.1 * S;
+      const y1 = ridge.y + (0.7 + 0.7 * rnd()) * S;
+      boxAt(T, IDX, rectCorners(px, pz, bx, bz, bw, bh), y0, y1, col, w);
+      boxAt(T, IDX, rectCorners(px, pz, bx, bz, bw + 0.12 * S, bh + 0.12 * S), y1, y1 + 0.16 * S, capCol, w);
+    }
+  }
+  const hist = style === STYLE.HIST || style === STYLE.AZUL;
+  if (hist && g.close && g.areaM2 >= 250 && plan.poly && (plan.shape === 'gabled' || plan.shape === 'hipped')) {
+    const rnd = fracRnd(g.seed ^ 0x2f13);
+    if (rnd() < 0.55) dormer(T, IDX, plan, g, R, (u, v) => ({ x: u * R.ux - v * R.uz, z: u * R.uz + v * R.ux }));
   }
 }
 
