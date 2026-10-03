@@ -1,115 +1,115 @@
 {
- "id": "oliveira",
- "name_pt": "Igreja de Nossa Senhora da Oliveira",
- "name_ru": "Церковь Богоматери Оливейры",
- "category": "religious",
- "year": "1387",
- "short_ru": "Готическая коллегиата на месте монастыря Мумадоны 949 года; перед ней — Падран-ду-Саладу",
- "long_ru": "Графиня Мумадона Диаш основала здесь монастырь около 949 года, а в XII веке он стал богатой коллегиатой Санта-Мария. Король Жуан I после победы при Алжубарроте исполнил обет и в 1387–1413 годах перестроил церковь в готике; башню в мануэлинском стиле добавили около 1513 года. На площади перед храмом стоит готический балдахин Падран-ду-Саладу в память о битве 1340 года, а рядом растёт олива — символ чуда 1342 года, давшего церкви имя.",
- "image": "assets/img/guimaraes/oliveira.jpg",
- "image_credit": {
-  "author": "Palickap",
-  "license": "CC BY-SA 4.0",
-  "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es,_Padr%C3%A3o_do_Salado_(1).jpg"
- },
- "history_ru": "Всё началось с монастыря. Около 949 года графиня Мумадона Диаш основала в низине Вимаранеша обитель во имя Спасителя, Девы Марии и апостолов — сначала двойную, для монахов и монахинь. В 1074–1075 годах папа Григорий VII запретил двойные монастыри, и к 1089 году обитель стала мужской. Около 1139 года монастырь превратили в коллегиату Санта-Мария-де-Гимарайнш — одну из богатейших церковных корпораций Португалии позднего Средневековья. От романской церкви XII века остались крыло клуатра, фасад зала капитула и капитель главного портала.\n\nВ XIV веке коллегиата стала центром паломничества к образу Святой Марии. Накануне битвы при Алжубарроте в 1385 году король Жуан I дал ей обет и в 1387 году оплатил перестройку храма. Проект приписывают придворному архитектору Жуану Гарсии де Толедо. Основные работы закончили к 1401 году, последние — в 1413-м. Три нефа с выступающим трансептом — обычная схема церквей нищенствующих орденов; большое окно фасада, устроенное как ретабло с Древом Иессеевым, — одна из лучших готических композиций Португалии. Около 1513 года над церковью подняли башню в мануэлинском стиле с зубцами.\n\nИмя церкви дала легенда. Готский король Вамба будто бы привёз из Иерусалима оливу и посадил её в Сан-Торкату; в XIV веке дерево пересадили на главную площадь, и оно засохло. В 1342 году купец Перу Эштевеш поставил рядом крест, привезённый, по преданию, из Нормандии, — и через три дня олива зазеленела. Горожане увидели в этом чудо, и Богоматерь Победы стала Богоматерью Оливейры. Крест и сегодня стоит под готическим балдахином Падран-ду-Саладу, который король Афонсу IV воздвиг в память о победе над маврами при Саладо в 1340 году. Олива росла на площади до 1870 года; в 1985 году, при реставрации площади, на её месте посадили новую.\n\nВ XVII–XVIII веках церковь переделали в духе времени: при Педру II углубили капеллу-мор, а интерьер украсили позолоченной резьбой. Реставрация XX века снова открыла средневековые гранитные стены и колонны. Коллегиату упразднили в 1911 году и восстановили в 1967-м. В бывшем клуатре работает музей Алберту Сампайю с сокровищницей коллегиаты. Церковь — национальный памятник с 1910 года и часть исторического центра, включённого в список ЮНЕСКО в 2001 году.",
- "facts_ru": [
-  "Монастырь Мумадоны Диаш основан около 949 года.",
-  "Жуан I перестроил церковь в 1387–1413 годах по обету перед битвой при Алжубарроте.",
-  "Падран-ду-Саладу построил Афонсу IV в память о победе 1340 года.",
-  "Даты на ограде оливы — 1342, 1870 и 1985 — три жизни дерева.",
-  "Национальный памятник с 1910 года; часть объекта ЮНЕСКО с 2001 года."
- ],
- "sources": [
-  {
-   "title": "Igreja de Nossa Senhora da Oliveira (Guimarães) — Wikipédia (pt)",
-   "url": "https://pt.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira_(Guimar%C3%A3es)"
-  },
-  {
-   "title": "Igreja de Nossa Senhora da Oliveira — Wikipedia (en)",
-   "url": "https://en.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira"
-  },
-  {
-   "title": "Igreja de Nossa Senhora da Oliveira — Câmara Municipal de Guimarães",
-   "url": "https://www.cm-guimaraes.pt/monumentos/poi/igreja-de-nossa-senhora-da-oliveira"
-  },
-  {
-   "title": "Padrão do Salado — Wikipédia (pt)",
-   "url": "https://pt.wikipedia.org/wiki/Padr%C3%A3o_do_Salado"
-  }
- ],
- "tip_ru": "Церковь открыта с понедельника по субботу с 8:30 до 12:00 и с 15:30 до 19:30, в воскресенье с 9:00 до 13:00 и с 17:00 до 20:00; вход свободный. Через готическую аркаду старой ратуши с площади Оливейры попадаете прямо на площадь Сантьяго. В клуатре за церковью — музей Алберту Сампайю; общий билет с замком и дворцом герцогов стоит 13 €.",
- "gallery": [
-  {
-   "src": "assets/img/guimaraes/oliveira-1.jpg",
-   "kind": "interior",
-   "caption_ru": "Три нефа на гранитных колоннах, вид к капелле-мор",
-   "credit": {
-    "author": "Josep Renalias",
-    "license": "CC BY-SA 3.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_-_Nossa_Senhora_da_Oliveira_-_Interior.JPG"
-   }
-  },
-  {
-   "src": "assets/img/guimaraes/oliveira-2.jpg",
-   "kind": "interior",
-   "caption_ru": "Капелла-мор с позолоченным ретабло и образом Богоматери Оливейры",
-   "credit": {
-    "author": "John Samuel",
+  "id": "oliveira",
+  "name_pt": "Igreja de Nossa Senhora da Oliveira",
+  "name_ru": "Церковь Богоматери Оливейры",
+  "category": "religious",
+  "year": "1387",
+  "short_ru": "Готическая коллегиата на месте монастыря Мумадоны 949 года; перед ней — Падран-ду-Саладу",
+  "long_ru": "Графиня Мумадона Диаш основала здесь монастырь около 949 года, а в XII веке он стал богатой коллегиатой Санта-Мария. Король Жуан I после победы при Алжубарроте исполнил обет и в 1387–1413 годах перестроил церковь в готике; башню в мануэлинском стиле добавили около 1513 года. На площади перед храмом стоит готический балдахин Падран-ду-Саладу в память о битве 1340 года, а рядом растёт олива — символ чуда 1342 года, давшего церкви имя.",
+  "image": "assets/img/guimaraes/oliveira.jpg",
+  "image_credit": {
+    "author": "Palickap",
     "license": "CC BY-SA 4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Interior_of_Igreja_de_Nossa_Senhora_da_Oliveira_08.jpg"
-   }
+    "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es,_Padr%C3%A3o_do_Salado_(1).jpg"
   },
-  {
-   "src": "assets/img/guimaraes/oliveira-3.jpg",
-   "kind": "interior",
-   "caption_ru": "Орган на хорах над входом",
-   "credit": {
-    "author": "Double Croche",
-    "license": "CC0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Orgel,_Igreja_de_Nossa_Senhora_da_Oliveira,_Guimar%C3%A3es,_Portugal.jpg"
-   }
-  },
-  {
-   "src": "assets/img/guimaraes/oliveira-4.jpg",
-   "kind": "detail",
-   "caption_ru": "Капители Падран-ду-Саладу: рыцари в кольчугах",
-   "credit": {
-    "author": "Daniel Villafruela",
-    "license": "CC BY-SA 4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C4%81es-Padr%C3%A3o_da_batalha_de_Salado-Cavaleiros-20140912.jpg"
-   }
-  },
-  {
-   "src": "assets/img/guimaraes/oliveira-5.jpg",
-   "kind": "exterior",
-   "caption_ru": "Площадь Оливейры: балдахин Падран-ду-Саладу, олива и террасы кафе",
-   "credit": {
-    "author": "Feliciano Guimarães",
-    "license": "CC BY 2.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_@_36_MP_-_Largo_da_Oliveira_(35262143891).jpg"
-   }
-  }
- ],
- "panorama": null,
- "videos": [
-  {
-   "youtube_id": "ppw-6obEMHk",
-   "title": "Igreja de Nossa Senhora da Oliveira, Guimarães Portugal",
-   "channel": "Porta dos Fundadores",
-   "lang": "pt"
-  },
-  {
-   "youtube_id": "-ZYY2afr7iw",
-   "title": "Órgão Histórico na Paróquia de Nossa Senhora da Oliveira, Guimarães",
-   "channel": "Agência Ecclesia",
-   "lang": "pt"
-  },
-  {
-   "youtube_id": "OFXXmcMT23g",
-   "title": "Lenda da Nossa Senhora da Oliveira - Guimarães",
-   "channel": "Joana Silva",
-   "lang": "pt"
-  }
- ]
+  "history_ru": "Всё началось с монастыря. Около 949 года графиня Мумадона Диаш основала в низине Вимаранеша обитель во имя Спасителя, Девы Марии и апостолов — сначала двойную, для монахов и монахинь. В 1074–1075 годах папа Григорий VII запретил двойные монастыри, и к 1089 году обитель стала мужской. Около 1139 года монастырь превратили в коллегиату Санта-Мария-де-Гимарайнш — одну из богатейших церковных корпораций Португалии позднего Средневековья. От романской церкви XII века остались крыло клуатра, фасад зала капитула и капитель главного портала.\n\nВ XIV веке коллегиата стала центром паломничества к образу Святой Марии. Накануне битвы при Алжубарроте в 1385 году король Жуан I дал ей обет и в 1387 году оплатил перестройку храма. Проект приписывают придворному архитектору Жуану Гарсии де Толедо. Основные работы закончили к 1401 году, последние — в 1413-м. Три нефа с выступающим трансептом — обычная схема церквей нищенствующих орденов; большое окно фасада, устроенное как ретабло с Древом Иессеевым, — одна из лучших готических композиций Португалии. Около 1513 года над церковью подняли башню в мануэлинском стиле с зубцами.\n\nИмя церкви дала легенда. Готский король Вамба будто бы привёз из Иерусалима оливу и посадил её в Сан-Торкату; в XIV веке дерево пересадили на главную площадь, и оно засохло. В 1342 году купец Перу Эштевеш поставил рядом крест, привезённый, по преданию, из Нормандии, — и через три дня олива зазеленела. Горожане увидели в этом чудо, и Богоматерь Победы стала Богоматерью Оливейры. Крест и сегодня стоит под готическим балдахином Падран-ду-Саладу, который король Афонсу IV воздвиг в память о победе над маврами при Саладо в 1340 году. Олива росла на площади до 1870 года; в 1985 году, при реставрации площади, на её месте посадили новую.\n\nВ XVII–XVIII веках церковь переделали в",
+  "facts_ru": [
+    "Монастырь Мумадоны Диаш основан около 949 года.",
+    "Жуан I перестроил церковь в 1387–1413 годах по обету перед битвой при Алжубарроте.",
+    "Падран-ду-Саладу построил Афонсу IV в память о победе 1340 года.",
+    "Даты на ограде оливы — 1342, 1870 и 1985 — три жизни дерева.",
+    "Национальный памятник с 1910 года; часть объекта ЮНЕСКО с 2001 года."
+  ],
+  "sources": [
+    {
+      "title": "Igreja de Nossa Senhora da Oliveira (Guimarães) — Wikipédia (pt)",
+      "url": "https://pt.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira_(Guimar%C3%A3es)"
+    },
+    {
+      "title": "Igreja de Nossa Senhora da Oliveira — Wikipedia (en)",
+      "url": "https://en.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira"
+    },
+    {
+      "title": "Igreja de Nossa Senhora da Oliveira — Câmara Municipal de Guimarães",
+      "url": "https://www.cm-guimaraes.pt/monumentos/poi/igreja-de-nossa-senhora-da-oliveira"
+    },
+    {
+      "title": "Padrão do Salado — Wikipédia (pt)",
+      "url": "https://pt.wikipedia.org/wiki/Padr%C3%A3o_do_Salado"
+    }
+  ],
+  "tip_ru": "Церковь открыта с понедельника по субботу с 8:30 до 12:00 и с 15:30 до 19:30, в воскресенье с 9:00 до 13:00 и с 17:00 до 20:00; вход свободный. Через готическую аркаду старой ратуши с площади Оливейры попадаете прямо на площадь Сантьяго. В клуатре за церковью — музей Алберту Сампайю; общий билет с замком и дворцом герцогов стоит 13 €.",
+  "gallery": [
+    {
+      "src": "assets/img/guimaraes/oliveira-1.jpg",
+      "kind": "interior",
+      "caption_ru": "Три нефа на гранитных колоннах, вид к капелле-мор",
+      "credit": {
+        "author": "Josep Renalias",
+        "license": "CC BY-SA 3.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_-_Nossa_Senhora_da_Oliveira_-_Interior.JPG"
+      }
+    },
+    {
+      "src": "assets/img/guimaraes/oliveira-2.jpg",
+      "kind": "interior",
+      "caption_ru": "Капелла-мор с позолоченным ретабло и образом Богоматери Оливейры",
+      "credit": {
+        "author": "John Samuel",
+        "license": "CC BY-SA 4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Interior_of_Igreja_de_Nossa_Senhora_da_Oliveira_08.jpg"
+      }
+    },
+    {
+      "src": "assets/img/guimaraes/oliveira-3.jpg",
+      "kind": "interior",
+      "caption_ru": "Орган на хорах над входом",
+      "credit": {
+        "author": "Double Croche",
+        "license": "CC0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Orgel,_Igreja_de_Nossa_Senhora_da_Oliveira,_Guimar%C3%A3es,_Portugal.jpg"
+      }
+    },
+    {
+      "src": "assets/img/guimaraes/oliveira-4.jpg",
+      "kind": "detail",
+      "caption_ru": "Капители Падран-ду-Саладу: рыцари в кольчугах",
+      "credit": {
+        "author": "Daniel Villafruela",
+        "license": "CC BY-SA 4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C4%81es-Padr%C3%A3o_da_batalha_de_Salado-Cavaleiros-20140912.jpg"
+      }
+    },
+    {
+      "src": "assets/img/guimaraes/oliveira-5.jpg",
+      "kind": "exterior",
+      "caption_ru": "Площадь Оливейры: балдахин Падран-ду-Саладу, олива и террасы кафе",
+      "credit": {
+        "author": "Feliciano Guimarães",
+        "license": "CC BY 2.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_@_36_MP_-_Largo_da_Oliveira_(35262143891).jpg"
+      }
+    }
+  ],
+  "panorama": null,
+  "videos": [
+    {
+      "youtube_id": "ppw-6obEMHk",
+      "title": "Igreja de Nossa Senhora da Oliveira, Guimarães Portugal",
+      "channel": "Porta dos Fundadores",
+      "lang": "pt"
+    },
+    {
+      "youtube_id": "-ZYY2afr7iw",
+      "title": "Órgão Histórico na Paróquia de Nossa Senhora da Oliveira, Guimarães",
+      "channel": "Agência Ecclesia",
+      "lang": "pt"
+    },
+    {
+      "youtube_id": "OFXXmcMT23g",
+      "title": "Lenda da Nossa Senhora da Oliveira - Guimarães",
+      "channel": "Joana Silva",
+      "lang": "pt"
+    }
+  ]
 }

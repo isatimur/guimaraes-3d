@@ -28,16 +28,16 @@ const SHOT_CLEAR = 10 * S;
 // frame: frame only the first n focus landmarks. The rest of the focus
 // list only keeps its map labels on during the chapter.
 const VIEWS = {
-  bracara: { az: 0.2, elev: 0.5, k: 1.3, primary: true },
-  gallaecia: { az: -0.5, elev: 0.5, k: 1.2 },
-  suebi: { az: 0.9, elev: 0.62, k: 2.4, primary: true },
-  cathedral: { az: 0, elev: 0.34, k: 1.05, primary: true },
-  walls: { az: -0.25, elev: 0.5, k: 1.1 },
-  baroque: { az: 0.2, elev: 0.3, k: 0.8, primary: true },
-  avenue: { az: 0.15, elev: 0.45, k: 0.85 },
-  sameiro: { az: -0.2, elev: 0.28, k: 1.25, primary: true },
-  stadium: { az: 0.25, elev: 0.42, k: 1.1 },
-  unesco: { az: -0.35, elev: 0.3, k: 0.9, frame: 2 },
+  briteiros: { az: 0.2, elev: 0.4, k: 1.2, primary: true },
+  vimaranes: { az: 0.2, elev: 0.45, k: 1.2, primary: true },
+  castle: { az: 0.2, elev: 0.4, k: 1.2 },
+  oliveira: { az: 0.2, elev: 0.4, k: 1.2 },
+  paco: { az: 0.2, elev: 0.4, k: 1.2, frame: 2 },
+  walls: { az: 0.2, elev: 0.4, k: 1.2, primary: true },
+  orders: { az: 0.2, elev: 0.4, k: 1.2, primary: true },
+  couros: { az: 0.2, elev: 0.4, k: 1.2, frame: 2 },
+  vitoria: { az: 0.2, elev: 0.4, k: 1.2, primary: true },
+  unesco: { az: 0.2, elev: 0.4, k: 1.2, primary: true },
 };
 
 const clamp01 = (x) => Math.min(1, Math.max(0, x));

@@ -1,115 +1,115 @@
 {
- "id": "paco-duques",
- "name_pt": "Paço dos Duques de Bragança",
- "name_ru": "Дворец герцогов Браганса",
- "category": "museum",
- "year": "XV век",
- "short_ru": "Дворец XV века с 39 кирпичными трубами и гобеленами; отстроен заново в 1937–1959 годах",
- "long_ru": "Афонсу, граф Барселуш и будущий первый герцог Браганса, начал строить дворец около 1420 года, после женитьбы на Констансе де Норонье. Герцоги скоро переехали в Вила-Висозу; дворец разбирали на камень, а в XIX веке превратили в казарму. В 1937–1959 годах архитектор Рожериу де Азеведу отстроил его заново по образцу северных дворцов. Сегодня здесь музей с фламандскими гобеленами и северная резиденция президента республики.",
- "image": "assets/img/guimaraes/paco-duques.jpg",
- "image_credit": {
-  "author": "Panegyrics of Granovetter",
-  "license": "CC BY-SA 4.0",
-  "source_url": "https://commons.wikimedia.org/wiki/File:30902_Palace_Duques_de_Bragan%C3%A7a_(54869968560).jpg"
- },
- "history_ru": "Дворец заказал Афонсу, внебрачный сын короля Жуана I и восьмой граф Барселуш. Он вернулся из поездок по дворам Франции, Венеции, Арагона и Кастилии, женился вторым браком на Констансе де Норонье и около 1420 года начал строить в Гимарайнше резиденцию по бургундской моде. Почти квадратный план с четырьмя угловыми башнями напоминает дворец королей Майорки в Перпиньяне; над крутыми крышами поднимаются 39 кирпичных труб. В 1442 году Афонсу получил титул первого герцога Браганса. Он умер в 1461 году; вдова жила во дворце до 1480 года.\n\nНаследники предпочли Вила-Висозу на юге, и дворец опустел. В 1483 году король Жуан II казнил третьего герцога за измену и конфисковал имущество; в 1496 году его вернули семье, но в Гимарайнш герцоги не вернулись. В 1611 году клариссы, а в 1666 году капуцины получили разрешение брать отсюда камень для своих монастырей. В 1807 году, во время французского вторжения, во дворце разместили казарму; солдаты стояли здесь до 1935 года и разобрали двор с галереями под плац.\n\nВ 1933 году директор музея Алберту Сампайю Алфреду Гимарайнш показал руины Салазару. В 1937 году архитектор Рожериу де Азеведу начал реконструкцию. Он ездил в Брюссель, Антверпен и на Луару за образцами и восстанавливал не столько то, что было, сколько то, что могло быть: работу до сих пор называют спорной. Стройка шла до 1959 года. 25 июня 1959 года дворец стал северной резиденцией президента республики, 26 августа открылся как музей.\n\nВ музее на первом этаже — фламандские и французские гобелены, восточные ковры, мебель, китайский фарфор, картина «Пасхальный агнец», приписываемая Жозефе де Обидуш, и портрет Екатерины Браганской. Банкетный зал накрыт деревянным сводом, капеллу освещают витражи. Дворец — национальный памятник с 1910 года. В 2022 году его посетили 366 514 человек, в 2024-м — 376 331: это один из самых посещаемых памятников севера Португалии.",
- "facts_ru": [
-  "Строительство началось около 1420 года, после второй женитьбы графа Афонсу.",
-  "Над крышами дворца — 39 кирпичных труб в бургундском духе.",
-  "С 1807 по 1935 год во дворце стояла казарма.",
-  "Реконструкция Рожериу де Азеведу шла с 1937 по 1959 год.",
-  "С 25 июня 1959 года — северная резиденция президента Португалии."
- ],
- "sources": [
-  {
-   "title": "Paço dos Duques de Bragança (Guimarães) — Wikipédia (pt)",
-   "url": "https://pt.wikipedia.org/wiki/Pa%C3%A7o_dos_Duques_de_Bragan%C3%A7a_(Guimar%C3%A3es)"
-  },
-  {
-   "title": "Palace of the Dukes of Braganza — Wikipedia (en)",
-   "url": "https://en.wikipedia.org/wiki/Palace_of_the_Dukes_of_Braganza"
-  },
-  {
-   "title": "História do Paço — pacodosduques.gov.pt",
-   "url": "https://pacodosduques.gov.pt/monumentos/paco-dos-duques/historia-paco/"
-  },
-  {
-   "title": "Paço dos Duques de Bragança — Câmara Municipal de Guimarães",
-   "url": "https://www.cm-guimaraes.pt/monumentos/poi/paco-dos-duques-de-braganca"
-  }
- ],
- "tip_ru": "Дворец открыт ежедневно с 10:00 до 18:00, последний вход в 17:30. Билет — 5 €, вместе с замком — 8 €, с музеем Алберту Сампайю — 13 €. Идёт ремонт: часть залов может быть закрыта. У пандуса перед фасадом стоит статуя Афонсу Энрикеша, а до замка — три минуты пешком через парк.",
- "gallery": [
-  {
-   "src": "assets/img/guimaraes/paco-duques-1.jpg",
-   "kind": "interior",
-   "caption_ru": "Банкетный зал: деревянный свод, люстры и гобелены",
-   "credit": {
-    "author": "lumoplank",
-    "license": "CC0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_-_Guimaraes5958.jpg"
-   }
-  },
-  {
-   "src": "assets/img/guimaraes/paco-duques-2.jpg",
-   "kind": "interior",
-   "caption_ru": "Капелла с витражами",
-   "credit": {
-    "author": "Gerd Eichmann",
+  "id": "paco-duques",
+  "name_pt": "Paço dos Duques de Bragança",
+  "name_ru": "Дворец герцогов Браганса",
+  "category": "museum",
+  "year": "XV век",
+  "short_ru": "Дворец XV века с 39 кирпичными трубами и гобеленами; отстроен заново в 1937–1959 годах",
+  "long_ru": "Афонсу, граф Барселуш и будущий первый герцог Браганса, начал строить дворец около 1420 года, после женитьбы на Констансе де Норонье. Герцоги скоро переехали в Вила-Висозу; дворец разбирали на камень, а в XIX веке превратили в казарму. В 1937–1959 годах архитектор Рожериу де Азеведу отстроил его заново по образцу северных дворцов. Сегодня здесь музей с фламандскими гобеленами и северная резиденция президента республики.",
+  "image": "assets/img/guimaraes/paco-duques.jpg",
+  "image_credit": {
+    "author": "Panegyrics of Granovetter",
     "license": "CC BY-SA 4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-22-Kapelle-2011-gje.jpg"
-   }
+    "source_url": "https://commons.wikimedia.org/wiki/File:30902_Palace_Duques_de_Bragan%C3%A7a_(54869968560).jpg"
   },
-  {
-   "src": "assets/img/guimaraes/paco-duques-3.jpg",
-   "kind": "exterior",
-   "caption_ru": "Внутренний двор с аркадами и кирпичными трубами",
-   "credit": {
-    "author": "Gerd Eichmann",
-    "license": "CC BY-SA 4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-06-Patio-2011-gje.jpg"
-   }
-  },
-  {
-   "src": "assets/img/guimaraes/paco-duques-4.jpg",
-   "kind": "detail",
-   "caption_ru": "Накрытый стол под фламандским гобеленом",
-   "credit": {
-    "author": "Gerd Eichmann",
-    "license": "CC BY-SA 4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-18-Tafel-2011-gje.jpg"
-   }
-  },
-  {
-   "src": "assets/img/guimaraes/paco-duques-5.jpg",
-   "kind": "exterior",
-   "caption_ru": "Дворец с высоты: четыре угловые башни и крутые крыши",
-   "credit": {
-    "author": "Luís Miguel Jorge Duarte",
-    "license": "CC BY-SA 4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File:DJI_0156pa%C3%A7o_duques_bragan%C3%A7a.jpg"
-   }
-  }
- ],
- "panorama": null,
- "videos": [
-  {
-   "youtube_id": "xOZLJYj3Ts4",
-   "title": "Visita guiada ao Paço dos Duques de Bragança",
-   "channel": "Mais Guimarães",
-   "lang": "pt"
-  },
-  {
-   "youtube_id": "NH_811wtA5c",
-   "title": "Paço dos Duques de Bragança - Porto Canal",
-   "channel": "DR Cultura Norte",
-   "lang": "pt"
-  },
-  {
-   "youtube_id": "3apC693HL5k",
-   "title": "Palace of the Dukes of Braganza, Guimarães",
-   "channel": "Travelling Scientist Kisshore",
-   "lang": "en"
-  }
- ]
+  "history_ru": "Дворец заказал Афонсу, внебрачный сын короля Жуана I и восьмой граф Барселуш. Он вернулся из поездок по дворам Франции, Венеции, Арагона и Кастилии, женился вторым браком на Констансе де Норонье и около 1420 года начал строить в Гимарайнше резиденцию по бургундской моде. Почти квадратный план с четырьмя угловыми башнями напоминает дворец королей Майорки в Перпиньяне; над крутыми крышами поднимаются 39 кирпичных труб. В 1442 году Афонсу получил титул первого герцога Браганса. Он умер в 1461 году; вдова жила во дворце до 1480 года.\n\nНаследники предпочли Вила-Висозу на юге, и дворец опустел. В 1483 году король Жуан II казнил третьего герцога за измену и конфисковал имущество; в 1496 году его вернули семье, но в Гимарайнш герцоги не вернулись. В 1611 году клариссы, а в 1666 году капуцины получили разрешение брать отсюда камень для своих монастырей. В 1807 году, во время французского вторжения, во дворце разместили казарму; солдаты стояли здесь до 1935 года и разобрали двор с галереями под плац.\n\nВ 1933 году директор музея Алберту Сампайю Алфреду Гимарайнш показал руины Салазару. В 1937 году архитектор Рожериу де Азеведу начал реконструкцию. Он ездил в Брюссель, Антверпен и на Луару за образцами и восстанавливал не столько то, что было, сколько то, что могло быть: работу до сих пор называют спорной. Стройка шла до 1959 года. 25 июня 1959 года дворец стал северной резиденцией президента республики, 26 августа открылся как музей.\n\nВ музее на первом этаже — фламандские и французские гобелены, восточные ковры, мебель, китайский фарфор, картина «Пасхальный агнец», приписываемая Жозефе де Обидуш, и портрет Екатерины Браганской. Банкетный зал накрыт деревянным сводом, капеллу освещают витражи. Дворец — национальный памятник с 1910 года.",
+  "facts_ru": [
+    "Строительство началось около 1420 года, после второй женитьбы графа Афонсу.",
+    "Над крышами дворца — 39 кирпичных труб в бургундском духе.",
+    "С 1807 по 1935 год во дворце стояла казарма.",
+    "Реконструкция Рожериу де Азеведу шла с 1937 по 1959 год.",
+    "С 25 июня 1959 года — северная резиденция президента Португалии."
+  ],
+  "sources": [
+    {
+      "title": "Paço dos Duques de Bragança (Guimarães) — Wikipédia (pt)",
+      "url": "https://pt.wikipedia.org/wiki/Pa%C3%A7o_dos_Duques_de_Bragan%C3%A7a_(Guimar%C3%A3es)"
+    },
+    {
+      "title": "Palace of the Dukes of Braganza — Wikipedia (en)",
+      "url": "https://en.wikipedia.org/wiki/Palace_of_the_Dukes_of_Braganza"
+    },
+    {
+      "title": "História do Paço — pacodosduques.gov.pt",
+      "url": "https://pacodosduques.gov.pt/monumentos/paco-dos-duques/historia-paco/"
+    },
+    {
+      "title": "Paço dos Duques de Bragança — Câmara Municipal de Guimarães",
+      "url": "https://www.cm-guimaraes.pt/monumentos/poi/paco-dos-duques-de-braganca"
+    }
+  ],
+  "tip_ru": "Дворец открыт ежедневно с 10:00 до 18:00, последний вход в 17:30. Билет — 5 €, вместе с замком — 8 €, с музеем Алберту Сампайю — 13 €. Идёт ремонт: часть залов может быть закрыта. У пандуса перед фасадом стоит статуя Афонсу Энрикеша, а до замка — три минуты пешком через парк.",
+  "gallery": [
+    {
+      "src": "assets/img/guimaraes/paco-duques-1.jpg",
+      "kind": "interior",
+      "caption_ru": "Банкетный зал: деревянный свод, люстры и гобелены",
+      "credit": {
+        "author": "lumoplank",
+        "license": "CC0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Guimar%C3%A3es_-_Guimaraes5958.jpg"
+      }
+    },
+    {
+      "src": "assets/img/guimaraes/paco-duques-2.jpg",
+      "kind": "interior",
+      "caption_ru": "Капелла с витражами",
+      "credit": {
+        "author": "Gerd Eichmann",
+        "license": "CC BY-SA 4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-22-Kapelle-2011-gje.jpg"
+      }
+    },
+    {
+      "src": "assets/img/guimaraes/paco-duques-3.jpg",
+      "kind": "exterior",
+      "caption_ru": "Внутренний двор с аркадами и кирпичными трубами",
+      "credit": {
+        "author": "Gerd Eichmann",
+        "license": "CC BY-SA 4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-06-Patio-2011-gje.jpg"
+      }
+    },
+    {
+      "src": "assets/img/guimaraes/paco-duques-4.jpg",
+      "kind": "detail",
+      "caption_ru": "Накрытый стол под фламандским гобеленом",
+      "credit": {
+        "author": "Gerd Eichmann",
+        "license": "CC BY-SA 4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Guimaraes-Palast_der_Herzoege_von_Braganca-18-Tafel-2011-gje.jpg"
+      }
+    },
+    {
+      "src": "assets/img/guimaraes/paco-duques-5.jpg",
+      "kind": "exterior",
+      "caption_ru": "Дворец с высоты: четыре угловые башни и крутые крыши",
+      "credit": {
+        "author": "Luís Miguel Jorge Duarte",
+        "license": "CC BY-SA 4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:DJI_0156pa%C3%A7o_duques_bragan%C3%A7a.jpg"
+      }
+    }
+  ],
+  "panorama": null,
+  "videos": [
+    {
+      "youtube_id": "xOZLJYj3Ts4",
+      "title": "Visita guiada ao Paço dos Duques de Bragança",
+      "channel": "Mais Guimarães",
+      "lang": "pt"
+    },
+    {
+      "youtube_id": "NH_811wtA5c",
+      "title": "Paço dos Duques de Bragança - Porto Canal",
+      "channel": "DR Cultura Norte",
+      "lang": "pt"
+    },
+    {
+      "youtube_id": "3apC693HL5k",
+      "title": "Palace of the Dukes of Braganza, Guimarães",
+      "channel": "Travelling Scientist Kisshore",
+      "lang": "en"
+    }
+  ]
 }

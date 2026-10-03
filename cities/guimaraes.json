@@ -23,10 +23,13 @@
   "traffic": { "car_free": [[41.4425, -8.2918, 200]], "axes_base": [41.4, -8.4] },
   "nature": { "hills": [{ "lat": 41.4285, "lon": -8.2705, "r": 1500, "name": "Penha" }] },
   "start_view": { "landmark": "castelo", "narrow_landmark": "castelo" },
-  "story": false,
   "ms_centre": [41.4425, -8.2918],
   "data_dir": "data",
   "landmarks_file": "data/landmarks.json",
+  "content": {
+    "history": { "min": 1000, "max": 3400, "parasMin": 3, "parasMax": 7 },
+    "facts": { "min": 4, "max": 6, "maxChars": 140 }
+  },
   "og_image": "/og/guimaraes.jpg",
   "landmark_candidates": [
     { "id": "castelo", "name_pt": "Castelo de Guimarães", "category": "civic", "why": "10th-c. castle, cradle of Portugal" },

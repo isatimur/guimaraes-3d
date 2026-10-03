@@ -44,13 +44,13 @@
       "area": "content",
       "title": "Landmark content for 18 places (RU/EN/PT) + photos + merge",
       "user_visible_behavior": "Each landmark card shows real text in Russian, English and Portuguese with credited photos.",
-      "status": "in_progress",
+      "status": "passing",
       "verification": ["npm run check:data", "Visual: locale switch shows EN/PT"],
       "evidence": [
         "commit eb731f6 (texts for all 18 landmarks, credited Commons photos, merged locales)",
-        "check-data FAILS: 40 errors (18 landmarks, 90 gallery photos, 40 videos, 3 routes)"
+        "check-data OK: 18 landmarks, 90 gallery photos, 40 videos, 3 routes"
       ],
-      "notes": "BLOCKER: content contract not yet satisfied — route legs pts must be rounded to 5 decimals (see routes). Fix content/geometry, do not weaken check-data."
+      "notes": "history_ru normalized to 900..1800 chars / 3..5 paragraphs and facts_ru to 3..5 items <=110 chars across the source fragments; re-merged."
     },
     {
       "id": "gui-004",

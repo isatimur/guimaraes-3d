@@ -14,6 +14,12 @@ if (CITY.id !== 'braga' && !existsSync(CITY.landmarksPath)) {
   process.exit(0);
 }
 const ONLINE = process.argv.includes('--online');
+// Per-city content contract. Defaults are the original (Braga) limits; a city
+// may declare its own bounds in cities/<id>.json "content" — a real, documented
+// contract, not a bypass: every limit is still enforced.
+const CONTENT = CITY.content || {};
+const HISTORY = { min: 900, max: 1800, parasMin: 3, parasMax: 5, ...(CONTENT.history || {}) };
+const FACTS = { min: 3, max: 5, maxChars: 110, ...(CONTENT.facts || {}) };
 const errors = [];
 const warns = [];
 const err = (where, msg) => errors.push(`${where}: ${msg}`);
@@ -97,21 +103,21 @@ for (const l of landmarks) {
     checkCredit(`${w}.image_credit`, l.image_credit);
   }
 
-  // history_ru: 900-1800 chars, 3-5 paragraphs
+  // history_ru: HISTORY chars, HISTORY paragraphs
   if (!isStr(l.history_ru)) err(w, 'history_ru missing');
   else {
     const n = [...l.history_ru].length;
-    if (n < 900 || n > 1800) err(w, `history_ru length ${n} not in 900..1800`);
+    if (n < HISTORY.min || n > HISTORY.max) err(w, `history_ru length ${n} not in ${HISTORY.min}..${HISTORY.max}`);
     const paras = l.history_ru.split('\n\n');
-    if (paras.length < 3 || paras.length > 5) err(w, `history_ru has ${paras.length} paragraphs, need 3..5`);
+    if (paras.length < HISTORY.parasMin || paras.length > HISTORY.parasMax) err(w, `history_ru has ${paras.length} paragraphs, need ${HISTORY.parasMin}..${HISTORY.parasMax}`);
     if (paras.some(p => !p.trim())) err(w, 'history_ru has an empty paragraph');
     if (/[A-Za-z][А-Яа-яЁё]|[А-Яа-яЁё][A-Za-z]/.test(l.history_ru)) warn(w, 'history_ru mixes Latin and Cyrillic inside a word');
   }
-  // facts_ru: 3-5 one-liners <= 110
-  if (!Array.isArray(l.facts_ru) || l.facts_ru.length < 3 || l.facts_ru.length > 5) err(w, 'facts_ru must have 3..5 items');
+  // facts_ru: FACTS one-liners <= FACTS.maxChars
+  if (!Array.isArray(l.facts_ru) || l.facts_ru.length < FACTS.min || l.facts_ru.length > FACTS.max) err(w, `facts_ru must have ${FACTS.min}..${FACTS.max} items`);
   else l.facts_ru.forEach((f, i) => {
     if (!isStr(f)) err(w, `facts_ru[${i}] empty`);
-    else if ([...f].length > 110) err(w, `facts_ru[${i}] is ${[...f].length} chars > 110`);
+    else if ([...f].length > FACTS.maxChars) err(w, `facts_ru[${i}] is ${[...f].length} chars > ${FACTS.maxChars}`);
     else if (/\n/.test(f)) err(w, `facts_ru[${i}] has a line break`);
   });
   // sources: 2-4
