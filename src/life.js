@@ -30,6 +30,7 @@ export function setLifeData(doc) {
 import { S } from './geo.js';
 import { t } from './i18n.js';
 import { createWeather, addScaled } from './weather.js';
+import { createWaterMaterial, createWeirs } from './water.js';
 import { createLive } from './live.js';
 import { createTrafficModel } from './traffic-model.js';
 import { buildNetwork, createFlow } from './road-network.js';
@@ -736,18 +737,18 @@ function birdMaterial(uHeight) {
 function buildBirds({ items, heightAt, project, nature, mobile, lite = false }) {
   const byId = (id) => items.find((i) => i.data.id === id);
   const anchors = [];
-  for (const [id, lift, r] of [['bom-jesus', 13, 26], ['sameiro', 16, 26], ['se-braga', 9, 15]]) {
+  for (const [id, lift, r] of [['oliveira', 11, 20], ['toural', 10, 18], ['penha', 24, 46], ['castelo', 12, 26]]) {
     const it = byId(id);
     if (it) anchors.push({ id, x: it.x, z: it.z, y: it.top + lift, r });
   }
-  // the Rio Este: the middle of its longest OSM line
-  const este = (nature?.data?.lines || []).filter((l) => l.n === 'Rio Este').sort((a, b) => b.p.length - a.p.length)[0];
-  if (este) {
-    const q = este.p[este.p.length >> 1];
+  // the Rio Selho: the middle of its longest OSM line
+  const selho = (nature?.data?.lines || []).filter((l) => l.n === 'Rio Selho').sort((a, b) => b.p.length - a.p.length)[0];
+  if (selho) {
+    const q = selho.p[selho.p.length >> 1];
     const c = project(q[0], q[1]);
-    anchors.push({ id: 'rio-este', x: c.x, z: c.z, y: heightAt(c.x, c.z) + 14, r: 40 });
+    anchors.push({ id: 'rio-selho', x: c.x, z: c.z, y: heightAt(c.x, c.z) + 14, r: 40 });
   }
-  const M = lite ? 10 : mobile ? 20 : 40;
+  const M = lite ? 8 : mobile ? 16 : 30;
   const uHeight = { value: 900 };
   const geo = birdGeometry();
   const mat = birdMaterial(uHeight);
@@ -959,7 +960,7 @@ function buildBirds({ items, heightAt, project, nature, mobile, lite = false }) 
 }
 
 // ------------------------------------------------------------ fountains
-const SITES = ['praca-republica', 'avenida-central', 'santa-barbara', 'bom-jesus', 'tibaes', 'largo'];
+const SITES = ['praca-republica', 'avenida-central', 'santa-barbara', 'bom-jesus', 'tibaes', 'largo', 'toural', 'sao-tiago'];
 
 function buildFountains({ project, heightAt, items, mobile }) {
   const list = LIFE?.fountains || [];
@@ -980,10 +981,10 @@ function buildFountains({ project, heightAt, items, mobile }) {
     const g = heightAt(qx, qz);
     const hit = surfaceHeights(mesh, [qx], [qz], [g - 2], [g + (spout ? 1.2 : 3)])[0];
     const top = Number.isFinite(hit) ? hit : g + 0.15;
-    emitters.push({ ...f, site, x: qx, z: qz, y: top + (spout ? 0.9 * S : 0.05), spout });
+    emitters.push({ ...f, site, x: qx, z: qz, y: top + (spout ? 0.9 * S : 0.05), spout, h: f.h ?? 1.6, r: f.r ?? 1.1 });
   }
   // particles per emitter
-  const counts = emitters.map((e) => (e.spout ? 40 : e.id === 'praca-republica' ? 520 : e.h >= 3 ? 280 : 130));
+  const counts = emitters.map((e) => (e.spout ? 40 : e.id === 'praca-republica' ? 520 : e.h >= 2.4 ? 260 : e.h >= 1.7 ? 190 : 140));
   const scale = mobile ? 0.5 : 1;
   const total = counts.reduce((s, n) => s + Math.round(n * scale), 0);
   const O = new Float32Array(total * 3);
@@ -1087,26 +1088,51 @@ function buildFountains({ project, heightAt, items, mobile }) {
   points.frustumCulled = false;
   points.renderOrder = 20;
   const sitesItems = SITES.map((s) => byId(s));
+  // basin water: a disc at the fountain rim, sharing the river's material so
+  // the ripples, sky reflection and rain rings all match the waterways
+  const basinMat = createWaterMaterial({ open: true });
+  const basinGroup = new THREE.Group();
+  basinGroup.name = 'fountain-basins';
+  const basins = [];
+  for (const e of emitters) {
+    if (e.spout) continue;
+    const r = Math.max(0.5, e.r * S * 1.9);
+    const g = new THREE.CircleGeometry(r, 24).rotateX(-Math.PI / 2);
+    const m = new THREE.Mesh(g, basinMat);
+    m.position.set(e.x, e.y + 0.03, e.z);
+    m.receiveShadow = true;
+    m.renderOrder = 1;
+    basinGroup.add(m);
+    basins.push({ mesh: m, site: SITES.indexOf(e.site) });
+  }
+  const group = new THREE.Group();
+  group.name = 'fountains';
+  group.add(points, basinGroup);
 
   function update(camera, { atmosphere, height, camDist }) {
     // only near: a droplet from far away is less than a pixel
     let near = Infinity;
     for (const e of emitters) near = Math.min(near, (e.x - camera.position.x) ** 2 + (e.z - camera.position.z) ** 2);
-    points.visible = camDist < 900 && near < 1200 * 1200;
-    if (!points.visible) return;
-    uniforms.uHeight.value = height;
+    const on = camDist < 900 && near < 1200 * 1200;
+    points.visible = on;
     // hidden with its landmark (category filter)
     for (let i = 0; i < sitesItems.length; i++) {
       const it = sitesItems[i];
       uniforms.uHide.value[i] = it && !it.meshes[0].visible ? 1 : 0;
     }
+    for (const b of basins) {
+      const it = sitesItems[b.site];
+      b.mesh.visible = on && (!it || it.meshes[0].visible);
+    }
+    if (!on) return;
+    uniforms.uHeight.value = height;
     // water catches the sky and the sun; at night the lamps of the square
     const st = atmosphere.state;
     const sunK = Math.min(1, st.lightI / 4) * Math.max(0, atmosphere.sunDir.y + 0.1);
     addScaled(uniforms.uColor.value.copy(st.mid).multiplyScalar(0.7), st.light, 0.55 * sunK);
     if (st.night > 0) uniforms.uColor.value.lerp(NIGHT_WATER, st.night * 0.8);
   }
-  return { object: points, update, emitters, stats: { fountains: emitters.length, particles: total } };
+  return { object: group, update, emitters, basins, stats: { fountains: emitters.length, particles: total, basins: basins.length } };
 }
 const NIGHT_WATER = new THREE.Color(0.5, 0.42, 0.3);
 
@@ -1255,8 +1281,8 @@ function buildCableCar({ project, heightAt }) {
 
 export function createLife(ctx) {
   const { renderer, scene, camera, atmosphere, project, heightAt, roads, items, nature, fx, reducedMotion = false, mobile = false, lite = false, debug = {}, setHash = () => {} } = ctx;
-  // light mode (main.js): 150 cars at the peak, 10 birds
-  const carMax = lite ? 150 : mobile ? 300 : 600;
+  // light mode (main.js): 180 cars at the peak, 8 birds
+  const carMax = lite ? 180 : mobile ? 360 : 900;
   const group = new THREE.Group();
   group.name = 'life';
   scene.add(group);
@@ -1284,12 +1310,13 @@ export function createLife(ctx) {
   const traffic = safe('traffic', () => buildTraffic({ roads, project, heightAt, mobile, model, N: carMax }));
   const birds = safe('birds', () => buildBirds({ items, heightAt, project, nature, mobile, lite }));
   const fountains = safe('fountains', () => buildFountains({ project, heightAt, items, mobile }));
+  const weirs = safe('weirs', () => createWeirs({ data: nature?.data, project, heightAt, weirs: LIFE?.weirs }));
   // the street level: calçada squares, furniture, people, POI signs
   // (streetscape.js; it builds once its data has arrived)
   const street = safe('streetscape', () =>
     createStreetscape({ camera, roads, project, heightAt, items, outlines: ctx.outlines, footprints: ctx.footprints, lite, mobile, debug, model, fx, surfaceHeights }),
   );
-  for (const p of [funicular, cablecar, traffic, birds, fountains, street]) if (p) group.add(p.object);
+  for (const p of [funicular, cablecar, traffic, birds, fountains, weirs, street]) if (p) group.add(p.object);
 
   const ctxLive = { scene, camera, renderer, project, heightAt, datumM, mobile, reducedMotion, live, model, atmosphere, group };
   // aircraft and buses: a separate chunk, loaded after the first frame
@@ -1315,6 +1342,7 @@ export function createLife(ctx) {
     traffic: traffic?.stats ?? null,
     birds: birds?.stats ?? null,
     fountains: fountains?.stats ?? null,
+    weirs: weirs?.stats ?? null,
     streetscape: street?.stats ?? null,
     rainDrops: 0,
     visibleVehicles: 0,
@@ -1362,6 +1390,7 @@ export function createLife(ctx) {
     traffic?.update(adt, camera, frustum, view);
     birds?.update(adt, camera, view);
     fountains?.update(camera, view);
+    weirs?.update(adt, { color: atmosphere.state.light }, view.height);
     street?.update(adt, frustum, view);
     air?.update(adt, dt, view);
     buses?.update(adt, dt, view);

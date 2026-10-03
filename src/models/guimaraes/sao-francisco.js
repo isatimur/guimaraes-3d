@@ -127,6 +127,8 @@ function saoFrancisco(k, { footprint, dims }) {
     if (e.len < 8) continue;
     k.push({ x: e.mx + e.nx * 0.06, z: e.mz + e.nz * 0.06, ry: e.ry });
     const n = Math.max(2, Math.floor(e.len / 4.6));
+    // granite pilaster strips between the bays
+    for (let i = 0; i <= n; i++) k.box(0.55, wingEave, 0.3, GL, -e.len / 2 + (i * e.len) / n, 0, 0.08);
     for (let i = 0; i < n; i++) {
       const u = -e.len / 2 + (i + 0.5) * (e.len / n);
       win(k, u, 1.6, 1.2, 2.0, 0, { bw: 0.26, depth: 0.24, trim: GL, pane: 'glass', emit: k.rnd() > 0.7 ? 0.25 : 0.07, bars: true, sill: true });

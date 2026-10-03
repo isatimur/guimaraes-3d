@@ -27,11 +27,12 @@ const D = 'graniteDark';
 // The courtyard ring from OSM relation 2433235 (way 182728792), in local m.
 const COURTYARD = [[-12.3, 10.8], [-12.9, -7.66], [12.1, -8.35], [12.69, 10.11]];
 
-// Brick chimney: stack from y0 to y0+h, a cornice cap and two pots.
+// Monumental brick chimney: tapered stack, corbelled granite cap, pots.
 function chimney(k, x, z, y0, h) {
-  k.box(1.1, h, 1.1, 'brick', x, y0, z, { jit: 0.05 });
-  k.box(1.5, 0.28, 1.5, 'brick', x, y0 + h, z, { jit: 0.04 });
-  for (const [ox, oz] of [[-0.28, -0.28], [0.28, 0.28]]) k.cyl(0.16, 0.2, 0.5, 6, 'brick', x + ox, y0 + h + 0.28, z + oz);
+  k.box(0.92, h, 0.92, 'brick', x, y0, z, { jit: 0.05 });
+  k.box(1.06, 0.22, 1.06, L, x, y0 + h, z, { jit: 0.04 });
+  k.box(1.4, 0.3, 1.4, 'graniteLight', x, y0 + h + 0.22, z, { jit: 0.04 });
+  for (const [ox, oz] of [[-0.32, -0.32], [0.32, 0.32], [-0.32, 0.32], [0.32, -0.32]]) k.cyl(0.12, 0.16, 0.55, 6, 'terracotta', x + ox, y0 + h + 0.52, z + oz);
 }
 
 // Twin mullioned window (the palace lights).
@@ -45,7 +46,7 @@ function mullion(k, x, y, w, h, z, o = {}) {
 function chimneysAlong(k, n, x0, z0, x1, z1, y) {
   for (let i = 0; i < n; i++) {
     const t = (i + 0.5) / n;
-    chimney(k, x0 + (x1 - x0) * t, z0 + (z1 - z0) * t, y, 1.4 + (i % 3) * 0.9);
+    chimney(k, x0 + (x1 - x0) * t, z0 + (z1 - z0) * t, y, 1.9 + (i % 3) * 1.0);
   }
 }
 
@@ -65,13 +66,26 @@ function paco(k, { footprint, dims }) {
   const towerTop = 17;
 
   k.begin('main');
-  // ranges on the real outline with the courtyard open, plus a battered plinth
-  k.prism(footprint.outline, -1.0, eaves + 1.0, G, { holes: [cy] });
+  // ranges on the real outline with the courtyard open: a granite lower
+  // storey under whitewashed upper floors (the alternating palace tone),
+  // plus a battered plinth
+  k.prism(footprint.outline, -1.0, 6.0, G, { holes: [cy] });
+  k.prism(footprint.outline, 4.8, eaves - 4.8, 'plaster', { holes: [cy], mat: 3 });
   k.prism(offset(footprint.outline, 0.22), -1.0, 1.6, D, { holes: [offset(cy, -0.22)] });
+  k.prism(offset(footprint.outline, 0.16), 4.7, 0.35, L, { holes: [offset(cy, -0.16)] });
   polyCornice(k, footprint.outline, eaves - 0.55, corniceProfile('eave', 0.55), L);
   polyCornice(k, [...cy].reverse(), eaves - 0.55, corniceProfile('band', 0.45), L);
-  // floor band between the ground and first floors
-  k.prism(offset(footprint.outline, 0.05), 4.4, 0.3, L, { holes: [offset(cy, -0.05)] });
+  // granite corner quoins on the four outer corners
+  for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+    const qx = sx > 0 ? x1 : x0;
+    const qz = sz > 0 ? z1 : z0;
+    for (let c = 0; c * 0.95 < eaves - 1; c++) {
+      const y = 0.6 + c * 0.95;
+      const long = c % 2 ? 0.95 : 0.55;
+      const short = c % 2 ? 0.55 : 0.95;
+      k.box(long, 0.88, short, L, qx + sx * (long / 2 - 0.42), y, qz + sz * (short / 2 - 0.42), { jit: 0.05 });
+    }
+  }
 
   // ---- deep corbel table under the outer eaves (the palace's trademark)
   for (const e of edges(footprint.outline)) {

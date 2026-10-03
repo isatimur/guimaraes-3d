@@ -128,6 +128,16 @@ function estadio(k, { footprint, dims }) {
     k.box(12.4, 0.5, 8.4, 'graniteGrey', sx * 88, 5, sz * 86);
   }
 
+  // --- scoreboard on the east stand and corner flags
+  k.box(11, 3.2, 0.5, 'dark', PC.x, 26.5, -88.4, { mat: 9 });
+  k.box(10, 2.4, 0.2, 'window', PC.x, 26.9, -88.0, { emit: 0.5 });
+  for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+    const fx = PC.x + sx * (PL / 2 + 8.5);
+    const fz = PC.z + sz * (PW / 2 + 8.5);
+    k.box(0.1, 2.2, 0.1, 'steel', fx, 0.2, fz, { mat: 9 });
+    k.box(0.9, 0.6, 0.05, 'flowerRed', fx + 0.45, 2.0, fz, { mat: 0 });
+  }
+
   // --- roof over the main (Poente) and south stands: cantilevered slab
   const roof = (cx, cz, w, d, ry) => {
     k.box(w, 0.5, d, 'white', cx, hTotal - 0.5, cz, { ry, mat: 8 });

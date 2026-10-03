@@ -176,9 +176,9 @@ export const waterUniforms = {
   uWTime: { value: 0 },
   uWSunDir: { value: new THREE.Vector3(0, 1, 0) },
   uWSunCol: { value: new THREE.Color(1, 1, 1) },
-  uWDeep: { value: new THREE.Color(0x14302e) },
-  uWShallow: { value: new THREE.Color(0x4a5a3a) },
-  uWFoam: { value: new THREE.Color(0xd9d6cc) },
+  uWDeep: { value: new THREE.Color(0x202c29) },
+  uWShallow: { value: new THREE.Color(0x5d6549) },
+  uWFoam: { value: new THREE.Color(0xdde0d6) },
 };
 
 const WATER_VERT_PARS = /* glsl */ `
@@ -387,6 +387,38 @@ export function createWaterMaterial({ open = false } = {}) {
 }
 
 // ------------------------------------------------------------ geometry
+// The OSM waterway polylines resampled every MAX_SEG world units, each
+// sample carrying the local flow direction; shared by the surface ribbon,
+// the banks and the weirs so they line up.
+function sampleLines(data, project) {
+  const MAX_SEG = 5;
+  const out = [];
+  for (const l of data.lines || []) {
+    if (!Array.isArray(l.p) || l.p.length < 2) continue;
+    const half = ((l.w || 3) * S) / 2;
+    const pts = [];
+    let prev = null;
+    for (const q of l.p) {
+      const c = project(q[0], q[1]);
+      if (prev) {
+        const n = Math.max(1, Math.ceil(Math.hypot(c.x - prev.x, c.z - prev.z) / MAX_SEG));
+        for (let i = 1; i <= n; i++) pts.push({ x: prev.x + ((c.x - prev.x) * i) / n, z: prev.z + ((c.z - prev.z) * i) / n });
+      } else pts.push(c);
+      prev = c;
+    }
+    const smp = pts.map((p, i) => {
+      const a = pts[Math.max(0, i - 1)];
+      const b = pts[Math.min(pts.length - 1, i + 1)];
+      let dx = b.x - a.x;
+      let dz = b.z - a.z;
+      const L = Math.hypot(dx, dz) || 1;
+      return { x: p.x, z: p.z, dx: dx / L, dz: dz / L };
+    });
+    out.push({ name: l.n || '', w: l.w || 3, half, smp });
+  }
+  return out;
+}
+
 // Distance from (x, z) to the rings' edges, world units.
 function edgeDistance(x, z, rings) {
   let best = Infinity;
@@ -404,6 +436,103 @@ function edgeDistance(x, z, rings) {
   return best;
 }
 
+// Distance of a waterway's closest sample to the map origin, world units:
+// the narrow centre streams run under paving and take no banks.
+function riverCoreDist(r) {
+  let d = Infinity;
+  for (const p of r.smp) d = Math.min(d, Math.hypot(p.x, p.z));
+  return d;
+}
+
+// Stone edging and a green verge along a river, one ribbon per bank,
+// draped on the terrain: wet granite at the waterline, a gravel verge, then
+// the grass of the valley. One merged geometry, one draw.
+function buildBanks(rivers, heightAt) {
+  const pos = [];
+  const col = [];
+  const idx = [];
+  const C = [new THREE.Color(0x7b786e), new THREE.Color(0x5f6d44), new THREE.Color(0x58673e)];
+  for (const r of rivers) {
+    // no banks for the narrow streams buried under the historic centre
+    if (r.w < 8 && riverCoreDist(r) < 220) continue;
+    const bw = r.w >= 8 ? 0.95 : 0.62;
+    for (const side of [-1, 1]) {
+      const base = pos.length / 3;
+      for (const p of r.smp) {
+        const nx = -p.dz * side;
+        const nz = p.dx * side;
+        const offs = [r.half * 0.96, r.half + bw * 0.42, r.half + bw];
+        const ys = [0.22, 0.07, 0.0];
+        for (let c = 0; c < 3; c++) {
+          const x = p.x + nx * offs[c];
+          const z = p.z + nz * offs[c];
+          pos.push(x, heightAt(x, z) + ys[c], z);
+          col.push(C[c].r, C[c].g, C[c].b);
+        }
+      }
+      for (let i = 0; i < r.smp.length - 1; i++) {
+        const v = base + i * 3;
+        for (let k = 0; k < 2; k++) idx.push(v + k, v + 3 + k, v + k + 1, v + k + 1, v + 3 + k, v + 4 + k);
+      }
+    }
+  }
+  if (!idx.length) return null;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  g.computeBoundingSphere();
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
+  mat.name = 'riverbank';
+  const mesh = new THREE.Mesh(g, mat);
+  mesh.name = 'riverbank';
+  mesh.receiveShadow = true;
+  return { mesh, triangles: idx.length / 3 };
+}
+
+// Boulders strewn along the banks: instanced low-poly rocks, the stone the
+// town's walls and kerbs are cut from.
+function buildBankRocks(rivers, heightAt) {
+  const count = new THREE.DodecahedronGeometry(0.5, 0);
+  const mat = new THREE.MeshStandardMaterial({ color: 0x77746a, roughness: 0.98, flatShading: true });
+  mat.name = 'bank-rocks';
+  const spots = [];
+  const rnd = lcg(913);
+  for (const r of rivers) {
+    if (r.smp.length < 3) continue;
+    if (r.w < 8 && riverCoreDist(r) < 220) continue;
+    const n = Math.min(24, Math.max(1, Math.round(r.smp.length / 14)));
+    for (let k = 0; k < n; k++) {
+      const p = r.smp[Math.floor(rnd() * r.smp.length)];
+      const side = rnd() < 0.5 ? -1 : 1;
+      const off = r.half + 0.5 + rnd() * 1.6;
+      const x = p.x - p.dz * side * off;
+      const z = p.z + p.dx * side * off;
+      spots.push({ x, z, s: 0.25 + rnd() * 0.55, rot: rnd() * TAU });
+    }
+  }
+  if (!spots.length) return null;
+  const mesh = new THREE.InstancedMesh(count, mat, spots.length);
+  mesh.name = 'bank-rocks';
+  const m = new THREE.Matrix4();
+  const q = new THREE.Quaternion();
+  const up = new THREE.Vector3(0, 1, 0);
+  const pos = new THREE.Vector3();
+  const sc = new THREE.Vector3();
+  spots.forEach((s, i) => {
+    q.setFromAxisAngle(up, s.rot);
+    pos.set(s.x, heightAt(s.x, s.z) + s.s * 0.25, s.z);
+    sc.set(s.s, s.s * 0.7, s.s);
+    mesh.setMatrixAt(i, m.compose(pos, q, sc));
+  });
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.computeBoundingSphere();
+  mesh.castShadow = false;
+  mesh.receiveShadow = true;
+  return { mesh, count: spots.length };
+}
+
 // Rivers as ribbons draped on the terrain (three vertices across: bank,
 // centre, bank, so the bank distance interpolates); ponds and reservoirs as
 // flat polygons, split until no edge is longer than MAX_EDGE so the bank
@@ -415,40 +544,20 @@ export function createWater({ data, areas, project, heightAt }) {
   const shore = [];
   const FLOW = 0.45; // world units per second, about 1.8 m/s
   const LIFT = 0.28; // world units (1.1 m) above the terrain
-  const MAX_SEG = 5;
   const MAX_EDGE = 4.5; // world units (18 m)
-  for (const l of data.lines || []) {
-    if (!Array.isArray(l.p) || l.p.length < 2) continue;
-    const half = ((l.w || 3) * S) / 2;
-    const pts = [];
-    let prev = null;
-    for (const q of l.p) {
-      const c = project(q[0], q[1]);
-      if (prev) {
-        const n = Math.max(1, Math.ceil(Math.hypot(c.x - prev.x, c.z - prev.z) / MAX_SEG));
-        for (let i = 1; i <= n; i++) pts.push({ x: prev.x + ((c.x - prev.x) * i) / n, z: prev.z + ((c.z - prev.z) * i) / n });
-      } else pts.push(c);
-      prev = c;
-    }
+  const rivers = sampleLines(data, project);
+  for (const r of rivers) {
     const base = pos.length / 3;
-    for (let i = 0; i < pts.length; i++) {
-      const a = pts[Math.max(0, i - 1)];
-      const b = pts[Math.min(pts.length - 1, i + 1)];
-      let dx = b.x - a.x;
-      let dz = b.z - a.z;
-      const L = Math.hypot(dx, dz) || 1;
-      dx /= L;
-      dz /= L;
-      const p = pts[i];
+    for (const p of r.smp) {
       for (const side of [-1, 0, 1]) {
-        const x = p.x - dz * half * side;
-        const z = p.z + dx * half * side;
+        const x = p.x - p.dz * r.half * side;
+        const z = p.z + p.dx * r.half * side;
         pos.push(x, heightAt(x, z) + LIFT, z);
-        flow.push(dx * FLOW, dz * FLOW);
-        shore.push(side ? 0 : half);
+        flow.push(p.dx * FLOW, p.dz * FLOW);
+        shore.push(side ? 0 : r.half);
       }
     }
-    for (let i = 0; i < pts.length - 1; i++) {
+    for (let i = 0; i < r.smp.length - 1; i++) {
       const v = base + i * 3;
       for (let k = 0; k < 2; k++) idx.push(v + k, v + 3 + k, v + k + 1, v + k + 1, v + 3 + k, v + 4 + k);
     }
@@ -543,11 +652,21 @@ export function createWater({ data, areas, project, heightAt }) {
   mesh.receiveShadow = true;
   mesh.renderOrder = 1;
 
+  // banks and boulders ride with the surface: nature.js adds one object
+  const banks = buildBanks(rivers, heightAt);
+  const rocks = buildBankRocks(rivers, heightAt);
+  if (banks) mesh.add(banks.mesh);
+  if (rocks) mesh.add(rocks.mesh);
+
   let sunSource = null; // the visible sun (scene.js skySunDir), when set
   let time = 0;
   return {
     mesh,
-    triangles: idx.length / 3,
+    banks: banks?.mesh ?? null,
+    triangles: idx.length / 3 + (banks?.triangles ?? 0),
+    bankTriangles: banks?.triangles ?? 0,
+    rocks: rocks?.count ?? 0,
+    rivers,
     // the glitter follows the visible sun disc
     setSunSource(v) {
       sunSource = v;
@@ -569,4 +688,240 @@ export function createWater({ data, areas, project, heightAt }) {
       }
     },
   };
+}
+
+// ------------------------------------------------------------ weirs
+// Small stone weirs across the waterway with a white cascade sheet and a
+// little spray. The bars are merged into one stone draw; every cascade is
+// one animated sheet; all spray is one points draw. Placed from the weirs
+// authored in data/life.json, found on the nearest waterway sample.
+const WEIR_VERT = /* glsl */ `
+  attribute vec2 aUv;
+  varying vec2 vUv;
+  varying vec3 vW;
+  void main() {
+    vUv = aUv;
+    vec4 w = modelMatrix * vec4(position, 1.0);
+    vW = w.xyz;
+    gl_Position = projectionMatrix * viewMatrix * w;
+  }`;
+const WEIR_FRAG = /* glsl */ `
+  uniform float uTime;
+  uniform vec3 uColor;
+  uniform float uAlpha;
+  varying vec2 vUv;
+  varying vec3 vW;
+  float h21(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+  }
+  float noise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y);
+  }
+  void main() {
+    // foam streaks rushing down the sheet, faster near the crest
+    float y = vUv.y;
+    vec2 q = vec2(vUv.x * 7.0 + sin(y * 9.0 + uTime * 3.0) * 0.4, y * 6.0 - uTime * (2.4 + y * 4.0));
+    float n = noise(q) * 0.6 + noise(q * 2.3 + 11.0) * 0.4;
+    float foam = smoothstep(0.35, 0.85, n) * (0.55 + 0.45 * y);
+    float edge = smoothstep(0.0, 0.14, vUv.x) * smoothstep(1.0, 0.86, vUv.x);
+    float head = smoothstep(0.0, 0.12, y) * smoothstep(1.0, 0.8, y);
+    float a = foam * edge * head * uAlpha;
+    if (a < 0.01) discard;
+    gl_FragColor = vec4(uColor, a);
+  }`;
+
+export function createWeirs({ data, project, heightAt, weirs }) {
+  if (!Array.isArray(weirs) || !weirs.length) return null;
+  const rivers = sampleLines(data, project);
+  if (!rivers.length) return null;
+  const crestY = 0.28;
+  const barPos = [];
+  const sheetPos = [];
+  const sheetUv = [];
+  const sheetIdx = [];
+  const drops = [];
+  const rnd = lcg(559);
+  const _m = new THREE.Matrix4();
+  const _e = new THREE.Euler();
+  for (const wdef of weirs) {
+    if (!Number.isFinite(wdef.lat) || !Number.isFinite(wdef.lon)) continue;
+    const c = project(wdef.lat, wdef.lon);
+    let best = null;
+    let bd = Infinity;
+    for (const r of rivers) {
+      if (wdef.line && !r.name.includes(wdef.line)) continue;
+      for (const p of r.smp) {
+        const d = (p.x - c.x) ** 2 + (p.z - c.z) ** 2;
+        if (d < bd) { bd = d; best = { r, p }; }
+      }
+    }
+    if (!best || bd > 40 * 40) continue;
+    const { r, p } = best;
+    const half = r.half;
+    const drop = (wdef.drop || 0.9) * S;
+    const y0 = heightAt(p.x, p.z);
+    const barH = drop + 0.7 * S + 0.15;
+    const yaw = Math.atan2(p.dx, p.dz);
+    // stone bar across the channel
+    _e.set(0, yaw, 0);
+    _m.makeRotationFromEuler(_e);
+    _m.setPosition(p.x, y0 + barH / 2, p.z);
+    const bg = new THREE.BoxGeometry(half * 2 + 0.7, barH, 0.9);
+    bg.applyMatrix4(_m);
+    barPos.push(bg);
+    // cascade sheet: crest edge upstream, toe downstream
+    const clen = 1.1 + drop * 1.8;
+    const ax = -p.dz, az = p.dx; // across the flow
+    const wy = half * 0.94;
+    const topY = y0 + crestY + drop * 0.55;
+    const upd = 0.42;
+    const bx = p.x + p.dx * upd;
+    const bz = p.z + p.dz * upd;
+    const ex = bx + p.dx * clen;
+    const ez = bz + p.dz * clen;
+    const base = sheetPos.length / 3;
+    sheetPos.push(
+      bx - ax * wy, topY, bz - az * wy,
+      bx + ax * wy, topY, bz + az * wy,
+      ex + ax * wy, y0 + crestY, ez + az * wy,
+      ex - ax * wy, y0 + crestY, ez - az * wy,
+    );
+    sheetUv.push(0, 0, 1, 0, 1, 1, 0, 1);
+    sheetIdx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+    drops.push({ x: bx, z: bz, y: topY, half, dx: p.dx, dz: p.dz, ax, az, drop });
+  }
+  if (!barPos.length) return null;
+  const merged = mergeWeirGeoms(barPos);
+  const stoneMat = new THREE.MeshStandardMaterial({ color: 0x777469, roughness: 0.96, metalness: 0 });
+  stoneMat.name = 'weir-stone';
+  const stone = new THREE.Mesh(merged, stoneMat);
+  stone.name = 'weir-stone';
+  stone.castShadow = true;
+  stone.receiveShadow = true;
+
+  const sheetGeo = new THREE.BufferGeometry();
+  sheetGeo.setAttribute('position', new THREE.Float32BufferAttribute(sheetPos, 3));
+  sheetGeo.setAttribute('aUv', new THREE.Float32BufferAttribute(sheetUv, 2));
+  sheetGeo.setIndex(sheetIdx);
+  sheetGeo.computeVertexNormals();
+  sheetGeo.computeBoundingSphere();
+  const sheetUniforms = { uTime: { value: 0 }, uColor: { value: new THREE.Color(0.9, 0.94, 0.93) }, uAlpha: { value: 0.8 } };
+  const sheetMat = new THREE.ShaderMaterial({ uniforms: sheetUniforms, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+  sheetMat.name = 'weir-foam';
+  const sheet = new THREE.Mesh(sheetGeo, sheetMat);
+  sheet.name = 'weir-foam';
+  sheet.renderOrder = 3;
+
+  // spray: droplets thrown from the toe of each cascade
+  const per = 60;
+  const total = drops.length * per;
+  const sp = new Float32Array(total * 3);
+  const sv = new Float32Array(total * 3);
+  const sl = new Float32Array(total * 2);
+  let k = 0;
+  for (const d of drops) {
+    for (let i = 0; i < per; i++) {
+      const o = k * 3;
+      const along = rnd();
+      const across = (rnd() - 0.5) * 2 * d.half * 0.9;
+      sp[o] = d.x + d.dx * along * 0.6 + d.ax * across;
+      sp[o + 1] = d.y - d.drop * 0.4 + rnd() * d.drop * 0.5;
+      sp[o + 2] = d.z + d.dz * along * 0.6 + d.az * across;
+      sv[o] = d.dx * (0.4 + rnd() * 0.8) + (rnd() - 0.5) * 0.9;
+      sv[o + 1] = 0.9 + rnd() * 0.8;
+      sv[o + 2] = d.dz * (0.4 + rnd() * 0.8) + (rnd() - 0.5) * 0.9;
+      sl[k * 2] = 0.5 + rnd() * 0.5;
+      sl[k * 2 + 1] = rnd();
+      k++;
+    }
+  }
+  const sprayGeo = new THREE.BufferGeometry();
+  sprayGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+  sprayGeo.setAttribute('aVel', new THREE.BufferAttribute(sv, 3));
+  sprayGeo.setAttribute('aLife', new THREE.BufferAttribute(sl, 2));
+  const sprayUniforms = { uTime: { value: 0 }, uG: { value: 9.81 * S }, uPx: { value: 500 }, uColor: { value: new THREE.Color(0.9, 0.93, 0.92) } };
+  const sprayMat = new THREE.ShaderMaterial({
+    uniforms: sprayUniforms,
+    transparent: true,
+    depthWrite: false,
+    vertexShader: /* glsl */ `
+      uniform float uTime;
+      uniform float uG;
+      uniform float uPx;
+      attribute vec3 aVel;
+      attribute vec2 aLife;
+      varying float vA;
+      void main() {
+        float life = aLife.x;
+        float age = mod(uTime + aLife.y * life, life);
+        vec3 p = position + aVel * age - vec3(0.0, 0.5 * uG * age * age, 0.0);
+        vec4 mv = viewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        float d = -mv.z;
+        gl_PointSize = clamp(0.035 * uPx / d, 1.0, 5.0);
+        float k = age / life;
+        vA = (1.0 - smoothstep(0.7, 1.0, k)) * smoothstep(0.0, 0.06, k) * (1.0 - smoothstep(260.0, 600.0, d));
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor;
+      varying float vA;
+      void main() {
+        vec2 p = gl_PointCoord * 2.0 - 1.0;
+        float r = dot(p, p);
+        if (r > 1.0 || vA < 0.01) discard;
+        gl_FragColor = vec4(uColor, vA * 0.5 * (1.0 - r));
+      }`,
+  });
+  sprayMat.name = 'weir-spray';
+  const spray = new THREE.Points(sprayGeo, sprayMat);
+  spray.name = 'weir-spray';
+  spray.frustumCulled = false;
+  spray.renderOrder = 4;
+
+  const group = new THREE.Group();
+  group.name = 'weirs';
+  group.add(stone, sheet, spray);
+
+  let time = 0;
+  return {
+    object: group,
+    update(dt, light, px) {
+      time += Math.min(dt, 1 / 20);
+      sheetUniforms.uTime.value = time;
+      sprayUniforms.uTime.value = time;
+      if (px) sprayUniforms.uPx.value = px;
+      if (light) sheetUniforms.uColor.value.setRGB(0.9, 0.94, 0.93).lerp(light.color, 0.22);
+    },
+    stats: { weirs: drops.length, spray: total, bars: barPos.length },
+  };
+}
+
+function mergeWeirGeoms(geoms) {
+  const total = geoms.reduce((a, g) => a + g.attributes.position.count, 0);
+  const P = new Float32Array(total * 3);
+  const N = new Float32Array(total * 3);
+  const idx = [];
+  let v = 0;
+  let vi = 0;
+  for (const g of geoms) {
+    const gp = g.attributes.position.array;
+    const gn = g.attributes.normal.array;
+    const gi = g.index.array;
+    P.set(gp, v * 3);
+    N.set(gn, v * 3);
+    for (let i = 0; i < gi.length; i++) idx.push(gi[i] + v);
+    v += g.attributes.position.count;
+    vi += gi.length;
+    g.dispose();
+  }
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.BufferAttribute(P, 3));
+  out.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+  out.setIndex(idx);
+  out.computeBoundingSphere();
+  return out;
 }

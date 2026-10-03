@@ -35,6 +35,10 @@ export function pedestrianDemand(hour, weekend, ymd = 0) {
   return lerpHour(weekend ? WEEKEND : WEEKDAY, hour);
 }
 export const DEMAND_MAX = 1.5;
+// the town reads busier than the raw curve: a denser walker pool, a demand
+// lift and more terrace seats taken at any hour
+const DENSITY = 1.25;
+const SEAT = 1.35;
 
 // ------------------------------------------------------------ the figure
 // metres, standing on y = 0, facing +z; aPart: 0 shirt, 1 / 2 legs, 3 / 4
@@ -179,7 +183,7 @@ export function createPeople({ lanes, spots, max, lite, shadows = false }) {
   const { X, Z, Y, H, start: LS, n: LN, sampleLane, linkStart, links } = lanes;
   const nS = X.length;
   // ---- walkers: 3/4 of the people at the peak of a festival night
-  const NW = lanes.nLanes ? Math.round(max * 0.75) : 0;
+  const NW = lanes.nLanes ? Math.round(max * 0.85) : 0;
   const rnd = lcg(1806);
   const wl = new Int32Array(NW); // lane
   const ws = new Float32Array(NW); // position in samples along the lane
@@ -242,6 +246,21 @@ export function createPeople({ lanes, spots, max, lite, shadows = false }) {
   }
   function place(i) {
     if (!candN) return false;
+    // a third walk in twos and threes: share a lane, speed and direction
+    // with an earlier walker, keeping a lateral and along-lane offset
+    if (i > 0 && rnd() < 0.32) {
+      const a = Math.floor(rnd() * i);
+      const la = wl[a];
+      if (ws[a] < LN[la] - 1 && !whop[a]) {
+        wl[i] = la;
+        wd[i] = wd[a];
+        ws[i] = Math.min(LN[la] - 1, Math.max(0, ws[a] + (rnd() - 0.5) * 1.6));
+        wv[i] = wv[a];
+        wf[i] = Math.max(-1, Math.min(1, wf[a] + (rnd() < 0.5 ? -1 : 1) * (0.42 + rnd() * 0.34)));
+        whop[i] = 0;
+        return true;
+      }
+    }
     // rejection by the lane's weight (pedestrian streets 3, squares 2.5 ...)
     let k = cand[Math.floor(rnd() * candN)];
     for (let g = 0; g < 6; g++) {
@@ -422,7 +441,7 @@ export function createPeople({ lanes, spots, max, lite, shadows = false }) {
     // re-gather the spawn samples when the focus moved
     const moved = (fx - candX) ** 2 + (fz - candZ) ** 2;
     if (moved > 12 * 12) gather(fx, fz, R);
-    const want = Math.min(NW, Math.round((NW * demand) / DEMAND_MAX));
+    const want = Math.min(NW, Math.round((NW * Math.min(DEMAND_MAX, demand * DENSITY)) / DEMAND_MAX));
     // after a jump (or the first time) everyone is placed anew
     if (!wasOn || moved > R * R * 0.25) {
       for (let i = 0; i < want; i++) place(i);
@@ -450,7 +469,7 @@ export function createPeople({ lanes, spots, max, lite, shadows = false }) {
     }
     // the people who stay, nearest cells first is not needed: the cap is high
     shownStaying = 0;
-    const share = demand / DEMAND_MAX;
+    const share = Math.min(1, (demand / DEMAND_MAX) * SEAT);
     for (let gx = Math.floor((fx - R) / CELL); gx <= Math.floor((fx + R) / CELL) && n < max; gx++) {
       for (let gz = Math.floor((fz - R) / CELL); gz <= Math.floor((fz + R) / CELL) && n < max; gz++) {
         const c = spotCells.get(gx * 65536 + gz);

@@ -156,6 +156,24 @@ function oliveira(k, { footprint, dims }) {
   }
   k.cyl(0.34, 0.34, 0.16, 10, T, naveCx, ry, zW + 0.12, { rx: Math.PI / 2 });
   k.box(naveW - 1.5, 0.55, 0.7, L, naveCx, eave - 0.7, zW - 0.05);
+  // corner pinnacles at the gable springing and a cross at the apex
+  for (const sx of [-1, 1]) {
+    k.box(0.7, 2.2, 0.7, L, naveCx + (sx * naveW) / 2, hRidge - 0.6, zW - 0.35);
+    k.cone(0.5, 1.6, 4, L, naveCx + (sx * naveW) / 2, hRidge + 1.6, zW - 0.35, { ry: Math.PI / 4 });
+  }
+  k.box(0.28, 1.5, 0.28, L, naveCx, hRidge + 0.2, zW - 0.35);
+  k.box(0.9, 0.16, 0.16, 'iron', naveCx, hRidge + 1.4, zW - 0.35);
+  // clerestory lancets under the nave eaves on both flanks
+  for (const sx of [-1, 1]) {
+    const cwx = naveCx + (sx * naveW) / 2;
+    for (let z = zApse + 3; z < zW - 4; z += 5.2) {
+      k.push({ x: cwx + sx * 0.02, z, ry: sx > 0 ? Math.PI / 2 : -Math.PI / 2 });
+      win(k, 0, eave - 3.0, 1.0, 1.7, 0, { arch: 'round', bw: 0.2, depth: 0.22, trim: T, pane: 'glass', emit: 0.12 });
+      k.pop();
+    }
+  }
+  // ridge tiles along the nave roof
+  for (let z = zApse + 1; z < zW - 1; z += 1.3) k.box(0.55, 0.16, 1.05, 'terracotta', naveCx, hRidge, z);
 
   // ---- low south-west entrance on the recessed front (x -2.4..5.8, z 19.6)
   k.push({ x: 1.7, z: 19.6, ry: 0 });
@@ -206,6 +224,13 @@ function oliveira(k, { footprint, dims }) {
   for (const y of [7.5, 15.5, 21.5]) k.box(tw + 0.3, 0.35, tw + 0.3, L, tcx, y, tcz);
   // corner quoin strips and the iron-grille window with the arms (photo)
   for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) k.box(0.7, body - 1, 0.7, D, tcx + sx * (tw / 2 - 0.35), 1, tcz + sz * (tw / 2 - 0.35));
+  // clasping buttresses on the tower
+  for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+    const bx = tcx + sx * (tw / 2 + 0.05);
+    const bz = tcz + sz * (tw / 2 + 0.05);
+    k.box(0.9, 12.0, 0.9, L, bx, 0.5, bz, { jit: 0.04 });
+    k.box(1.1, 0.3, 1.1, L, bx, 12.5, bz);
+  }
   win(k, tcx, 4.0, 2.4, 3.2, tcz + tw / 2, { bw: 0.4, depth: 0.3, pane: 'dark', trim: L, sill: false });
   for (let i = 0; i < 6; i++) k.box(0.09, 3.0, 0.09, 'iron', tcx - 1.1 + i * 0.44, 4.2, tcz + tw / 2 + 0.16);
   for (let i = 0; i < 5; i++) k.box(2.3, 0.09, 0.09, 'iron', tcx, 3.2 + i * 0.6, tcz + tw / 2 + 0.16);

@@ -14,7 +14,7 @@
 // (life.js) and the park belongs to the city layer. The model stays on the
 // church outline, so check-fit's site deviation is ~0.
 import * as THREE from 'three';
-import { win } from '../parts.js';
+import { win, bell } from '../parts.js';
 import { bbox, offset, clean, edges } from '../geom.js';
 
 const G = 'granite';
@@ -47,6 +47,8 @@ function penha(k, { footprint, dims }) {
   for (const e of edges(ol)) {
     if (Math.abs(e.nx) < 0.85 || e.len < 12) continue;
     k.push({ x: e.mx, y: 0, z: e.mz, ry: e.ry });
+    // slender pilaster strips between the bays (straight Art-Deco order)
+    for (const u of [-13.8, -9.2, -4.6, 0, 4.6, 9.2, 13.8]) k.box(0.5, eaves - y0, 0.35, L, u, y0, 0.1);
     for (const u of [-11.5, -6.9, -2.3, 2.3, 6.9, 11.5]) {
       win(k, u, 4.4, 1.6, 5.0, 0, { arch: 'round', bw: 0.3, depth: 0.3, trim: L, pane: 'glass' });
     }
@@ -118,6 +120,7 @@ function penha(k, { footprint, dims }) {
       { x: -1.05, y: 0.7, w: 1.5, h: 3.0, arch: 'round', pane: 'dark' },
       { x: 1.05, y: 0.7, w: 1.5, h: 3.0, arch: 'round', pane: 'dark' },
     ], 0, 0, tw / 2 - 0.27);
+    for (const bx of [-1.05, 1.05]) bell(k, 1.0, bx, 0.7, 0.2);
     k.pop();
   }
   k.corniceRing(tw + 0.4, tw + 0.4, [[0, 0], [0.4, 0.2], [0.4, 0.7], [0.9, 1]], L, 0, 21.8, tz);

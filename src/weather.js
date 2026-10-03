@@ -122,6 +122,7 @@ function cloudDeck() {
 function rainStreaks(n) {
   const seed = new Float32Array(n * 2 * 3);
   const end = new Float32Array(n * 2);
+  const rnd = new Float32Array(n * 2);
   let s = 12345;
   const r = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
   for (let i = 0; i < n; i++) {
@@ -133,11 +134,13 @@ function rainStreaks(n) {
       seed.set([x, y, z], (i * 2 + e) * 3);
       // aEnd: 0 head, 1 tail; the tail carries a per-drop length jitter
       end[i * 2 + e] = e === 0 ? 0 : 0.6 + 0.8 * k;
+      rnd[i * 2 + e] = k;
     }
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(seed, 3));
   geo.setAttribute('aEnd', new THREE.BufferAttribute(end, 1));
+  geo.setAttribute('aRnd', new THREE.BufferAttribute(rnd, 1));
   geo.setDrawRange(0, 0);
   const uniforms = {
     uBoxMin: { value: new THREE.Vector3() },
@@ -145,8 +148,8 @@ function rainStreaks(n) {
     uTime: { value: 0 },
     uFall: { value: new THREE.Vector3(0, -1, 0) },
     uLen: { value: 1 },
-    uColor: { value: new THREE.Color(0.62, 0.68, 0.76) },
-    uAlpha: { value: 0.3 },
+    uColor: { value: new THREE.Color(0.7, 0.76, 0.84) },
+    uAlpha: { value: 0.34 },
   };
   const mat = new THREE.ShaderMaterial({
     uniforms,
@@ -159,13 +162,15 @@ function rainStreaks(n) {
       uniform vec3 uFall;
       uniform float uLen;
       attribute float aEnd;
+      attribute float aRnd;
       varying float vTail;
       void main() {
         // world-anchored drops repeated every uBox: the box moves with the
-        // camera, the drops do not slide with it
-        vec3 p = position * uBox + uFall * uTime;
+        // camera, the drops do not slide with it; each drop falls at its own
+        // speed so the streaks are not one rigid curtain
+        vec3 p = position * uBox + uFall * uTime * (0.72 + 0.56 * aRnd);
         p = uBoxMin + mod(p - uBoxMin, uBox);
-        p -= normalize(uFall) * uLen * aEnd;
+        p -= normalize(uFall) * uLen * aEnd * (0.7 + 0.6 * aRnd);
         vTail = step(0.01, aEnd);
         gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
       }`,
@@ -174,7 +179,7 @@ function rainStreaks(n) {
       uniform float uAlpha;
       varying float vTail;
       void main() {
-        gl_FragColor = vec4(uColor, uAlpha * (1.0 - 0.85 * vTail));
+        gl_FragColor = vec4(uColor, uAlpha * (1.0 - 0.82 * vTail));
       }`,
   });
   mat.name = 'rain';
@@ -210,8 +215,8 @@ function snowFlakes(n) {
     uFall: { value: new THREE.Vector3(0, -1, 0) },
     uSize: { value: 0.05 },
     uPx: { value: 500 },
-    uColor: { value: new THREE.Color(0.9, 0.92, 0.96) },
-    uAlpha: { value: 0.8 },
+    uColor: { value: new THREE.Color(0.94, 0.96, 1.0) },
+    uAlpha: { value: 0.9 },
   };
   const mat = new THREE.ShaderMaterial({
     uniforms,
@@ -228,18 +233,20 @@ function snowFlakes(n) {
       varying float vA;
       void main() {
         vec3 p = position * uBox + uFall * uTime * (0.75 + 0.5 * aRnd);
-        // flutter: each flake on its own slow circle
+        // flutter: each flake on its own slow circle, drifting sideways
         float a = uTime * (0.6 + 0.9 * aRnd) + aRnd * 40.0;
-        p.xz += vec2(sin(a), cos(a * 0.8)) * uBox * 0.015;
+        p.xz += vec2(sin(a), cos(a * 0.8)) * uBox * 0.02;
         p = uBoxMin + mod(p - uBoxMin, uBox);
         vec4 mv = viewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
-        float px = uSize * (0.6 + 0.8 * aRnd) * uPx / max(-mv.z, 1e-3);
-        gl_PointSize = clamp(px, 1.0, 7.0);
+        // a slow twinkle, and bigger flakes the nearer they are
+        float tw = 0.72 + 0.28 * sin(uTime * 2.3 + aRnd * 34.0);
+        float px = uSize * (0.6 + 0.8 * aRnd) * tw * uPx / max(-mv.z, 1e-3);
+        gl_PointSize = clamp(px, 1.5, 9.0);
         // soft at the box edges (the wrap), faint when tiny
         vec3 q = (p - uBoxMin) / uBox;
         vec3 e = min(q, 1.0 - q);
-        vA = smoothstep(0.0, 0.08, min(min(e.x, e.y), e.z)) * clamp(px * 0.6, 0.25, 1.0);
+        vA = smoothstep(0.0, 0.08, min(min(e.x, e.y), e.z)) * clamp(px * 0.6, 0.3, 1.0);
       }`,
     fragmentShader: /* glsl */ `
       uniform vec3 uColor;
@@ -261,6 +268,74 @@ function snowFlakes(n) {
   return { points, uniforms, n };
 }
 
+// ------------------------------------------------------------ valley mist
+// Dawn mist over the low ground (the Ave and Selho valleys): one wide sheet
+// at a fixed altitude, following the camera, its density from the shared
+// cloud noise. It fills the bottoms, so the city and the hills stay clear.
+function valleyMist() {
+  const uniforms = {
+    ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog),
+    ...WEATHER_UNIFORMS,
+    uTime: { value: 0 },
+    uTint: { value: new THREE.Color(0.82, 0.85, 0.9) },
+    uAlpha: { value: 0 },
+    uScale: { value: 0.00016 },
+    uNear: { value: 25 },
+    uNight: { value: 0 },
+  };
+  const mat = new THREE.ShaderMaterial({
+    uniforms,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    fog: true,
+    vertexShader: /* glsl */ `
+      varying vec3 vW;
+      #include <fog_pars_vertex>
+      void main() {
+        vec4 w = modelMatrix * vec4(position, 1.0);
+        vW = w.xyz;
+        vec4 mvPosition = viewMatrix * w;
+        gl_Position = projectionMatrix * mvPosition;
+        #include <fog_vertex>
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform sampler2D tCloud;
+      uniform vec4 cloudParams;
+      uniform vec3 uTint;
+      uniform float uTime, uAlpha, uScale, uNear, uNight;
+      varying vec3 vW;
+      #include <fog_pars_fragment>
+      void main() {
+        vec2 uv = vW.xz * uScale + cloudParams.xy * 2.0 + vec2(uTime * 0.0016, uTime * 0.0009);
+        float a = texture2D(tCloud, uv).r;
+        float b = texture2D(tCloud, uv * 2.7 + 0.3).g;
+        // a light haze everywhere on the sheet, denser in the noise banks
+        float dens = smoothstep(0.18, 0.66, a * 0.7 + b * 0.3) * 0.85 + 0.15;
+        float dist = length(vW - cameraPosition);
+        // near the camera and far out it thins: no wall to fly through
+        float fade = smoothstep(uNear, uNear + 150.0, dist) * (1.0 - smoothstep(3000.0, 5800.0, dist));
+        float al = dens * uAlpha * fade * (0.85 + 0.15 * uNight);
+        if (al < 0.004) discard;
+        gl_FragColor = vec4(uTint, al);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+        #include <fog_fragment>
+      }`,
+  });
+  mat.name = 'valley-mist';
+  const geo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.name = 'valley-mist';
+  mesh.scale.set(9000, 1, 9000);
+  mesh.frustumCulled = false;
+  mesh.renderOrder = 34; // under the cloud deck, over the ground
+  mesh.castShadow = false;
+  mesh.receiveShadow = false;
+  mesh.visible = false;
+  return { mesh, uniforms };
+}
+
 // ------------------------------------------------------------ public
 export function createWeather({ scene, atmosphere, datumM = 0, mobile = false, reducedMotion = false }) {
   const deck = cloudDeck();
@@ -273,6 +348,10 @@ export function createWeather({ scene, atmosphere, datumM = 0, mobile = false, r
   scene.add(rain.lines);
   const snow = snowFlakes(mobile ? 1500 : 4000);
   scene.add(snow.points);
+  const mist = valleyMist();
+  const mistY = (166 - datumM) * S;
+  mist.mesh.position.y = mistY;
+  scene.add(mist.mesh);
   let snowK = 0; // 0..1, from the season
   let snowPx = 500; // pixels per world unit at distance 1 (seasons.js)
 
@@ -360,10 +439,10 @@ export function createWeather({ scene, atmosphere, datumM = 0, mobile = false, r
       camera.getWorldDirection(_fwd);
       u.uBoxMin.value.copy(camera.position).addScaledVector(_fwd, box * 0.5).subScalar(box / 2);
       // a drop crosses the box in about a second, slanted by the wind
-      u.uFall.value.set(wind.x * 0.12, -1, wind.z * 0.12).multiplyScalar(box * 0.95);
-      u.uLen.value = box * 0.03;
+      u.uFall.value.set(wind.x * 0.18, -1, wind.z * 0.18).multiplyScalar(box * 0.95);
+      u.uLen.value = box * 0.05;
       if (!reducedMotion) u.uTime.value = time;
-      u.uAlpha.value = 0.26 * cur.rain * (1 - 0.5 * atmosphere.night);
+      u.uAlpha.value = 0.34 * cur.rain * (1 - 0.45 * atmosphere.night);
     }
 
     // ---- snow flakes: slow, a box that follows the view like the rain
@@ -379,12 +458,29 @@ export function createWeather({ scene, atmosphere, datumM = 0, mobile = false, r
       u.uBoxMin.value.copy(camera.position).addScaledVector(_fwd, box * 0.5).subScalar(box / 2);
       // a flake crosses the box in about eight seconds, drifting with the wind
       u.uFall.value.set(wind.x * 0.25, -1, wind.z * 0.25).multiplyScalar(box * 0.12);
-      u.uSize.value = box * 0.0022;
+      u.uSize.value = box * 0.003;
       u.uPx.value = snowPx;
       if (!reducedMotion) u.uTime.value = time;
-      const lit = 0.55 + 0.45 * Math.min(1, atmosphere.state.lightI / 3.5);
-      u.uColor.value.setRGB(0.9, 0.92, 0.96).multiplyScalar(lit * (1 - 0.6 * atmosphere.night));
-      u.uAlpha.value = 0.75 * Math.min(1, snowK * 1.5);
+      const lit = 0.6 + 0.4 * Math.min(1, atmosphere.state.lightI / 3.5);
+      u.uColor.value.setRGB(0.94, 0.96, 1.0).multiplyScalar(lit * (1 - 0.55 * atmosphere.night));
+      u.uAlpha.value = 0.9 * Math.min(1, snowK * 1.5);
+    }
+
+    // ---- dawn mist over the low ground
+    const st = atmosphere.state;
+    const dawn = (1 - THREE.MathUtils.smoothstep(st.el, 8, 26)) * THREE.MathUtils.smoothstep(atmosphere.sunDir.x, -0.1, 0.2) * (1 - st.night);
+    const camAbove = camera.position.y - mistY;
+    if (dawn > 0.02 && camAbove > 4 && camAbove < 900) {
+      mist.mesh.visible = true;
+      mist.mesh.position.x = camera.position.x;
+      mist.mesh.position.z = camera.position.z;
+      const u = mist.uniforms;
+      if (!reducedMotion) u.uTime.value = time;
+      u.uAlpha.value = 0.6 * dawn * (1 - 0.55 * cur.rain) * (0.7 + 0.5 * cur.haze);
+      u.uNight.value = st.night;
+      u.uTint.value.copy(st.haze).lerp(st.light, 0.3).multiplyScalar(0.88 + 0.12 * Math.min(1, st.lightI / 4));
+    } else {
+      mist.mesh.visible = false;
     }
   }
 
@@ -392,6 +488,7 @@ export function createWeather({ scene, atmosphere, datumM = 0, mobile = false, r
     deck: deck.mesh,
     rain: rain.lines,
     snow: snow.points,
+    mist: mist.mesh,
     set,
     update,
     // winter flakes 0..1; px: drawing-buffer pixels per world unit at

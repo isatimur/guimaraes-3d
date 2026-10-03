@@ -65,6 +65,11 @@ function briteiros(k, { footprint, dims }) {
       // broken rubble on the coping
       if (i % 2 === 0) k.box(1.2, 0.4, 2.0, D, a[0], h, a[1], { jit: 0.15 });
     }
+    // tumbled stones at the foot of the wall
+    for (let i = 0; i < pts.length; i += 2) {
+      const a = pts[i];
+      k.box(0.8 + k.rnd() * 0.6, 0.5 + k.rnd() * 0.4, 0.8 + k.rnd() * 0.5, k.rnd() > 0.5 ? D : L, a[0] + (k.rnd() - 0.5) * 4, 0.1, a[1] + (k.rnd() - 0.5) * 4, { jit: 0.2, ry: k.rnd() * 3 });
+    }
   });
 
   // --- the mapped buildings
@@ -115,6 +120,8 @@ function briteiros(k, { footprint, dims }) {
     [-70, 55], [-35, 60], [0, 48], [35, 62], [72, 50],
     [-20, 110], [25, 120], [60, 95], [-95, 90], [95, 85],
     [-60, 160], [10, 170], [65, 155], [-25, 200], [40, 205],
+    [-105, -35], [88, 40], [-45, 130], [30, 155], [-8, 88],
+    [52, 100], [-80, 120], [80, 140], [-100, 45], [15, -40],
   ];
   let n = 0;
   for (const [x, z] of place) {

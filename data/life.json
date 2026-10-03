@@ -148,14 +148,62 @@
    "lat": 41.441451,
    "lon": -8.295447,
    "kind": "jet",
-   "name": "Chafariz do Toural"
+   "name": "Chafariz do Toural",
+   "site": "toural",
+   "h": 2.6,
+   "r": 1.4
   },
   {
    "id": "fonte-sao-tiago",
    "lat": 41.443202,
    "lon": -8.293498,
    "kind": "jet",
-   "name": "Fonte de São Tiago"
+   "name": "Fonte de São Tiago",
+   "site": "sao-tiago",
+   "h": 1.9,
+   "r": 1.1
+  }
+ ],
+ "weirs": [
+  {
+   "id": "selho-norte",
+   "lat": 41.46304,
+   "lon": -8.29643,
+   "line": "Selho",
+   "drop": 1.4,
+   "name": "Açude do Rio Selho"
+  },
+  {
+   "id": "selho-sul",
+   "lat": 41.45008,
+   "lon": -8.30945,
+   "line": "Selho",
+   "drop": 1.1,
+   "name": "Açude do Rio Selho (sul)"
+  },
+  {
+   "id": "santa-luzia",
+   "lat": 41.4537,
+   "lon": -8.287,
+   "line": "Santa Luzia",
+   "drop": 0.9,
+   "name": "Açude da Ribeira de Santa Luzia"
+  },
+  {
+   "id": "couros-norte",
+   "lat": 41.4482,
+   "lon": -8.2759,
+   "line": "Couros",
+   "drop": 1.0,
+   "name": "Açude da Ribeira de Couros"
+  },
+  {
+   "id": "nespereira",
+   "lat": 41.4114,
+   "lon": -8.3156,
+   "line": "Nespereira",
+   "drop": 0.8,
+   "name": "Açude do Regato de Nespereira"
   }
  ]
 }
