@@ -91,13 +91,13 @@
       "area": "content",
       "title": "Three routes",
       "user_visible_behavior": "Three authored routes are selectable and drawn on the map.",
-      "status": "in_progress",
+      "status": "passing",
       "verification": ["npm run check:data", "Visual: each route draws and its card opens"],
       "evidence": [
-        "data/routes.json + cities/guimaraes.json + scripts/fetch-routes.mjs modified (uncommitted)",
-        "check-data: route penha-day.legs[1] pts must be [lat,lon] rounded to 5 decimals"
+        "data/routes.json (3 routes)",
+        "check-data OK: route legs pts rounded to 5 decimals"
       ],
-      "notes": "Uncommitted routes work; round the leg pts to 5 decimals to satisfy the content contract."
+      "notes": "Route leg pts normalized to 5 decimals."
     },
     {
       "id": "gui-008",
