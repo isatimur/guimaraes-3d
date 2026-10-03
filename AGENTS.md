@@ -98,3 +98,6 @@ to report (or `--apply`) engine changes.
 3. Record any blocker or risk.
 4. Commit only when the repo is in a safe, restartable state.
 5. Leave it clean enough that the next session can run `./init.sh` immediately.
+
+Use `clean-state-checklist.md` to close out, `session-handoff.md` for larger
+sessions, and `evaluator-rubric.md` before accepting a feature.
