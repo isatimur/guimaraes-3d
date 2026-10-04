@@ -98,3 +98,16 @@ updates it automatically.
   - Wave 8's matching sky/cloud pass (clouds, god rays) never ran — credit limit; nothing partial was left behind for it.
   - `live.walkers` reads 0 with live mode off (by design — gated); the walker pool (1275) and market-day gating are intact.
 - Next best step: wave 8b (clouds + sun shafts), then Phase C finer DEM.
+
+### Session 005
+
+- Date: 2026-10-04
+- Goal: verify the remaining untested surfaces directly (sky states, deep-links, guide, cinema/story/mobile) after the credit-limit block.
+- Completed (verification only — no code changes needed):
+  - Sky/weather: `#weather=rain` and `#weather=partly` deep-links confirmed working on fresh loads (an earlier same-page `goto` test was flawed — hash changes don't reload). Rain streaks + grey dimming, and the sunlit cloud deck with drifting ground shadows, both render correctly. The SunRaysPass is wired with off-screen fade by design.
+  - Identity sweep: remaining "Braga" hits are legitimate (University of Minho spans both cities; Soares/São Miguel history; "Dukes of Braganza"; code comments; a dead-for-Guimarães story branch). `api/guide.js` prompt is city-generic and data-grounded.
+  - Regression: cinema 1/18 (castle letterbox + photo + timeline), story intro ("Колыбель Португалии" over dusk aerial), mobile 390px (no overflow) — all 0 errors.
+- Verification run: `npm run verify` was already green at `e975eaa`; no source changes this session.
+- Evidence captured: `/tmp/h-rain.png`, `/tmp/h-partly.png`, `/tmp/reg-cinema.png`, `/tmp/reg-story.png`, `/tmp/reg-mobile.png`, `/tmp/paco-grounds.png` (grounds stats: 4 forecourts, 10 lawns, 7 paths, 10 beds).
+- Known risk or unresolved issue: none new.
+- Next best step: wave 8b (clouds + sun shafts tuning) when capacity allows, then Phase C finer DEM.
