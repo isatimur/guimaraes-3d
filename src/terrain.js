@@ -17,7 +17,7 @@ const smooth = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
 // toMetres(lat, lon) -> {x, z} local metres (z = south); S: world units per metre.
 export function createTerrain(data, toMetres, S, { exaggeration = VERTICAL_EXAGGERATION } = {}) {
   const ok = data && Array.isArray(data.heights) && data.cols > 1 && data.rows > 1 && data.heights.length === data.cols * data.rows;
-  if (data && !ok) console.warn('[braga] terrain.json is malformed; using flat ground');
+  if (data && !ok) console.warn('[guimaraes] terrain.json is malformed; using flat ground');
 
   const cols = ok ? data.cols : 2;
   const rows = ok ? data.rows : 2;

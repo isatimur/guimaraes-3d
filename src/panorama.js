@@ -306,7 +306,7 @@ export function createPanorama({ reducedMotion, onOpen, onClose }) {
       },
       (err) => {
         if (my !== token) return;
-        console.warn('[braga] panorama failed to load', pano.src, err?.message || err);
+        console.warn('[guimaraes] panorama failed to load', pano.src, err?.message || err);
         status.textContent = t('Панорама не загрузилась');
       },
     );

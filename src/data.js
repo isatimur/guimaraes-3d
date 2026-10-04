@@ -28,7 +28,7 @@ function cleanLandmarks(raw) {
     const lat = Number(l?.lat);
     const lon = Number(l?.lon);
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-      console.warn('[braga] landmark skipped, bad coordinates:', l?.id);
+      console.warn('[guimaraes] landmark skipped, bad coordinates:', l?.id);
       continue;
     }
     out.push({
@@ -125,12 +125,12 @@ function cleanRoutes(raw, landmarks) {
     const stops = (Array.isArray(r.stops) ? r.stops : [])
       .filter((s) => {
         if (byId.has(s?.landmark_id)) return true;
-        console.warn(`[braga] route "${r.id}": stop skipped, unknown landmark "${s?.landmark_id}"`);
+        console.warn(`[guimaraes] route "${r.id}": stop skipped, unknown landmark "${s?.landmark_id}"`);
         return false;
       })
       .map((s) => ({ landmark_id: s.landmark_id, time_ru: str(s.time_ru), stay_min: num(s.stay_min), note_ru: str(s.note_ru) }));
     if (stops.length < 2) {
-      console.warn(`[braga] route "${r.id}" skipped: fewer than two known stops`);
+      console.warn(`[guimaraes] route "${r.id}" skipped: fewer than two known stops`);
       continue;
     }
     const legs = [];
@@ -181,7 +181,7 @@ async function fetchTable(file, key, status) {
     return v;
   } catch (e) {
     status[key] = 'missing';
-    console.info(`[braga] ${dataPath(file)} unavailable (${e.message}); ${key} empty.`);
+    console.info(`[guimaraes] ${dataPath(file)} unavailable (${e.message}); ${key} empty.`);
     return {};
   }
 }
@@ -217,7 +217,7 @@ export async function loadData(onStep = () => {}) {
       geo[key] = res.value;
       status[key] = 'real';
     } else {
-      console.warn(`[braga] ${D}/${file} unavailable (${res.reason?.message}). ${key} layer disabled.`);
+      console.warn(`[guimaraes] ${D}/${file} unavailable (${res.reason?.message}). ${key} layer disabled.`);
       geo[key] = null;
       status[key] = 'missing';
     }
@@ -227,13 +227,13 @@ export async function loadData(onStep = () => {}) {
   if (lmRes.status === 'fulfilled') {
     landmarks = lmRes.value;
   } else if (braga) {
-    console.warn(`[braga] ${CITY.landmarks_file} unavailable (${lmRes.reason?.message}). Using placeholder landmarks.`);
+    console.warn(`[guimaraes] ${CITY.landmarks_file} unavailable (${lmRes.reason?.message}). Using placeholder landmarks.`);
     landmarks = cleanLandmarks(PLACEHOLDER_LANDMARKS);
     status.landmarks = 'placeholder';
   } else {
     // a new city: the map draws the terrain and the city fabric it has;
     // the landmark list comes from the landmark agents later
-    console.info(`[braga] ${CITY.name.en}: no landmarks yet (${CITY.landmarks_file}: ${lmRes.reason?.message}). Empty list.`);
+    console.info(`[guimaraes] ${CITY.name.en}: no landmarks yet (${CITY.landmarks_file}: ${lmRes.reason?.message}). Empty list.`);
     landmarks = [];
     status.landmarks = 'none';
   }
@@ -242,7 +242,7 @@ export async function loadData(onStep = () => {}) {
   if (rdRes.status === 'fulfilled') {
     roads = rdRes.value;
   } else {
-    console.warn(`[braga] ${D}/roads.json unavailable (${rdRes.reason?.message}). Using placeholder roads.`);
+    console.warn(`[guimaraes] ${D}/roads.json unavailable (${rdRes.reason?.message}). Using placeholder roads.`);
     // the placeholder streets are Braga's; another city gets its own frame and no streets
     roads = braga ? PLACEHOLDER_ROADS : { origin: CITY.origin, bbox: CITY.core_bbox, features: [] };
     status.roads = 'placeholder';
@@ -251,7 +251,7 @@ export async function loadData(onStep = () => {}) {
   status.enriched = enrich(landmarks, force);
   if (status.enriched.length) {
     const why = force ? '?demo: empty rich fields filled' : 'no rich fields in landmarks.json';
-    console.warn(`[braga] ${why}. Placeholder values used for: ${status.enriched.join(', ')}`);
+    console.warn(`[guimaraes] ${why}. Placeholder values used for: ${status.enriched.join(', ')}`);
   }
   for (const l of landmarks) cleanRich(l);
 
@@ -265,7 +265,7 @@ export async function loadData(onStep = () => {}) {
     }
   }
   if (routeErr || force) {
-    if (routeErr) console.warn(`[braga] ${D}/routes.json unavailable (${routeErr.message}). ${braga ? 'Using placeholder routes.' : 'No routes.'}`);
+    if (routeErr) console.warn(`[guimaraes] ${D}/routes.json unavailable (${routeErr.message}). ${braga ? 'Using placeholder routes.' : 'No routes.'}`);
     if ((routeErr || !routes.length) && braga) {
       routes = cleanRoutes(PLACEHOLDER_ROUTES, landmarks);
       status.routes = 'placeholder';

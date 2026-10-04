@@ -1330,7 +1330,7 @@ export function createLife(ctx) {
     try {
       return fn();
     } catch (e) {
-      console.warn(`[braga] life: ${name} failed`, e);
+      console.warn(`[guimaraes] life: ${name} failed`, e);
       return null;
     }
   };
@@ -1365,7 +1365,7 @@ export function createLife(ctx) {
       air = safe('aircraft', () => a.createLiveAir(ctxLive));
       buses = safe('buses', () => b.createLiveBus(ctxLive));
     })
-    .catch((e) => console.warn('[braga] life: live layers failed to load', e));
+    .catch((e) => console.warn('[guimaraes] life: live layers failed to load', e));
   const buildMs = Math.round(performance.now() - t0);
 
   const frustum = new THREE.Frustum();

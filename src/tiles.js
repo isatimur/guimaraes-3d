@@ -127,7 +127,7 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
       if (!Array.isArray(doc?.tiles) || !doc.grid) throw new Error('no tiles[]');
     } catch (e) {
       failed = true;
-      console.info(`[braga] tiles: ${dataPath('tiles/index.json')} unavailable (${e.message}); only the core is drawn`);
+      console.info(`[guimaraes] tiles: ${dataPath('tiles/index.json')} unavailable (${e.message}); only the core is drawn`);
       return;
     }
     const g = doc.grid;
@@ -212,13 +212,13 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
         w = new Worker(new URL('./tile-worker.js', import.meta.url), { type: 'module' });
       } catch (e) {
         failed = true;
-        console.warn('[braga] tiles: no module worker; only the core is drawn', e);
+        console.warn('[guimaraes] tiles: no module worker; only the core is drawn', e);
         return;
       }
       const W = { w, busy: 0, ok: false };
       w.onmessage = (ev) => onMessage(W, ev.data);
       w.onerror = (ev) => {
-        console.warn('[braga] tiles: worker failed', ev.message || ev);
+        console.warn('[guimaraes] tiles: worker failed', ev.message || ev);
         stats.errors++;
         W.dead = true;
       };
@@ -361,7 +361,7 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
       T.tries++;
       T.retryAt = clock + 5 * T.tries;
       if (T.state === 'loading') T.state = T.tries >= 3 ? 'failed' : 'idle';
-      if (T.tries === 1 || T.state === 'failed') console.warn(`[braga] tiles: ${m.key} failed (${m.error})${T.state === 'failed' ? ', given up' : ''}`);
+      if (T.tries === 1 || T.state === 'failed') console.warn(`[guimaraes] tiles: ${m.key} failed (${m.error})${T.state === 'failed' ? ', given up' : ''}`);
       return;
     }
     nFetch[0] += m.stats.fetchMs;

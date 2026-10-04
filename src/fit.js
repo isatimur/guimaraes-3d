@@ -388,7 +388,7 @@ export function fitLandmark(l, ctx) {
   };
   const worst = Math.max(deviation.site, deviation.main ?? 0, deviation.height ?? 0);
   if (worst > DEVIATION_WARN && !fit.legacy && typeof console !== 'undefined') {
-    console.warn(`[braga] ${l.id}: model box deviates ${(worst * 100).toFixed(0)} % from the OSM extent`, deviation);
+    console.warn(`[guimaraes] ${l.id}: model box deviates ${(worst * 100).toFixed(0)} % from the OSM extent`, deviation);
   }
 
   const long = Math.max(size.x, size.z);

@@ -97,7 +97,7 @@ export function createLiveBus({ scene, camera, renderer, project, heightAt, mobi
   let status = 'waiting';
   let loadAt = performance.now() + LOAD_AFTER_MS;
   const rtKey = optInKey('tubkey', 'tubKey');
-  if (rtKey) console.info(`[braga] TUB real-time: key stored, but TUB publishes no open GTFS-Realtime feed yet${TUB_RT_URL ? '' : ' (TUB_RT_URL is null)'}; the buses run on the schedule`);
+  if (rtKey) console.info(`[guimaraes] TUB real-time: key stored, but TUB publishes no open GTFS-Realtime feed yet${TUB_RT_URL ? '' : ' (TUB_RT_URL is null)'}; the buses run on the schedule`);
 
   async function load() {
     status = 'loading';
@@ -109,7 +109,7 @@ export function createLiveBus({ scene, camera, renderer, project, heightAt, mobi
       status = 'ok';
     } catch (e) {
       status = `unavailable: ${e.message}`;
-      console.info(`[braga] TUB schedule unavailable (${e.message}); no buses`);
+      console.info(`[guimaraes] TUB schedule unavailable (${e.message}); no buses`);
     }
   }
 

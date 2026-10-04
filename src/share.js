@@ -113,7 +113,7 @@ function applySocialTags() {
 // ------------------------------------------------------------ service worker
 if (import.meta.env.PROD && 'serviceWorker' in navigator && !uiOff) {
   const register = () =>
-    navigator.serviceWorker.register('./sw.js').catch((err) => console.warn('[braga] service worker not registered', err));
+    navigator.serviceWorker.register('./sw.js').catch((err) => console.warn('[guimaraes] service worker not registered', err));
   if (document.readyState === 'complete') register();
   else window.addEventListener('load', register, { once: true });
 }
@@ -482,7 +482,7 @@ export function installShare(ctx) {
       try {
         await postcard(btn.dataset.preset);
       } catch (err) {
-        console.error('[braga] postcard failed', err);
+        console.error('[guimaraes] postcard failed', err);
         toast(tr('failed'), 4000);
       } finally {
         btn.removeAttribute('aria-busy');

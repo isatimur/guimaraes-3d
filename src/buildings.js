@@ -324,7 +324,7 @@ export function buildBuildings(data, project, heightAt, masks = { outlines: [], 
   if (tris > MAX_TRIS) {
     keep = items.filter((it) => !(it.far && it.areaM2 < SMALL_M2));
     stats.droppedSmall = items.length - keep.length;
-    console.info(`[braga] buildings: ${tris} triangles > ${MAX_TRIS}; dropped ${stats.droppedSmall} buildings < ${SMALL_M2} m² beyond ${FAR_M} m`);
+    console.info(`[guimaraes] buildings: ${tris} triangles > ${MAX_TRIS}; dropped ${stats.droppedSmall} buildings < ${SMALL_M2} m² beyond ${FAR_M} m`);
   }
 
   // --- pass 2: geometry per tile

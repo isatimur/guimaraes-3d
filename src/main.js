@@ -645,9 +645,9 @@ async function start() {
     if (r) {
       if (routeById.has(r)) {
         if (route?.route.id !== r) openRoute(r);
-      } else console.warn(`[braga] #route=${r}: no such route`);
+      } else console.warn(`[guimaraes] #route=${r}: no such route`);
     } else if (p) {
-      if (!indexById.has(p)) console.warn(`[braga] #place=${p}: no such place`);
+      if (!indexById.has(p)) console.warn(`[guimaraes] #place=${p}: no such place`);
       else if (indexById.get(p) !== active) select(indexById.get(p));
     }
   }
@@ -1453,7 +1453,7 @@ async function start() {
           // storage may be blocked
         }
       }
-      console.info(`[braga] ${avgMs.toFixed(1)} ms per frame: effects off, smaller shadow map${LITE ? '' : '; light mode from the next visit'}`);
+      console.info(`[guimaraes] ${avgMs.toFixed(1)} ms per frame: effects off, smaller shadow map${LITE ? '' : '; light mode from the next visit'}`);
     }
     probe = null;
   }
@@ -1501,7 +1501,7 @@ async function start() {
     };
     debug.stats = stats;
     console.info(
-      `[braga] stats: ${stats.drawCalls} draw calls, ${stats.frameTriangles} triangles this frame; scene ${stats.sceneTriangles} triangles in ${meshes} meshes; buildings ${city.stats.built} in ${city.stats.tiles} tiles (${city.stats.triangles} tris), skipped ${city.stats.skippedOutline + city.stats.skippedPlan} under landmarks`,
+      `[guimaraes] stats: ${stats.drawCalls} draw calls, ${stats.frameTriangles} triangles this frame; scene ${stats.sceneTriangles} triangles in ${meshes} meshes; buildings ${city.stats.built} in ${city.stats.tiles} tiles (${city.stats.triangles} tris), skipped ${city.stats.skippedOutline + city.stats.skippedPlan} under landmarks`,
     );
     console.table(marks.report);
   }
@@ -1560,7 +1560,7 @@ async function start() {
       try {
         fn();
       } catch (e) {
-        console.error(`[braga] ${name} failed`, e);
+        console.error(`[guimaraes] ${name} failed`, e);
       }
     };
     await step('nature', buildNatureLayer);
@@ -1609,7 +1609,7 @@ loadCity()
     return start();
   })
   .catch((err) => {
-    console.error('[braga] start failed', err);
+    console.error('[guimaraes] start failed', err);
     stopBoot?.();
     const msg = t('Не удалось запустить карту. Нужен браузер с поддержкой WebGL.');
     const text = document.getElementById('loader-text');

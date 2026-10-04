@@ -593,7 +593,7 @@ export function createLiveAir({ scene, camera, renderer, project, heightAt, datu
       r.at = performance.now();
       if (!routeLogged) {
         routeLogged = true;
-        console.info(`[braga] aircraft route lookup unavailable (${e.name === 'AbortError' ? 'timeout' : e.message})`);
+        console.info(`[guimaraes] aircraft route lookup unavailable (${e.name === 'AbortError' ? 'timeout' : e.message})`);
       }
     } finally {
       clearTimeout(timer);
@@ -636,7 +636,7 @@ export function createLiveAir({ scene, camera, renderer, project, heightAt, datu
       nextIn = src === 'opensky' ? POLL_SLOW_MS : POLL_MS;
       if (!loggedSrc) {
         loggedSrc = true;
-        console.info(`[braga] live aircraft: ${j.src} answered, ${total} airborne within 40 nm`);
+        console.info(`[guimaraes] live aircraft: ${j.src} answered, ${total} airborne within 40 nm`);
       }
     } catch (e) {
       if (my !== ctl) return;
@@ -644,7 +644,7 @@ export function createLiveAir({ scene, camera, renderer, project, heightAt, datu
       nextIn = RETRY_MS;
       if (!loggedFail) {
         loggedFail = true;
-        console.info(`[braga] live aircraft unavailable (${status}); retry in ${RETRY_MS / 1000} s`);
+        console.info(`[guimaraes] live aircraft unavailable (${status}); retry in ${RETRY_MS / 1000} s`);
       }
     } finally {
       clearTimeout(timer);

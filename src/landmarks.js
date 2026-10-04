@@ -446,7 +446,7 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
   for (const s of shrink) {
     if (s.ok) continue;
     const pct = (v) => (v == null ? '-' : `${(v * 100).toFixed(1)} %`);
-    console.warn(`[braga] ${s.id}: model smaller than real (min ${SHRINK_MIN * 100} %): x ${pct(s.ratio.x)}, z ${pct(s.ratio.z)}, h ${pct(s.ratio.h)}`);
+    console.warn(`[guimaraes] ${s.id}: model smaller than real (min ${SHRINK_MIN * 100} %): x ${pct(s.ratio.x)}, z ${pct(s.ratio.z)}, h ${pct(s.ratio.h)}`);
   }
   // 1:1 at any distance: every landmark mesh keeps scale 1 and no morph
   function realScale() {

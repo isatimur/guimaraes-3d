@@ -403,7 +403,7 @@ export function createLive({ atmosphere, weather, reducedMotion = false, onPersi
     } catch (e) {
       // offline or blocked: keep the sun, reuse a recent reading if any
       status = `offline: ${e.message}`;
-      console.info(`[braga] Open-Meteo unavailable (${e.message}); live mode keeps the real sun`);
+      console.info(`[guimaraes] Open-Meteo unavailable (${e.message}); live mode keeps the real sun`);
       reading = reading || cachedReading();
     } finally {
       fetching = false;

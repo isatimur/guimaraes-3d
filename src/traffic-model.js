@@ -219,7 +219,7 @@ export function createTrafficModel({ max, getNow, isLive, getPreset, project, mo
       st.tomtomStatus = `failed: ${e.message}`;
       // after a failure, wait 10 minutes (a bad key must not hammer the API)
       lastTomTom = performance.now() + 8 * 60e3;
-      console.info(`[braga] TomTom traffic unavailable (${e.message}); the hourly profile drives the traffic`);
+      console.info(`[guimaraes] TomTom traffic unavailable (${e.message}); the hourly profile drives the traffic`);
     } finally {
       tomtomBusy = false;
     }

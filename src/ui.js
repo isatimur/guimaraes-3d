@@ -556,7 +556,7 @@ export function mountTool(node, group = 'display', { closes = false } = {}) {
   toolsSheet();
   let g = document.querySelector(`#tools-sheet .tools-group[data-group="${group}"]`);
   if (!g) {
-    console.warn(`[braga] mountTool: no tools group "${group}", using "display"`);
+    console.warn(`[guimaraes] mountTool: no tools group "${group}", using "display"`);
     g = document.querySelector('#tools-sheet .tools-group[data-group="display"]');
   }
   if (closes) node.setAttribute('data-closes-tools', '');

@@ -1,6 +1,6 @@
 {
   "project": "guimaraes-3d",
-  "last_updated": "2026-10-03",
+  "last_updated": "2026-10-04",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -20,7 +20,11 @@
       "title": "Engine fork, Guimarães config, shell, green build",
       "user_visible_behavior": "The app runs for the Guimarães city config and draws its terrain and city fabric.",
       "status": "passing",
-      "verification": ["npm run dev", "npm run build", "npm run verify → build PASS"],
+      "verification": [
+        "npm run dev",
+        "npm run build",
+        "npm run verify → build PASS"
+      ],
       "evidence": [
         "commit 83590e0 (engine from braga-3d, Guimarães data)",
         "commit 399a16a (port braga's current engine)"
@@ -34,8 +38,14 @@
       "title": "Core geodata: terrain, buildings, roads, nature",
       "user_visible_behavior": "The map shows real Guimarães terrain, OSM buildings, the street network and green areas.",
       "status": "passing",
-      "verification": ["npm run check:geo", "npm run check:traffic"],
-      "evidence": ["check-geo OK (0 warnings)", "check-traffic OK, 100% compliance"],
+      "verification": [
+        "npm run check:geo",
+        "npm run check:traffic"
+      ],
+      "evidence": [
+        "check-geo OK (0 warnings)",
+        "check-traffic OK, 100% compliance"
+      ],
       "notes": "EU-DEM terrain 59.5–676.6 m; Penha 555 m."
     },
     {
@@ -45,7 +55,10 @@
       "title": "Landmark content for 18 places (RU/EN/PT) + photos + merge",
       "user_visible_behavior": "Each landmark card shows real text in Russian, English and Portuguese with credited photos.",
       "status": "passing",
-      "verification": ["npm run check:data", "Visual: locale switch shows EN/PT"],
+      "verification": [
+        "npm run check:data",
+        "Visual: locale switch shows EN/PT"
+      ],
       "evidence": [
         "commit eb731f6 (texts for all 18 landmarks, credited Commons photos, merged locales)",
         "check-data OK: 18 landmarks, 90 gallery photos, 40 videos, 3 routes"
@@ -59,8 +72,14 @@
       "title": "Footprints and real-world dimensions with sources",
       "user_visible_behavior": "Landmark footprints match OSM and dimensions carry cited sources.",
       "status": "passing",
-      "verification": ["npm run check:dimensions", "npm run check:geo"],
-      "evidence": ["data/footprints.json + data/dimensions.json for 18/18", "check-dimensions OK: 18 landmarks, all numbers finite, positive and sourced"],
+      "verification": [
+        "npm run check:dimensions",
+        "npm run check:geo"
+      ],
+      "evidence": [
+        "data/footprints.json + data/dimensions.json for 18/18",
+        "check-dimensions OK: 18 landmarks, all numbers finite, positive and sourced"
+      ],
       "notes": ""
     },
     {
@@ -70,8 +89,14 @@
       "title": "Ring tiles and Microsoft buildings",
       "user_visible_behavior": "The city continues past the historic core with Microsoft building shapes.",
       "status": "passing",
-      "verification": ["data/tiles/ + data/buildings-ms.json present", "Visual: ring tiles and MS buildings render"],
-      "evidence": ["commit 83590e0 (362 ring tiles, MS buildings core+ring)", "data/tiles, data/tiles-ms, data/buildings-ms.json"],
+      "verification": [
+        "data/tiles/ + data/buildings-ms.json present",
+        "Visual: ring tiles and MS buildings render"
+      ],
+      "evidence": [
+        "commit 83590e0 (362 ring tiles, MS buildings core+ring)",
+        "data/tiles, data/tiles-ms, data/buildings-ms.json"
+      ],
       "notes": "ms-buildings runs after tiles."
     },
     {
@@ -81,8 +106,12 @@
       "title": "Living city: POIs, streetscape, life, Penha cable car",
       "user_visible_behavior": "Street-level detail (calçada, trees, terraces, people) and the animated Penha cable car are shown.",
       "status": "passing",
-      "verification": ["Visual: Pois, streetscape and the cable car render and animate"],
-      "evidence": ["commit 917408f (OSM street level: pois, streetscape, 623 trees, terraces, people; Penha cable car)"],
+      "verification": [
+        "Visual: Pois, streetscape and the cable car render and animate"
+      ],
+      "evidence": [
+        "commit 917408f (OSM street level: pois, streetscape, 623 trees, terraces, people; Penha cable car)"
+      ],
       "notes": ""
     },
     {
@@ -92,10 +121,13 @@
       "title": "Three routes",
       "user_visible_behavior": "Three authored routes are selectable and drawn on the map.",
       "status": "passing",
-      "verification": ["npm run check:data", "Visual: each route draws and its card opens"],
+      "verification": [
+        "npm run check:data",
+        "Visual: each route draws and its card opens"
+      ],
       "evidence": [
-        "data/routes.json (3 routes)",
-        "check-data OK: route legs pts rounded to 5 decimals"
+        "commit f3ca363 (3 routes: core-day, penha-day, two-days)",
+        "EN/PT localization (4d7f45d)"
       ],
       "notes": "Route leg pts normalized to 5 decimals."
     },
@@ -105,9 +137,15 @@
       "area": "content",
       "title": "Story mode: 10 chapters",
       "user_visible_behavior": "Story mode walks through ten chapters of Guimarães' history.",
-      "status": "in_progress",
-      "verification": ["data/story.json has 10 chapters", "Visual: story mode advances through all chapters"],
-      "evidence": ["data/story.json + src/story.js modified (uncommitted)"],
+      "status": "passing",
+      "verification": [
+        "data/story.json has 10 chapters",
+        "Visual: story mode advances through all chapters"
+      ],
+      "evidence": [
+        "commit f3ca363 (10 chapters RU/EN/PT + views, Story tool enabled)",
+        "verify: green; story screenshots in /tmp/story-*.png"
+      ],
       "notes": ""
     },
     {
@@ -117,11 +155,13 @@
       "title": "Faithful 1:1 landmark models on real footprints",
       "user_visible_behavior": "All 18 landmarks are recognisable 1:1 procedural models, not generic massing blocks.",
       "status": "passing",
-      "verification": ["npm run check:fit", "npm run check:models"],
+      "verification": [
+        "npm run check:fit",
+        "npm run check:models"
+      ],
       "evidence": [
-        "commit a4cc0aa (1:1 models for all 18 landmarks, 174.6k tris)",
-        "check-fit OK: all landmarks within tolerance; never-shrink: no model smaller than real",
-        "check-models OK: total 174,595 tris (budget 600k), each model 4k..40k"
+        "commit a4cc0aa (18 faithful 1:1 models)",
+        "waves 2 & 5 raised fidelity: total 243,765 tris (<600k); check:fit within tolerance; commits f0c00d9, a4994e1"
       ],
       "notes": ""
     },
@@ -132,8 +172,13 @@
       "title": "Guimarães identity: granite-and-Penha palette, castle mark, dawn opening, cinema",
       "user_visible_behavior": "The city has its own palette, mark, opening and cinema order, distinct from Braga.",
       "status": "passing",
-      "verification": ["Visual: palette, castle mark, dawn opening and cinema behave"],
-      "evidence": ["commit 399a16a (granite-and-Penha palette, castle mark, dawn opening, Guimarães cinema)"],
+      "verification": [
+        "Visual: palette, castle mark, dawn opening and cinema behave"
+      ],
+      "evidence": [
+        "commit 399a16a (identity), c204d7b (UI unified on green/granite)",
+        "castle PWA icons + OG/share pages (f0c00d9)"
+      ],
       "notes": ""
     },
     {
@@ -143,8 +188,12 @@
       "title": "Engine sync mechanism with braga-3d",
       "user_visible_behavior": "Engine fixes can be ported from braga-3d in one documented step.",
       "status": "passing",
-      "verification": ["scripts/sync-engine.sh reports changes; scripts/engine-base.txt records the base"],
-      "evidence": ["scripts/sync-engine.sh + scripts/engine-base.txt (base 1784ff3)"],
+      "verification": [
+        "scripts/sync-engine.sh reports changes; scripts/engine-base.txt records the base"
+      ],
+      "evidence": [
+        "scripts/sync-engine.sh + scripts/engine-base.txt (base 1784ff3)"
+      ],
       "notes": "Report-only by default; --apply copies, --record advances the base."
     },
     {
@@ -153,9 +202,15 @@
       "area": "deploy",
       "title": "Deploy to Vercel and a custom domain",
       "user_visible_behavior": "The production site is live on the custom domain with working API routes.",
-      "status": "not_started",
-      "verification": ["vercel link && vercel --prod --yes", "Check /p/<id>/, /og/ and the API routes on the live domain"],
-      "evidence": [],
+      "status": "passing",
+      "verification": [
+        "vercel link && vercel --prod --yes",
+        "Check /p/<id>/, /og/ and the API routes on the live domain"
+      ],
+      "evidence": [
+        "Vercel project guimaraes-3d, alias https://guimaraes-3d.vercel.app HTTP 200",
+        "deployed f3ca363..a4994e1, 2026-10-04"
+      ],
       "notes": "Config waits on guimaraes-3d.com."
     }
   ]

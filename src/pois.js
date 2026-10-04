@@ -231,7 +231,7 @@ export function loadPois() {
     .catch((e) => {
       STORE.error = e.message;
       STORE.loaded = true;
-      console.info(`[braga] ${dataPath('pois.json')} unavailable (${e.message}); no points of interest.`);
+      console.info(`[guimaraes] ${dataPath('pois.json')} unavailable (${e.message}); no points of interest.`);
       return STORE.list;
     });
   return readyP;
