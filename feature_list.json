@@ -110,7 +110,8 @@
         "Visual: Pois, streetscape and the cable car render and animate"
       ],
       "evidence": [
-        "commit 917408f (OSM street level: pois, streetscape, 623 trees, terraces, people; Penha cable car)"
+        "waves 1-7: streetscape/pois/life/cable car, forecourts, water/weirs, buses(6@8 stops), 1275 walkers in 5 builds + 115 dogs (wave 8, verified directly after credit-limit block)",
+        "verify: green; /tmp/w8-*.png"
       ],
       "notes": ""
     },

@@ -678,6 +678,198 @@ function buildTraffic({ roads, project, heightAt, mobile, model, N: nCars }) {
   };
 }
 
+// ------------------------------------------------------------ city buses
+// A handful of city buses that pull into the eight bus stops of roads.js:
+// they ride the same road network as the traffic (road-network.js), slow as
+// they near a shelter, dwell there a few seconds, then carry on. Stops are
+// the same primary/secondary ways of the centre, at 45 % of the way.
+const BUS_DWELL_S = 5;
+const BUS_STOP_R = 250; // world units (1 km) around the centre, as roads.js
+const BUS_TRIGGER = 7; // world units (28 m): pull over and stop
+const BUS_SLOW = 26; // world units (104 m): start easing off
+const BUS_AWAY_S = 45; // no stop nearby for this long: rejoin at one
+
+function busGeometry() {
+  const parts = [
+    box(2.4, 0.45, 11.4, 0, 0, 0, 0x1a1a1a),
+    box(2.55, 2.55, 12, 0, 0.35, 0, 0xf1f0ea),
+    box(2.6, 0.95, 11.2, 0, 1.55, 0.1, 0x2a3a46, 1),
+    box(2.62, 0.42, 11.9, 0, 0.95, 0, 0x2f6fb0),
+    box(2.4, 0.22, 7, 0, 2.9, -1.5, 0xd8d8d2),
+    box(2.3, 0.5, 0.1, 0, 2.3, 6.0, 0xffb347, 1.4),
+  ];
+  const g = mergeGeometries(parts);
+  g.scale(S * 1.1, S * 1.1, S * 1.1);
+  return g;
+}
+
+function buildCityBuses({ traffic, project, mobile, lite }) {
+  const net = traffic?.net;
+  const g = net?.graph;
+  if (!net || !g || !g.n) return null;
+  // ---- the eight stops, chosen exactly as roads.js builds their shelters
+  const ways = net.ways;
+  const list = [];
+  for (let wi = 0; wi < ways.length; wi++) {
+    const w = ways[wi];
+    if (w.hw !== 'primary' && w.hw !== 'secondary') continue;
+    if (w.tunnel || w.bridge || w.len < 60 * S) continue;
+    const m = w.start + (w.n >> 1);
+    if (net.X[m] * net.X[m] + net.Z[m] * net.Z[m] > BUS_STOP_R * BUS_STOP_R) continue;
+    list.push({ wi, w });
+  }
+  list.sort((a, b) => (b.w.cls.spawn || 0) - (a.w.cls.spawn || 0) || b.w.len - a.w.len);
+  const stops = [];
+  for (const { wi, w } of list) {
+    if (stops.length >= 8) break;
+    const i = Math.max(w.start, Math.min(w.start + w.n - 2, w.start + Math.floor(w.n * 0.45)));
+    if (net.HID[i]) continue;
+    stops.push({ x: net.X[i], z: net.Z[i], wi });
+  }
+  if (!stops.length) return null;
+
+  // ---- buses ride the road network, spawned biased to the stop ways
+  const zones = CAR_FREE().map(([la, lo, r]) => ({ ...project(la, lo), r: r * S }));
+  const blocked = (x, z) => zones.some((q) => (x - q.x) ** 2 + (z - q.z) ** 2 < q.r * q.r);
+  const N = lite ? 2 : mobile ? 4 : 6;
+  const rnd = lcg(20261004);
+  const flow = createFlow(net, { N, rnd, blocked });
+  if (!flow) return null;
+  const stopWays = new Set(stops.map((s) => s.wi));
+  flow.weigh((d, base) => base * (stopWays.has(g.way[d]) ? 80 : 0.05));
+  for (let i = 0; i < N; i++) flow.spawn(i);
+
+  const mesh = new THREE.InstancedMesh(busGeometry(), lifeMaterial({ roughness: 0.45, metalness: 0.12, lamps: lampChunk(0.6, 1.0) }), N);
+  mesh.name = 'city-buses';
+  mesh.frustumCulled = false;
+  mesh.castShadow = false;
+  mesh.receiveShadow = true;
+  mesh.count = 0;
+  mesh.visible = false;
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+  const dwell = new Float32Array(N);
+  const lastStop = new Int32Array(N).fill(-1);
+  const away = new Float32Array(N);
+  const bX = new Float32Array(N);
+  const bY = new Float32Array(N);
+  const bZ = new Float32Array(N);
+  const bHX = new Float32Array(N);
+  const bHZ = new Float32Array(N);
+  const bDY = new Float32Array(N);
+  const bStop = new Int32Array(N).fill(-1);
+  let shown = 0;
+  let atStop = -1;
+  const pos = { x: 0, y: 0, z: 0, hx: 0, hz: 1, dy: 0, hidden: 0 };
+  const RMAX2 = 1150 * 1150;
+
+  function inView(frustum, x, y, z, r) {
+    const p = frustum.planes;
+    for (let k = 0; k < 6; k++) if (p[k].normal.x * x + p[k].normal.y * y + p[k].normal.z * z + p[k].constant < -r) return false;
+    return true;
+  }
+
+  function advance(i, dt) {
+    if (dwell[i] > 0) {
+      dwell[i] -= dt;
+      return;
+    }
+    flow.locate(i, pos, 0);
+    let bd = Infinity;
+    for (const s of stops) bd = Math.min(bd, (pos.x - s.x) ** 2 + (pos.z - s.z) ** 2);
+    if (pos.x * pos.x + pos.z * pos.z > RMAX2 || (bd > 300 * 300 && away[i] > BUS_AWAY_S)) {
+      flow.spawn(i);
+      away[i] = 0;
+      lastStop[i] = -1;
+      bStop[i] = -1;
+    }
+    const k = bd < BUS_SLOW * BUS_SLOW ? 0.12 : 1;
+    flow.step(i, dt, k);
+    flow.locate(i, pos, dt);
+    let best = -1;
+    let b2 = Infinity;
+    for (let s = 0; s < stops.length; s++) {
+      const d = (pos.x - stops[s].x) ** 2 + (pos.z - stops[s].z) ** 2;
+      if (d < b2) {
+        b2 = d;
+        best = s;
+      }
+    }
+    if (b2 < BUS_TRIGGER * BUS_TRIGGER && lastStop[i] !== best) {
+      dwell[i] = BUS_DWELL_S;
+      lastStop[i] = best;
+      bStop[i] = best;
+    }
+    away[i] = b2 > 300 * 300 ? away[i] + dt : 0;
+    bX[i] = pos.x;
+    bY[i] = pos.y;
+    bZ[i] = pos.z;
+    bHX[i] = pos.hx;
+    bHZ[i] = pos.hz;
+    bDY[i] = pos.dy;
+  }
+
+  function update(dt, camera, frustum, { camDist }) {
+    for (let i = 0; i < N; i++) advance(i, dt);
+    const e = mesh.instanceMatrix.array;
+    let n = 0;
+    atStop = -1;
+    for (let i = 0; i < N; i++) {
+      if (dwell[i] > 0 && atStop < 0) atStop = bStop[i];
+      if (bX[i] * bX[i] + bZ[i] * bZ[i] > RMAX2) continue;
+      if (!inView(frustum, bX[i], bY[i], bZ[i], 8)) continue;
+      if (camDist > 3200) continue;
+      const o = n * 16;
+      const cp = 1 / Math.sqrt(1 + bDY[i] * bDY[i]);
+      const sp = bDY[i] * cp;
+      e[o] = bHZ[i];
+      e[o + 1] = 0;
+      e[o + 2] = -bHX[i];
+      e[o + 3] = 0;
+      e[o + 4] = -bHX[i] * sp;
+      e[o + 5] = cp;
+      e[o + 6] = -bHZ[i] * sp;
+      e[o + 7] = 0;
+      e[o + 8] = bHX[i] * cp;
+      e[o + 9] = sp;
+      e[o + 10] = bHZ[i] * cp;
+      e[o + 11] = 0;
+      e[o + 12] = bX[i];
+      e[o + 13] = bY[i] + 0.13;
+      e[o + 14] = bZ[i];
+      e[o + 15] = 1;
+      n++;
+    }
+    mesh.count = n;
+    mesh.visible = n > 0;
+    if (n) {
+      mesh.instanceMatrix.clearUpdateRanges();
+      mesh.instanceMatrix.addUpdateRange(0, n * 16);
+      mesh.instanceMatrix.needsUpdate = true;
+    }
+    shown = n;
+  }
+
+  return {
+    object: mesh,
+    update,
+    stops,
+    stats: { buses: N, stops: stops.length, atStops: stops.map((s) => [s.x, s.z]) },
+    get shown() {
+      return shown;
+    },
+    get atStop() {
+      return atStop;
+    },
+    // tests/debug: the world point and stop index of a bus dwelling now
+    dwelling() {
+      if (atStop < 0) return null;
+      const s = stops[atStop];
+      return { stop: atStop, x: s.x, z: s.z };
+    },
+  };
+}
+
 // ------------------------------------------------------------ birds
 function birdGeometry() {
   // units; +z forward, wings along x; aWing 0 at the body, 1 at the tips
@@ -1385,6 +1577,7 @@ export function createLife(ctx) {
   const funicular = safe('funicular', () => buildFunicular({ project, heightAt, items }));
   const cablecar = safe('cablecar', () => buildCableCar({ project, heightAt }));
   const traffic = safe('traffic', () => buildTraffic({ roads, project, heightAt, mobile, model, N: carMax }));
+  const cityBuses = safe('city buses', () => buildCityBuses({ traffic, project, mobile, lite }));
   const birds = safe('birds', () => buildBirds({ items, heightAt, project, nature, mobile, lite }));
   const fountains = safe('fountains', () => buildFountains({ project, heightAt, items, mobile }));
   const weirs = safe('weirs', () => createWeirs({ data: nature?.data, project, heightAt, weirs: LIFE?.weirs }));
@@ -1393,7 +1586,7 @@ export function createLife(ctx) {
   const street = safe('streetscape', () =>
     createStreetscape({ camera, roads, project, heightAt, items, outlines: ctx.outlines, footprints: ctx.footprints, lite, mobile, debug, model, fx, surfaceHeights }),
   );
-  for (const p of [funicular, cablecar, traffic, birds, fountains, weirs, street]) if (p) group.add(p.object);
+  for (const p of [funicular, cablecar, traffic, cityBuses, birds, fountains, weirs, street]) if (p) group.add(p.object);
 
   const ctxLive = { scene, camera, renderer, project, heightAt, datumM, mobile, reducedMotion, live, model, atmosphere, group };
   // aircraft and buses: a separate chunk, loaded after the first frame
@@ -1412,11 +1605,15 @@ export function createLife(ctx) {
   const _size = new THREE.Vector2();
   const view = { night: 0, camDist: 0, width: 1, height: 1, rain: 0, atmosphere };
   let time = 0;
+  // market days of the centre (0 Mo .. 6 Su), opening band in scene hours
+  const MARKET_DAYS = new Set([2, 5, 6]);
+  let marketApplied = false;
   const stats = {
     buildMs,
     funicular: funicular?.stats ?? null,
     cablecar: cablecar?.stats ?? null,
     traffic: traffic?.stats ?? null,
+    cityBuses: cityBuses?.stats ?? null,
     birds: birds?.stats ?? null,
     fountains: fountains?.stats ?? null,
     weirs: weirs?.stats ?? null,
@@ -1465,15 +1662,29 @@ export function createLife(ctx) {
     funicular?.update(adt, camera);
     cablecar?.update(adt, camera);
     traffic?.update(adt, camera, frustum, view);
+    cityBuses?.update(adt, camera, frustum, view);
     birds?.update(adt, camera, view);
     fountains?.update(camera, view);
     weirs?.update(adt, { color: atmosphere.state.light }, view.height);
+    // market crowd: the stalls stand on market days; feed the cluster in
+    const built = street?.built;
+    if (built?.people) {
+      if (!marketApplied) {
+        const stalls = (LIFE?.market?.stalls || []).map((s) => project(s.lat, s.lon));
+        built.people.addMarket(stalls);
+        marketApplied = true;
+      }
+      const clk = model?.clock;
+      const st = model?.state;
+      built.people.setMarketOpen(!!(st && clk && MARKET_DAYS.has(clk.weekday) && st.hour >= 8 && st.hour < 20));
+    }
     street?.update(adt, frustum, view);
     air?.update(adt, dt, view);
     buses?.update(adt, dt, view);
     badgeLines();
 
     stats.visibleVehicles = traffic?.visible ?? 0;
+    stats.visibleBuses = cityBuses?.shown ?? 0;
     stats.rainDrops = weather.rainDrops;
     stats.weather = weather.name;
     stats.live = live.live;
@@ -1486,6 +1697,7 @@ export function createLife(ctx) {
     live,
     funicular,
     traffic,
+    cityBuses,
     birds,
     fountains,
     street,

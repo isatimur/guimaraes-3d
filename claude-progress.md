@@ -82,3 +82,19 @@ updates it automatically.
   - `scripts/make-og.mjs --icons` still draws Braga's stair; icons were rendered by a throwaway script. Per-landmark OG cards were generated as brand cards (the app is not reachable for headless OG capture under SwiftShader).
   - `window.__braga` remains the debug global name (internal only; not user-visible).
 - Next best step: continue scene polish (squares paving vibrancy, esplanade paths, more POIs) or begin Phase C (finer DEM via `terrain.spacing_m`).
+
+### Session 004
+
+- Date: 2026-10-04
+- Goal: waves 6–8 (relief, typology, roads, forecourts, vegetation, water, crowd) + ship.
+- Completed:
+  - Wave 6 (`0a71a6e`): Catmull-Rom ground mesh exact at DEM nodes (heightAt bit-identical), rooftop clutter/townhouse variety/courtyards, asphalt + filleted kerbs + medians + traffic lights.
+  - Wave 7 (`9f279e2`): landmark forecourts (Largo do Paço parterre, esplanades), per-species seasonal vegetation + hedgerows/meadows/reeds, directional river flow + reflections + weirs, fountain jets with splash/mist.
+  - Wave 8 (this session): a background crowd agent was blocked mid-run by API credit limits and left partial `src/people.js` / `src/life.js` edits. I validated the remainder directly: `node --check` passes, full `npm run verify` green, browser run with 0 page/page-console errors, stats healthy (6 city buses at 8 stops, 1275 walkers in 5 builds — adult/child/elderly/shopper/cyclist — plus 115 dogs, 74 tris/person), and close-up screenshots show upright, non-deformed figures.
+- Verification run: `npm run verify` → `verify: OK` (7/7).
+- Evidence captured: `/tmp/w8-toural.png`, `/tmp/w8-close.png` (Toural at 10 m + close zoom, no defects).
+- Files or artifacts updated: src/{people,life}.js, claude-progress.md, feature_list.json (`gui-006` evidence).
+- Known risk or unresolved issue:
+  - Wave 8's matching sky/cloud pass (clouds, god rays) never ran — credit limit; nothing partial was left behind for it.
+  - `live.walkers` reads 0 with live mode off (by design — gated); the walker pool (1275) and market-day gating are intact.
+- Next best step: wave 8b (clouds + sun shafts), then Phase C finer DEM.
