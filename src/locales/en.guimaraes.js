@@ -409,4 +409,74 @@ export const landmarks = {
   }
 };
 
-export const routes = {};
+export const routes = {
+  'core-day': {
+    name: 'The UNESCO Core in Half a Day',
+    subtitle: 'Medieval squares, the Oliveira collegiate church, the castle and the Dukes’ palace',
+    duration: '≈ 5.5 hours',
+    description: 'Half a day in the heart of Guimarães, entirely on foot: every place stands a few minutes from the next inside the city walls. Start at Largo do Toural, walk to Praça de Santiago, then to Our Lady of Oliveira and its cloister, now the Alberto Sampaio Museum. Through the Alfândega tower with its “Aqui nasceu Portugal” inscription, climb to the castle — the cradle of Portugal — look in on the Romanesque church of São Miguel and finish at the Palace of the Dukes of Braganza. Have lunch in Praça de Santiago or by Oliveira. The Alberto Sampaio Museum is closed on Mondays.',
+    stops: [
+      { time: '09:30', note: 'The city’s main square, with 18th-century arcades and a fountain. The pedestrian core begins here.' },
+      { time: '09:55', note: 'A medieval square with arcades; in the Middle Ages a market was held here.' },
+      { time: '10:20', note: 'The Gothic collegiate church, the 1513 tower and the Padrão do Salado before its façade. Step inside.' },
+      { time: '11:10', note: 'A museum in the medieval cloister of Oliveira: gold work, azulejos, sculpture. Closed on Mondays.' },
+      { time: '12:05', note: 'The Alfândega tower and the “Aqui nasceu Portugal” inscription on the city wall.' },
+      { time: '12:35', note: 'A 10th-century castle on a granite hill: shield-shaped walls, the keep and the wall-walk.' },
+      { time: '13:30', note: 'The Romanesque church of São Miguel, where Afonso Henriques is said to have been baptised.' },
+      { time: '13:45', note: 'The Palace of the Dukes of Braganza: 39 chimneys, tapestries and a large collection. Ticket shared with the castle.' },
+    ],
+    legs: [
+      { note: 'Through Rua dos Sapateiros to Praça de Santiago.' },
+      { note: 'A couple of minutes west, to Largo da Oliveira.' },
+      { note: 'The cloister adjoins the church on its north side.' },
+      { note: 'Through Rua de Santa Maria to the city wall.' },
+      { note: 'Uphill along the Colina Sagrada to the castle.' },
+      { note: 'The church stands between the castle and the palace.' },
+      { note: 'The palace is right beside it, by the statue of Afonso Henriques.' },
+    ],
+  },
+  'penha-day': {
+    name: 'Penha and the Cable Car',
+    subtitle: 'The cable car up the mountain, the 1947 sanctuary and the walk down to the monastery',
+    duration: '≈ 4.5 hours',
+    description: 'A day on and around Mount Penha. From Praça de Santos Passos walk to the lower cable-car station at Hortas and ride up to Penha in ten minutes — 1,600 metres of track and 632 metres above the city. At the top: the 1947 granite sanctuary, a viewpoint and a park among granite rocks. Walk down along the forest road (about 3 km) to the Monastery of Santa Marinha da Costa, which stands above the city. In summer check the cable-car times: it is sometimes stopped in the heat.',
+    stops: [
+      { time: '10:00', note: 'Start in the centre and walk east to Santos Passos.' },
+      { time: '10:25', note: 'A Baroque church with two towers above a staircase and the São Gualter garden.' },
+      { time: '11:00', note: 'The 1995 cable car up, the sanctuary, the viewpoint and the park among granite rocks.' },
+      { time: '13:35', note: 'The walk down to the 12th-century monastery above the city; today a pousada. Church and cloister.' },
+    ],
+    legs: [
+      { note: 'From Largo do Toural east to Santos Passos.' },
+      { note: 'On foot to the Hortas station, then the cable car up to Penha (about 10 minutes).' },
+      { note: 'On foot down the forest road, about 3 km. You can also ride back on the cable car and descend from Hortas.' },
+    ],
+  },
+  'two-days': {
+    name: 'Two Unhurried Days',
+    subtitle: 'The UNESCO centre, art and tanneries, then the stadium, the university and the hill fort',
+    duration: '≈ 7.5 hours',
+    description: 'The first day is entirely on foot through the centre: castle, palace, Oliveira and São Francisco, then the Platform for the Arts in the old market, the Couros tannery quarter with its granite vats and the Vila Flor Palace. The second day is by taxi around the outskirts: the Estádio D. Afonso Henriques, the University of Minho engineering campus at Azurém and, half an hour north, the Citânia de Briteiros — a Celtic Iron Age hill fort with round houses. Do not put the second day on a Monday if you want to see the museum rooms.',
+    stops: [
+      { time: '09:30', note: 'Start with the castle and the church of São Miguel while it is still cool.' },
+      { time: '10:30', note: 'The collegiate church, the Padrão do Salado and Oliveira square.' },
+      { time: '11:20', note: 'The Gothic church and monastery with its cloister.' },
+      { time: '12:00', note: 'The Platform for Arts and Creativity: Pitágoras’s black metal mesh over the old market.' },
+      { time: '12:55', note: 'The tannery quarter: granite vats for curing hides along the Couros stream.' },
+      { time: '13:30', note: 'An 18th-century palace and the 2005 cultural centre with its garden.' },
+      { time: '14:15', note: 'Day 2: the Vitória stadium and Euro 2004, seen from outside.' },
+      { time: '14:50', note: 'The University of Minho engineering campus at Azurém.' },
+      { time: '15:50', note: 'The Citânia de Briteiros: Iron Age round houses on a hill, among the best in Iberia.' },
+    ],
+    legs: [
+      { note: 'Down from the castle to Oliveira square.' },
+      { note: 'Through the centre south, to São Francisco.' },
+      { note: 'West, to the Platform for the Arts.' },
+      { note: 'South, to the Couros quarter.' },
+      { note: 'South, to the Vila Flor Palace.' },
+      { note: 'Taxi to the stadium on the western edge.' },
+      { note: 'Taxi to the Azurém campus in the north.' },
+      { note: 'Taxi to the Citânia de Briteiros, about half an hour north.' },
+    ],
+  },
+};

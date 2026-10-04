@@ -409,4 +409,74 @@ export const landmarks = {
   }
 };
 
-export const routes = {};
+export const routes = {
+  'core-day': {
+    name: 'O núcleo da UNESCO em meio dia',
+    subtitle: 'Praças medievais, a colegiada da Oliveira, o castelo e o paço dos Duques',
+    duration: '≈ 5,5 horas',
+    description: 'Meio dia no coração de Guimarães, todo a pé: todos os locais ficam a poucos minutos uns dos outros dentro das muralhas. Comece no Largo do Toural, siga até à Praça de Santiago, depois à Igreja de Nossa Senhora da Oliveira e ao seu claustro, hoje Museu de Alberto Sampaio. Pela Torre da Alfândega, com a inscrição «Aqui nasceu Portugal», suba ao castelo — berço de Portugal —, espreite a igreja românica de São Miguel e termine no Paço dos Duques de Bragança. Almoce na Praça de Santiago ou junto à Oliveira. O Museu de Alberto Sampaio fecha às segundas-feiras.',
+    stops: [
+      { time: '09:30', note: 'A principal praça da cidade, com arcadas do século XVIII e uma fonte. Aqui começa o núcleo pedonal.' },
+      { time: '09:55', note: 'Praça medieval com arcadas; na Idade Média realizava-se aqui mercado.' },
+      { time: '10:20', note: 'A colegiada gótica, a torre de 1513 e o Padrão do Salado em frente da fachada. Entre para ver.' },
+      { time: '11:10', note: 'Museu no claustro medieval da Oliveira: ourivesaria, azulejos, escultura. Fechado às segundas-feiras.' },
+      { time: '12:05', note: 'A Torre da Alfândega e a inscrição «Aqui nasceu Portugal» na muralha.' },
+      { time: '12:35', note: 'Castelo do século X num monte de granito: muralhas em forma de escudo, a torre de menagem e o adarve.' },
+      { time: '13:30', note: 'A igreja românica de São Miguel, onde, segundo a tradição, foi batizado Afonso Henriques.' },
+      { time: '13:45', note: 'O Paço dos Duques de Bragança: 39 chaminés, tapeçarias e uma vasta coleção. Bilhete comum com o castelo.' },
+    ],
+    legs: [
+      { note: 'Pela Rua dos Sapateiros até à Praça de Santiago.' },
+      { note: 'Uns minutos a oeste, até ao Largo da Oliveira.' },
+      { note: 'O claustro encosta à igreja pelo lado norte.' },
+      { note: 'Pela Rua de Santa Maria até à muralha.' },
+      { note: 'A subir pela Colina Sagrada até ao castelo.' },
+      { note: 'A igreja fica entre o castelo e o paço.' },
+      { note: 'O paço fica ao lado, junto à estátua de Afonso Henriques.' },
+    ],
+  },
+  'penha-day': {
+    name: 'A Penha e o teleférico',
+    subtitle: 'O teleférico até ao monte, o santuário de 1947 e a descida até ao mosteiro',
+    duration: '≈ 4,5 horas',
+    description: 'Um dia no Monte da Penha e à sua volta. Da Praça de Santos Passos siga até à estação inferior do teleférico, nas Hortas, e suba à Penha em dez minutos — 1 600 metros de via e 632 metros acima da cidade. No alto: o santuário de granito de 1947, um miradouro e um parque entre penedos de granito. Desça a pé pela estrada florestal (cerca de 3 km) até ao Mosteiro de Santa Marinha da Costa, que fica sobre a cidade. No verão confirme os horários do teleférico: por vezes para com o calor.',
+    stops: [
+      { time: '10:00', note: 'Comece no centro e siga para leste até Santos Passos.' },
+      { time: '10:25', note: 'Igreja barroca com duas torres sobre uma escadaria e o jardim de São Gualter.' },
+      { time: '11:00', note: 'O teleférico de 1995 para cima, o santuário, o miradouro e o parque entre penedos de granito.' },
+      { time: '13:35', note: 'A descida até ao mosteiro do século XII sobre a cidade; hoje é pousada. Igreja e claustro.' },
+    ],
+    legs: [
+      { note: 'Do Largo do Toural para leste até Santos Passos.' },
+      { note: 'A pé até à estação das Hortas e depois o teleférico até à Penha (cerca de 10 minutos).' },
+      { note: 'A pé, a descer pela estrada florestal, cerca de 3 km. Também pode voltar de teleférico e descer das Hortas.' },
+    ],
+  },
+  'two-days': {
+    name: 'Dois dias sem pressa',
+    subtitle: 'O centro da UNESCO, arte e curtumes, depois o estádio, a universidade e a citânia',
+    duration: '≈ 7,5 horas',
+    description: 'O primeiro dia é todo a pé pelo centro: castelo, paço, Oliveira e São Francisco, depois a Plataforma das Artes no antigo mercado, o bairro dos Couros com os seus tanques de granito e o Paço de Vila Flor. O segundo dia é de táxi pelos arredores: o Estádio D. Afonso Henriques, o campus de Engenharia da Universidade do Minho, no Azurém, e, a meia hora a norte, a Citânia de Briteiros — um castro celta da Idade do Ferro com casas redondas. Não marque o segundo dia para uma segunda-feira se quiser ver as salas dos museus.',
+    stops: [
+      { time: '09:30', note: 'Comece pelo castelo e pela igreja de São Miguel, enquanto está fresco.' },
+      { time: '10:30', note: 'A colegiada, o Padrão do Salado e a praça da Oliveira.' },
+      { time: '11:20', note: 'A igreja gótica e o mosteiro com o seu claustro.' },
+      { time: '12:00', note: 'A Plataforma das Artes e da Criatividade: a malha metálica preta de Pitágoras sobre o antigo mercado.' },
+      { time: '12:55', note: 'O bairro dos curtidores: tanques de granito para curtir peles ao longo da ribeira dos Couros.' },
+      { time: '13:30', note: 'Paço do século XVIII e centro cultural de 2005, com jardim.' },
+      { time: '14:15', note: 'Dia 2: o estádio Vitória e o Euro 2004, visto por fora.' },
+      { time: '14:50', note: 'O campus de Engenharia da Universidade do Minho, no Azurém.' },
+      { time: '15:50', note: 'A Citânia de Briteiros: casas redondas da Idade do Ferro num monte, das melhores da Ibéria.' },
+    ],
+    legs: [
+      { note: 'Do castelo a descer até à praça da Oliveira.' },
+      { note: 'Pelo centro para sul, até São Francisco.' },
+      { note: 'Para oeste, até à Plataforma das Artes.' },
+      { note: 'Para sul, até ao bairro dos Couros.' },
+      { note: 'Para sul, até ao Paço de Vila Flor.' },
+      { note: 'De táxi até ao estádio, na periferia oeste.' },
+      { note: 'De táxi até ao campus do Azurém, a norte.' },
+      { note: 'De táxi até à Citânia de Briteiros, cerca de meia hora a norte.' },
+    ],
+  },
+};

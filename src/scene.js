@@ -313,36 +313,36 @@ function dirFrom(azDeg, elDeg, out = new THREE.Vector3()) {
 // Colours are sRGB hex; THREE.Color converts them to linear.
 const PRESETS = {
   morning: {
-    az: 100, el: 10,
-    light: 0xffd4a3, lightI: 3.9,
-    zenith: 0x46699c, mid: 0xb3c0d4, haze: 0xdcd2c9, scatter: 0xffd3a0, scatterK: 0.75, scatterP: 5,
-    disk: 0xfff1d8, diskI: 5,
-    hemiSky: 0xc9d4e6, hemiGround: 0x5a4c3c, hemiI: 0.18,
-    env: 0.65, exposure: 1.25, density: 0.00026, falloff: 0.0035, night: 0,
+    az: 100, el: 12,
+    light: 0xffcf9c, lightI: 3.7,
+    zenith: 0x2f4f86, mid: 0x7d9cc6, haze: 0xe0c398, scatter: 0xffbe78, scatterK: 0.5, scatterP: 6,
+    disk: 0xffe9c2, diskI: 3.1,
+    hemiSky: 0xbcd0e8, hemiGround: 0x5a4c3c, hemiI: 0.2,
+    env: 0.6, exposure: 1.08, density: 0.0002, falloff: 0.0038, night: 0,
   },
   day: {
     az: 165, el: 50,
     light: 0xfff2df, lightI: 3.6,
-    zenith: 0x2d5fa8, mid: 0x86abd8, haze: 0xc7d3df, scatter: 0xfff1da, scatterK: 0.35, scatterP: 8,
-    disk: 0xfffaf0, diskI: 6,
+    zenith: 0x1f55a6, mid: 0x6f9bd0, haze: 0xcbd8e6, scatter: 0xfff0d6, scatterK: 0.25, scatterP: 10,
+    disk: 0xfffaf0, diskI: 5,
     hemiSky: 0xcbd9ee, hemiGround: 0x5b5040, hemiI: 0.2,
-    env: 0.8, exposure: 1.0, density: 0.00014, falloff: 0.003, night: 0,
+    env: 0.8, exposure: 0.98, density: 0.00012, falloff: 0.003, night: 0,
   },
   sunset: {
-    az: 242, el: 12,
-    light: 0xffbb78, lightI: 4.4,
-    zenith: 0x33507f, mid: 0xa6adc4, haze: 0xd9c0ae, scatter: 0xf7bd78, scatterK: 0.85, scatterP: 5,
-    disk: 0xffe6bf, diskI: 6,
-    hemiSky: 0xc3c4d6, hemiGround: 0x5c4634, hemiI: 0.16,
-    env: 0.7, exposure: 1.3, density: 0.0002, falloff: 0.003, night: 0,
+    az: 242, el: 10,
+    light: 0xffb063, lightI: 4.2,
+    zenith: 0x2b4470, mid: 0x8898b8, haze: 0xe0ab7a, scatter: 0xff9d52, scatterK: 0.6, scatterP: 5,
+    disk: 0xffd28f, diskI: 4,
+    hemiSky: 0xbcc0d6, hemiGround: 0x5c4634, hemiI: 0.16,
+    env: 0.62, exposure: 1.12, density: 0.00017, falloff: 0.003, night: 0,
   },
   night: {
-    az: 140, el: 36,
+    az: 140, el: 10,
     light: 0x9db2dc, lightI: 0.42,
-    zenith: 0x050914, mid: 0x0c1528, haze: 0x1b2438, scatter: 0x34405c, scatterK: 0.3, scatterP: 6,
-    disk: 0xdfe8ff, diskI: 1.6,
-    hemiSky: 0x33415e, hemiGround: 0x1a1612, hemiI: 0.22,
-    env: 0.4, exposure: 1.3, density: 0.0002, falloff: 0.003, night: 1,
+    zenith: 0x03060f, mid: 0x0a1322, haze: 0x1c2740, scatter: 0x3a4666, scatterK: 0.35, scatterP: 7,
+    disk: 0xeef3ff, diskI: 3.2,
+    hemiSky: 0x2e3c58, hemiGround: 0x241a12, hemiI: 0.24,
+    env: 0.4, exposure: 1.25, density: 0.00018, falloff: 0.003, night: 1,
   },
 };
 
@@ -418,10 +418,14 @@ const SKY_FRAG = /* glsl */ `
     // the horizon band is the fog colour, in-scatter included (same formula
     // as the fog chunk), so fogged hills meet the sky without a seam
     vec3 haze = mix(uHaze, uScatter, clamp(pow(sd, max(uScatterK.y, 1.0)) * uScatterK.x, 0.0, 1.0));
-    vec3 col = mix(haze, uMid, smoothstep(0.0, 0.2, h));
-    col = mix(col, uZenith, smoothstep(0.14, 0.9, h));
+    vec3 col = mix(haze, uMid, smoothstep(0.0, 0.16, h));
+    col = mix(col, uZenith, smoothstep(0.06, 0.6, h));
     float above = smoothstep(-0.04, 0.03, h);
-    col += uScatter * pow(sd, 14.0) * 0.35 * above;
+    // sun in-scatter: a tight warm lobe around the disk over a faint broad one
+    col += uScatter * pow(sd, 28.0) * 0.2 * above;
+    col += uScatter * pow(sd, 9.0) * 0.03 * above;
+    // night: a warm town glow along the horizon, under the stars
+    col += vec3(1.0, 0.55, 0.28) * pow(max(1.0 - abs(h) * 3.2, 0.0), 3.0) * uNight * 0.05;
     // stars, then the sun or moon: not in the environment map (fireflies)
     float sky = 1.0 - uEnv;
     if (uNight > 0.001 && sky > 0.5) {
@@ -429,8 +433,8 @@ const SKY_FRAG = /* glsl */ `
       vec3 id = floor(p);
       float r = hash13(id);
       vec3 f = fract(p) - 0.5;
-      float s = step(0.9965, r) * smoothstep(0.22, 0.0, length(f)) * (0.35 + 0.65 * fract(r * 91.7));
-      col += vec3(0.85, 0.9, 1.0) * s * uNight * smoothstep(0.02, 0.25, h) * 1.6;
+      float s = step(0.994, r) * smoothstep(0.22, 0.0, length(f)) * (0.35 + 0.65 * fract(r * 91.7));
+      col += vec3(0.85, 0.9, 1.0) * s * uNight * smoothstep(0.02, 0.25, h) * 1.7;
     }
     float disk = smoothstep(0.99965, 0.99985, dot(d, uSunDir));
     col += uDisk * (disk * uDiskI + pow(sd, 400.0) * uDiskI * 0.12) * sky * above;

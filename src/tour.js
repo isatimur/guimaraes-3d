@@ -127,11 +127,11 @@ export function flightCurve(from, to, sky, { clear = FLIGHT_CLEARANCE } = {}) {
 }
 
 // ------------------------------------------------------------ shots
-// Order: the cathedral, Pópulo and the avenue in the morning, the schools,
-// the university, the Roman west and the baroque centre by day, down to
-// Parque da Ponte; Forum Braga, the theatre, São Frutuoso and the far
-// monastery toward sunset, the two stadiums, then Bom Jesus at dusk and
-// Sameiro at night. About 8 minutes in all.
+// Order: the castle and the Dukes' palace at dawn, the medieval wall,
+// Oliveira and the squares through the morning, the old market and the
+// tannery quarter by day, Vila Flor, the university and the stadium toward
+// sunset, then the Iron-Age hill fort, ending on Penha as night falls.
+// About 8 minutes in all.
 export const CINEMA_ORDER = [
   // dawn at the cradle of Portugal: the castle on its granite hill
   { id: 'castelo', shot: 'crane', dur: 15, time: 'morning' },
@@ -158,8 +158,8 @@ export const CINEMA_ORDER = [
   { id: 'penha', shot: 'crane', dur: 17, time: 'sunset', then: 'night', at: 6 },
 ];
 
-// Framing numbers for one landmark at its real size. A draped site (Bom
-// Jesus) climbs the slope, so its box bottom is the base.
+// Framing numbers for one landmark at its real size. A draped site (Penha)
+// climbs the slope, so its box bottom is the base.
 function subjectOf(it, camera, view) {
   const box = it.box;
   const size = box.getSize(new THREE.Vector3());
@@ -285,10 +285,10 @@ export function createCinema(ctx) {
   const byId = new Map(ctx.items.map((it) => [it.data.id, it]));
   const order = CINEMA_ORDER.filter((o) => byId.has(o.id));
   const dropped = CINEMA_ORDER.filter((o) => !byId.has(o.id)).map((o) => o.id);
-  // (another city has none of Braga's ids: its film order is a later step)
-  if (dropped.length && ctx.items.length) console.warn('[braga] cinema: no landmark for', dropped.join(', '));
+  // a landmark in the data but not in the film order is only reported
+  if (dropped.length && ctx.items.length) console.warn('[guimaraes] cinema: no landmark for', dropped.join(', '));
   const missing = ctx.items.filter((it) => !CINEMA_ORDER.some((o) => o.id === it.data.id)).map((it) => it.data.id);
-  if (missing.length) console.warn('[braga] cinema: not in CINEMA_ORDER:', missing.join(', '));
+  if (missing.length) console.warn('[guimaraes] cinema: not in CINEMA_ORDER:', missing.join(', '));
   // the button title counts the places the film really shows
   const toggle = document.getElementById('cinema-toggle');
   if (toggle) toggle.title = cityT('Фильм о {city_prep}: {n} с утра до ночи').replace('{n}', `${order.length} ${placesWord(order.length)}`);

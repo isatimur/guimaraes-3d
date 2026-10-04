@@ -167,7 +167,7 @@ button { font: inherit; color: inherit; }
   border-radius: 10px;
   box-shadow: var(--shadow-c);
 }
-.search.is-open { box-shadow: 0 0 0 2px var(--cob), var(--shadow-c); }
+.search.is-open, .search:focus-within { box-shadow: 0 0 0 2px var(--cob), var(--shadow-c); }
 .search-icon { width: 18px; height: 18px; flex: none; fill: none; stroke: var(--cob); stroke-width: 1.8; stroke-linecap: round; }
 .search-input { flex: 1; min-width: 0; height: 100%; padding: 0; font: 400 14.5px/1 var(--sans); color: var(--ink-c); background: none; border: 0; outline: none; }
 .search-input::placeholder { color: var(--mut); opacity: 1; }
@@ -1547,4 +1547,17 @@ body.is-cinema .callout, body.is-story .callout { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .callout-inner, .atmo, .tools-sheet, .side { transition: none; }
+  /* the rest of the interactive chrome: keep the state change, drop the easing */
+  .hbtn, .atmo-opt, .tool, .chip, .place, .route-item, .search-chip,
+  .compass, .btn-primary, .btn-ghost, .cinema-btn, .cinema-exit,
+  .pano-card, .pano-gyro, .story-dot { transition: none; }
+  .atmo-btn svg { transition: none; }
+}
+
+/* Honour a request for stronger contrast without touching the default look. */
+@media (prefers-contrast: more) {
+  :root { --text-2: #efe4d0; --text-3: #d9cdb6; }
+  .side { --text-2: #e9f1e3; --text-3: #cfdcc7; }
+  .tools-sheet, .atmo, #app .share-pop { --mut: #3b4b3f; --text-3: #3b4b3f; }
+  .legend-title, .legend-list { color: #fff; }
 }

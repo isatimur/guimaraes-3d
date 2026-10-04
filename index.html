@@ -37,7 +37,7 @@
   </head>
   <body>
     <div id="app">
-      <canvas id="scene" aria-label="Трёхмерная карта Гимарайнша"></canvas>
+      <canvas id="scene" role="img" aria-label="Трёхмерная карта Гимарайнша"></canvas>
       <div id="labels" aria-hidden="true"></div>
 
       <!-- Header of five things: wordmark, search, «Сейчас» (with the
@@ -70,7 +70,7 @@
             <button type="button" class="hbtn now-btn" id="now-btn" aria-pressed="false" disabled><span class="now-dot" aria-hidden="true"></span><span class="hbtn-label">Сейчас</span></button>
             <button type="button" class="hbtn atmo-btn" id="atmo-btn" aria-expanded="false" aria-controls="atmo" aria-label="Атмосфера" title="Атмосфера: время, сезон, погода"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.5 8 10l4-3.5" /></svg></button>
           </div>
-          <button type="button" class="hbtn mode-btn" id="cinema-toggle" aria-controls="cinema" title="Фильм о Браге с утра до ночи"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" /></svg><span class="hbtn-label">Кино</span></button>
+          <button type="button" class="hbtn mode-btn" id="cinema-toggle" aria-controls="cinema" title="Фильм о Гимарайнше с утра до ночи"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" /></svg><span class="hbtn-label">Кино</span></button>
         </div>
         <button type="button" class="hbtn tools-toggle" id="tools-toggle" aria-expanded="false" aria-controls="tools-sheet" aria-label="Меню"><span class="tools-dots" aria-hidden="true">⋯</span></button>
         <div class="tools-sheet" id="tools-sheet" role="group" aria-label="Меню">
@@ -80,7 +80,7 @@
           </div>
           <div class="tools-group" data-group="modes">
             <p class="tools-group-title">Режимы</p>
-            <button type="button" class="tool mode-btn" id="story-toggle" aria-controls="story" title="2000 лет истории Браги" data-closes-tools><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h4.2c.5 0 .8.3.8.8v8.2c0-.6-.4-1-1-1H3zM13 3.5H8.8c-.5 0-.8.3-.8.8v8.2c0-.6.4-1 1-1h4z" /></svg><span class="mode-label">История</span></button>
+            <button type="button" class="tool mode-btn" id="story-toggle" aria-controls="story" title="2000 лет истории Гимарайнша" data-closes-tools><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h4.2c.5 0 .8.3.8.8v8.2c0-.6-.4-1-1-1H3zM13 3.5H8.8c-.5 0-.8.3-.8.8v8.2c0-.6.4-1 1-1h4z" /></svg><span class="mode-label">История</span></button>
             <button type="button" class="tool mode-btn" id="routes-open" data-closes-tools><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 13.5a1.5 1.5 0 1 0 0-.01M12 2.5a1.5 1.5 0 1 0 0 .01M5.5 12.5h4a2.5 2.5 0 0 0 0-5h-3a2.5 2.5 0 0 1 0-5h4" /></svg><span class="mode-label">Маршруты</span></button>
           </div>
           <div class="tools-group" data-group="atmosphere">
@@ -338,7 +338,7 @@
         </div>
       </div>
 
-      <section class="story" id="story" hidden tabindex="-1" aria-label="История Браги">
+      <section class="story" id="story" hidden tabindex="-1" aria-label="История Гимарайнша">
         <div class="story-scroll">
           <div class="story-track"></div>
         </div>

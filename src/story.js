@@ -1,4 +1,4 @@
-// Story mode: two thousand years of Braga, told over the live 3D map.
+// Story mode: two thousand years of Guimarães, told over the live 3D map.
 //
 // A full-height overlay scrolls natively. One conductor turns the scroll
 // position into a continuous station index: station 0 is the overview
@@ -332,12 +332,12 @@ export function createStory(ctx) {
       try {
         data = await ctx.load();
       } catch (err) {
-        console.error('[braga] story.json failed to load', err);
+        console.error('[guimaraes] story.json failed to load', err);
         ctx.onError?.(err);
         return;
       }
       if (!Array.isArray(data?.chapters) || !data.chapters.length) {
-        console.error('[braga] story.json has no chapters');
+        console.error('[guimaraes] story.json has no chapters');
         ctx.onError?.(new Error('no chapters'));
         return;
       }
