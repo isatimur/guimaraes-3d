@@ -34,6 +34,8 @@ const FAR_MIN_M2 = 100;
 // lite: the core's smallest annexes (below this) are skipped: they are a
 // seventh of the footprint count and a few pixels wide over a phone view
 const SMALL_MS_M2 = 30;
+// a footprint below this is a sliver: never extruded (inverted/z-fighting cards)
+const MIN_AREA_M2 = 2;
 const CAST_U = 3000 * S; // shadows while the camera is within 3 km of the focus
 const VFAR_U = 6000 * S; // far LOD beyond this from the camera: roof-only houses
 const FOCUS_KEEP_U = 3000 * S; // ... and only beyond this from the focus
@@ -403,6 +405,11 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
         // of the core's footprint count
         if (J.minM2 && f.areaM2 < J.minM2) {
           stats.droppedSmall = (stats.droppedSmall || 0) + 1;
+          continue;
+        }
+        // a footprint below 2 m² is a sliver: never extrude (inverted cards)
+        if (f.areaM2 < MIN_AREA_M2) {
+          stats.degenerate = (stats.degenerate || 0) + 1;
           continue;
         }
         const m = masks.test(f);

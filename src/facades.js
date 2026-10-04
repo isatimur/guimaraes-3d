@@ -203,6 +203,9 @@ const PARAPET_M = 0.8;
 const EAVE_M = 0.35; // roof overhang past the walls (regular footprints)
 const REGULAR_FILL = 0.85; // footprint area / its rectangle: roof on the rectangle
 const MERGE_M = 0.12; // wall-top kinks smaller than this are dropped
+const MANSARD_S = Math.tan((16 * Math.PI) / 180); // upper mansard slope
+const SKILLION_S = Math.tan((15 * Math.PI) / 180);
+const MIN_SIDE_U = 0.5; // metres: below this the oriented rect is degenerate
 const SHAPES = new Set(['flat', 'gabled', 'hipped', 'pyramidal', 'skillion']);
 // tagged roof:shape (scripts keep the raw value) -> one of SHAPES
 export function normShape(s) {
@@ -215,24 +218,34 @@ export function normShape(s) {
   return null;
 }
 
-// The roof of one footprint: { shape, planes, parapet, clutter }.
+// The roof of one footprint: { shape, planes, parapet, clutter, court, party }.
 // planes: [{ ax, az, c }], roof y = ax * x + az * z + c (world units);
 // empty for a flat roof. top: eave height (world y).
 export function roofPlan(pts, areaM2, k, hM, style, top, a, h2, h3) {
-  const flat = (parapet) => ({ shape: 'flat', planes: [], parapet: parapet && !CFG.lite, clutter: 0 });
+  const flat = (parapet) => ({ shape: 'flat', planes: [], parapet: parapet && !CFG.lite, clutter: 0, court: null, party: false });
   if (CFG.off) return flat(false);
   const tagged = normShape(a?.r);
   const shed = k === 'industrial' || style === STYLE.IND;
-  const big = areaM2 > 900;
   let shape = tagged;
   const n = pts.length;
   const R = n >= 3 ? minRect(pts) : null;
   if (!R) return flat(false);
+  // degenerate oriented rect (a sliver): never build a roof on it
+  if (R.u1 - R.u0 < MIN_SIDE_U * S || R.v1 - R.v0 < MIN_SIDE_U * S) return flat(false);
   const fill = (areaM2 * S * S) / R.area;
   const hist = style === STYLE.HIST || style === STYLE.AZUL;
   // regular footprints: the roof on the rectangle (cheap, with eaves);
   // irregular ones: a hip clipped to the outline (centre only) or flat
   const regular = fill >= REGULAR_FILL;
+  let cx = 0;
+  let cz = 0;
+  for (const p of pts) {
+    cx += p.x;
+    cz += p.z;
+  }
+  cx /= n;
+  cz /= n;
+  const close = centreDist(cx, cz) <= RING_M;
   if (!shape) {
     if (shed || k === 'church') shape = 'flat';
     else if (hist) shape = areaM2 <= 1600 && (regular || (fill >= 0.5 && n <= 24)) ? 'auto' : 'flat';
@@ -243,35 +256,38 @@ export function roofPlan(pts, areaM2, k, hM, style, top, a, h2, h3) {
   if (shape === 'flat') {
     // parapets and rooftop boxes only where the camera comes close (the
     // centre and the ring): elsewhere a flat roof costs what it did
-    let cx = 0;
-    let cz = 0;
-    for (const p of pts) {
-      cx += p.x;
-      cz += p.z;
-    }
-    const close = centreDist(cx / n, cz / n) <= RING_M;
     const parapet = close && !shed && areaM2 >= 120 && hM >= 5;
     const p = flat(parapet);
-    // rooftop clutter: machine rooms and vents on some larger flat roofs
-    if (close && !CFG.lite && !shed && areaM2 >= 150 && h3 < 0.5) p.clutter = areaM2 > 600 ? 3 : areaM2 > 300 ? 2 : 1;
-    if (close && !CFG.lite && shed && areaM2 >= 400 && h3 < 0.3) p.clutter = 2;
+    // rooftop clutter: vents, water tanks, terraces, antennas, skylights
+    if (close && !CFG.lite && !shed && areaM2 >= 200 && h3 < 0.4) p.clutter = areaM2 > 1200 ? 3 : areaM2 > 700 ? 2 : 1;
+    if (close && !CFG.lite && shed && areaM2 >= 500 && h3 < 0.25) p.clutter = 2;
+    // inner courtyard on large, regular flat roofs: a hole + low parapet
+    if (close && !CFG.lite && !shed && hM >= 5 && regular && fill >= 0.9 && areaM2 >= 800 && h3 >= 0.5) {
+      const c = courtyard(R, pts, h3);
+      if (c) {
+        p.court = c;
+        p.clutter = 0;
+      }
+    }
     return p;
   }
   const len = R.u1 - R.u0;
   const wid = R.v1 - R.v0;
   const halfW = wid / 2;
   const halfL = len / 2;
-  const pitch = ((27 + 6 * h2) * Math.PI) / 180;
+  const pitch = ((25 + 10 * h2) * Math.PI) / 180; // per-house pitch variation
   const tanP = Math.tan(pitch);
-  const capU = RIDGE_MAX_M * S;
+  const capU = (RIDGE_MAX_M + (h3 - 0.5) * 1.1) * S; // ridge cap varies a little
   let H = Math.min(capU, tanP * halfW);
   if (H < 0.7 * S) return flat(false);
   if (shape === 'auto') {
     // gabled along the long axis for elongated, regular footprints; hipped
-    // otherwise (a hip clips cleanly to an irregular outline)
-    const hist = style === STYLE.HIST || style === STYLE.AZUL;
+    // otherwise (a hip clips cleanly to an irregular outline). A few small
+    // houses get a skillion, a few larger ones a mansard.
     const gabledShare = hist ? 0.35 : 0.55;
-    shape = len / wid >= 1.3 && fill >= 0.85 && h2 < gabledShare ? 'gabled' : 'hipped';
+    if (regular && areaM2 <= 240 && h3 < 0.15) shape = 'skillion';
+    else if (regular && areaM2 >= 130 && len / wid < 2.4 && h3 > 0.87) shape = 'mansard';
+    else shape = len / wid >= 1.3 && fill >= 0.85 && h2 < gabledShare ? 'gabled' : 'hipped';
   }
   // the four sides as planes: height = top + s * (distance inside the side)
   const { ux, uz } = R;
@@ -281,10 +297,24 @@ export function roofPlan(pts, areaM2, k, hM, style, top, a, h2, h3) {
   const across = a?.ro === 'across';
   const planes = [];
   if (shape === 'skillion') {
-    const Hs = Math.min(2 * S, Math.tan((15 * Math.PI) / 180) * wid);
+    const Hs = Math.min(2 * S, SKILLION_S * wid);
     const s = Hs / wid;
     planes.push(across ? side(1, 0, -R.u0, Hs / len) : side(0, 1, -R.v0, s));
-    return { shape, planes, parapet: false, clutter: 0, poly: regular ? eaveRect(R) : null };
+    return { shape, planes, parapet: false, clutter: 0, court: null, party: false, poly: regular ? eaveRect(R) : null };
+  }
+  if (shape === 'mansard') {
+    // steep lower skirt up to a break line, shallow upper slope above it
+    const breakD = Math.min(halfW, halfL) * 0.22;
+    const breakH = Math.min(2.6 * S, 3.1 * breakD);
+    const sLow = breakH / Math.max(breakD, 1e-6);
+    const upperOff = breakH / MANSARD_S - breakD;
+    planes.push(side(0, 1, -R.v0, sLow), side(0, 1, -R.v0 + upperOff, MANSARD_S));
+    planes.push(side(0, -1, R.v1, sLow), side(0, -1, R.v1 + upperOff, MANSARD_S));
+    planes.push(side(1, 0, -R.u0, sLow), side(1, 0, -R.u0 + upperOff, MANSARD_S));
+    planes.push(side(-1, 0, R.u1, sLow), side(-1, 0, R.u1 + upperOff, MANSARD_S));
+    const ridgeUp = breakH + MANSARD_S * Math.max(Math.min(halfW, halfL) - breakD, 0);
+    if (ridgeUp > capU) planes.push({ ax: 0, az: 0, c: top + capU });
+    return { shape, planes, parapet: false, clutter: 0, court: null, party: false, poly: regular ? eaveRect(R) : null, rect: R, ridge: null };
   }
   let sW = tanP; // slope off the long sides
   let sL = tanP; // off the short sides (hips)
@@ -303,7 +333,27 @@ export function roofPlan(pts, areaM2, k, hM, style, top, a, h2, h3) {
   }
   // a flat cap where a wide hip would rise above the ridge limit
   if (shape === 'hipped' && tanP * halfW > capU + 1e-6) planes.push({ ax: 0, az: 0, c: top + capU });
-  return { shape, planes, parapet: false, clutter: 0, poly: regular ? eaveRect(R) : null, rect: R, ridge: pitchedRidge(shape, R, top, sW, sL, H, capU, across) };
+  // party-wall parapet on regular gabled row houses, close fabric only
+  const party = shape === 'gabled' && regular && close && !CFG.lite && areaM2 >= 45 && areaM2 <= 420 && len / wid >= 1.35 && h3 >= 0.16 && h3 < 0.78;
+  return { shape, planes, parapet: false, clutter: 0, court: null, party, poly: regular ? eaveRect(R) : null, rect: R, ridge: pitchedRidge(shape, R, top, sW, sL, H, capU, across) };
+}
+
+// A rectangular courtyard hole for a large, regular flat roof: { cx, cz,
+// ux, uz, hu, hv, depth } in world units, or null when it does not fit.
+function courtyard(R, pts, h3) {
+  const len = R.u1 - R.u0;
+  const wid = R.v1 - R.v0;
+  const hu = Math.min(len * 0.26, len / 2 - 4 * S);
+  const hv = Math.min(wid * 0.26, wid / 2 - 4 * S);
+  if (hu < 2.5 * S || hv < 2.5 * S) return null;
+  const uc = (R.u0 + R.u1) / 2;
+  const vc = (R.v0 + R.v1) / 2;
+  const { ux, uz } = R;
+  const at = (u, v) => ({ x: u * ux - v * uz, z: u * uz + v * ux });
+  const c = at(uc, vc);
+  const cs = [at(uc - hu, vc - hv), at(uc + hu, vc - hv), at(uc + hu, vc + hv), at(uc - hu, vc + hv)];
+  if (!cs.every((p) => inPoly(p.x, p.z, pts))) return null;
+  return { cx: c.x, cz: c.z, ux, uz, hu, hv, depth: (2.2 + 1.1 * h3) * S };
 }
 
 // The ridge line of a pitched roof in world units: { ax, az, bx, bz, y }
@@ -451,6 +501,7 @@ const contour = [];
 export function extrudeRoofed(T, pts, plan, g) {
   const { base, gmin, top, footM, hM, wc, rc, w } = g;
   const n = pts.length;
+  const plinthOn = g.close && !g.far && hM >= 3.2 && (g.style === STYLE.HIST || g.style === STYLE.AZUL);
   // the pitched facets first: a clip that fails on an odd outline (the
   // facets do not cover it) falls back to a flat roof
   const facets = plan.planes.length ? roofFacets(plan, pts) : null;
@@ -500,6 +551,7 @@ export function extrudeRoofed(T, pts, plan, g) {
       }
       T.idx.push(u, u + 1, u + 2, u, u + 2, u + 3);
     }
+    if (plinthOn) plinth(T, IDX, a, b, gmin, nx, nz, wc, w);
     run += LM;
   }
 
@@ -512,11 +564,13 @@ export function extrudeRoofed(T, pts, plan, g) {
   if (planes.length) {
     if (g.close) eaves(T, IDX, pts, top, wc, w);
     roofDetail(T, IDX, plan, g);
+    if (g.close && plan.party) partyWalls(T, IDX, plan.rect, plan.ridge, top, wc, w);
   }
 
   // roof
   if (!planes.length) {
-    flatCap(T, pts, top, rc, w, T.idx);
+    if (plan.court && g.close && !g.far) courtyardRoof(T, T.idx, pts, plan.court, top, rc, wc, w);
+    else flatCap(T, pts, top, rc, w, T.idx);
     if (plan.clutter) clutter(T, pts, top, plan.clutter, w, g.seed);
     return;
   }
@@ -571,6 +625,9 @@ function roofFacets(plan, pts) {
     }
     poly = tidy(poly);
     if (poly.length < 3 || Math.abs(polyArea2(poly)) < 1e-6) continue;
+    // a clipped polygon that is not finite or self-overlaps would build
+    // inverted cards: reject it and let the roof fall back to flat
+    if (!poly.every((p) => Number.isFinite(p.x) && Number.isFinite(p.z))) continue;
     const contour = poly.map((p) => new Vector2(p.x, p.z));
     const faces = ShapeUtils.triangulateShape(contour, []);
     if (!faces.length) continue;
@@ -583,6 +640,7 @@ function roofFacets(plan, pts) {
     out.push({ P, poly, faces });
   }
   const want = Math.abs(polyArea2(roofPoly)) / 2;
+  if (!Number.isFinite(covered) || covered > want * 1.05) return null;
   return Math.abs(covered - want) <= 0.02 * want ? out : null;
 }
 
@@ -617,54 +675,142 @@ function inPoly(x, z, poly) {
   return inside;
 }
 const frac = (v) => v - Math.floor(v);
-// machine rooms and vents: small boxes (top and four sides) on a flat roof
+// Rooftop clutter on flat/parapet roofs, close fabric only: machine rooms,
+// vents, water tanks, small railed terraces, TV antennas and skylights.
+// Each piece is seeded and kept inside the footprint (inPoly).
+const TANK = hexLinear(0x8f979d);
+const TANK_DARK = hexLinear(0x5f676d);
+const GLASS_LID = hexLinear(0x33434d);
+
 function clutter(T, pts, y, count, w, seed) {
   const R = minRect(pts);
   if (!R) return;
   const { ux, uz } = R;
-  const at = (u, v) => ({ x: u * ux - v * uz, z: u * uz + v * ux });
-  let r = frac(Math.sin(seed * 12.9898 + 4.1) * 43758.5453);
-  const rnd = () => (r = frac(r * 9301 + 0.4927 + Math.sin(r * 78.233) * 0.5));
-  for (let c = 0, tries = 0; c < count && tries < count * 4; tries++) {
-    const su = (1.4 + 2.2 * rnd()) * S;
-    const sv = (1.2 + 1.6 * rnd()) * S;
-    const hb = (1.0 + 1.4 * rnd()) * S;
-    const u = R.u0 + su + (R.u1 - R.u0 - 2 * su) * rnd();
-    const v = R.v0 + sv + (R.v1 - R.v0 - 2 * sv) * rnd();
-    const cs = [at(u - su / 2, v - sv / 2), at(u + su / 2, v - sv / 2), at(u + su / 2, v + sv / 2), at(u - su / 2, v + sv / 2)];
-    if (!cs.every((p) => inPoly(p.x, p.z, pts))) continue;
-    c++;
-    const k = 0.85 + 0.25 * rnd();
-    const col = [CLUTTER[0] * k, CLUTTER[1] * k, CLUTTER[2] * k];
-    const y1 = y + hb;
-    // (cs is counter-clockwise like the footprint: outward normal (dz, -dx))
-    for (let i = 0; i < 4; i++) {
-      const A = cs[i];
-      const B = cs[(i + 1) % 4];
-      const L = Math.hypot(B.x - A.x, B.z - A.z);
-      const nx = (B.z - A.z) / L;
-      const nz = -(B.x - A.x) / L;
-      const v0 = T.pos.length / 3;
-      T.pos.push(A.x, y, A.z, B.x, y, B.z, B.x, y1, B.z, A.x, y1, A.z);
-      for (let q = 0; q < 4; q++) {
-        T.nor.push(nx, 0, nz);
-        T.col.push(col[0] * 0.85, col[1] * 0.85, col[2] * 0.85);
-        T.wall.push(0, -1, 0, w);
-      }
-      T.idx.push(v0, v0 + 2, v0 + 1, v0, v0 + 3, v0 + 2);
-    }
-    const v0 = T.pos.length / 3;
-    for (const p of cs) {
-      T.pos.push(p.x, y1, p.z);
-      T.nor.push(0, 1, 0);
-      T.col.push(col[0], col[1], col[2]);
-      T.wall.push(0, -1, 0, w);
-    }
-    // same orientation test as the roofs
-    const up = (cs[1].z - cs[0].z) * (cs[2].x - cs[0].x) - (cs[1].x - cs[0].x) * (cs[2].z - cs[0].z);
-    if (up >= 0) T.idx.push(v0, v0 + 1, v0 + 2, v0, v0 + 2, v0 + 3);
-    else T.idx.push(v0, v0 + 2, v0 + 1, v0, v0 + 3, v0 + 2);
+  const rnd = fracRnd(seed ^ 0x9e37);
+  const put = (hu, hv, pad) => {
+    const mu = hu + pad;
+    const mv = hv + pad;
+    if (R.u1 - R.u0 <= 2 * mu || R.v1 - R.v0 <= 2 * mv) return null;
+    const u = R.u0 + mu + (R.u1 - R.u0 - 2 * mu) * rnd();
+    const v = R.v0 + mv + (R.v1 - R.v0 - 2 * mv) * rnd();
+    return { x: u * ux - v * uz, z: u * uz + v * ux };
+  };
+  const fits = (cs) => cs.every((p) => inPoly(p.x, p.z, pts));
+  for (let c = 0, tries = 0; c < count && tries < count * 8; tries++) {
+    const kind = rnd();
+    const spot = put(1.2 * S, 1.0 * S, 0.3 * S);
+    if (!spot) return;
+    if (kind < 0.4) {
+      if (vent(T, ux, uz, spot, y, w, rnd, fits)) c++;
+    } else if (kind < 0.6) {
+      if (tank(T, ux, uz, spot, y, w, rnd, fits)) c++;
+    } else if (kind < 0.75) {
+      if (terrace(T, ux, uz, spot, y, w, rnd, fits)) c++;
+    } else if (kind < 0.89) {
+      if (antenna(T, ux, uz, spot, y, w, rnd, fits)) c++;
+    } else if (skylight(T, ux, uz, spot, y, w, rnd, fits)) c++;
   }
+}
+
+// a squat machine room / vent box
+function vent(T, ux, uz, spot, y, w, rnd, fits) {
+  const hu = (0.55 + 0.8 * rnd()) * S;
+  const hv = (0.5 + 0.7 * rnd()) * S;
+  const cs = rectCorners(spot.x, spot.z, ux, uz, hu, hv);
+  if (!fits(cs)) return false;
+  boxAt(T, T.idx, cs, y, y + (0.9 + 1.3 * rnd()) * S, shade(CLUTTER, 0.85 + 0.25 * rnd()), w);
+  return true;
+}
+
+// a water tank: a body on a low base, a lipped lid and a standpipe
+function tank(T, ux, uz, spot, y, w, rnd, fits) {
+  const hu = (0.55 + 0.25 * rnd()) * S;
+  const hv = hu * (0.9 + 0.2 * rnd());
+  const cs = rectCorners(spot.x, spot.z, ux, uz, hu, hv);
+  if (!fits(cs)) return false;
+  const body = shade(TANK, 0.88 + 0.24 * rnd());
+  const y1 = y + (1.2 + 0.7 * rnd()) * S;
+  boxAt(T, T.idx, cs, y + 0.15 * S, y1, body, w);
+  boxAt(T, T.idx, rectCorners(spot.x, spot.z, ux, uz, hu * 0.72, hv * 0.72), y, y + 0.18 * S, shade(body, 0.6), w);
+  boxAt(T, T.idx, rectCorners(spot.x, spot.z, ux, uz, hu * 1.06, hv * 1.06), y1, y1 + 0.1 * S, shade(body, 1.05), w);
+  const px = spot.x + ux * hu * 0.8;
+  const pz = spot.z + uz * hu * 0.8;
+  boxAt(T, T.idx, rectCorners(px, pz, ux, uz, 0.05 * S, 0.05 * S), y, y1 + 0.5 * S, TANK_DARK, w);
+  return true;
+}
+
+// a small roof terrace: a low parapet on three sides and a railing on the
+// open fourth
+function terrace(T, ux, uz, spot, y, w, rnd, fits) {
+  const hu = (1.3 + 0.8 * rnd()) * S;
+  const hv = (1.0 + 0.6 * rnd()) * S;
+  const cs = rectCorners(spot.x, spot.z, ux, uz, hu, hv);
+  if (!fits(cs)) return false;
+  const pw = 0.09 * S;
+  const col = shade(CLUTTER, 0.82);
+  const yt = y + (0.42 + 0.14 * rnd()) * S;
+  for (const i of [0, 1, 3]) {
+    const A = cs[i];
+    const B = cs[(i + 1) % 4];
+    const dx = B.x - A.x;
+    const dz = B.z - A.z;
+    const L = Math.hypot(dx, dz) || 1;
+    const nx = dz / L;
+    const nz = -dx / L;
+    boxAt(T, T.idx, [
+      { x: A.x + nx * pw, z: A.z + nz * pw },
+      { x: B.x + nx * pw, z: B.z + nz * pw },
+      { x: B.x + nx * pw * 2, z: B.z + nz * pw * 2 },
+      { x: A.x + nx * pw * 2, z: A.z + nz * pw * 2 },
+    ], y, yt, col, w);
+  }
+  const A = cs[2];
+  const B = cs[3];
+  const dx = B.x - A.x;
+  const dz = B.z - A.z;
+  const L = Math.hypot(dx, dz) || 1;
+  const nx = dz / L;
+  const nz = -dx / L;
+  const y0 = yt;
+  const y1 = y0 + 0.42 * S;
+  const np = Math.max(3, Math.round(L / (0.32 * S)));
+  const rr = 0.012 * S;
+  const ex = (dx / L) * rr;
+  const ez = (dz / L) * rr;
+  for (let j = 0; j <= np; j++) {
+    const t = j / np;
+    const px = A.x + dx * t;
+    const pz = A.z + dz * t;
+    quadN(T, T.idx, { x: px - ex, y: y0, z: pz - ez }, { x: px + ex, y: y0, z: pz + ez }, { x: px + ex, y: y1, z: pz + ez }, { x: px - ex, y: y1, z: pz - ez }, nx, 0, nz, IRON, w);
+  }
+  quadN(T, T.idx, { x: A.x, y: y1, z: A.z }, { x: B.x, y: y1, z: B.z }, { x: B.x, y: y1 + 0.04 * S, z: B.z }, { x: A.x, y: y1 + 0.04 * S, z: A.z }, nx, 0, nz, IRON, w);
+  return true;
+}
+
+// a mast with two crossbars
+function antenna(T, ux, uz, spot, y, w, rnd, fits) {
+  const hu = 0.05 * S;
+  const mast = rectCorners(spot.x, spot.z, ux, uz, hu, hu);
+  if (!fits(mast)) return false;
+  const h = (2.6 + 1.6 * rnd()) * S;
+  boxAt(T, T.idx, mast, y, y + h, shade(CLUTTER, 0.6), w);
+  const arm = (yy, half) => boxAt(T, T.idx, rectCorners(spot.x, spot.z, ux, uz, half, 0.03 * S), yy - 0.03 * S, yy + 0.03 * S, IRON, w);
+  arm(y + h - 0.2 * S, (0.45 + 0.25 * rnd()) * S);
+  arm(y + h - 0.6 * S, (0.65 + 0.35 * rnd()) * S);
+  return true;
+}
+
+// a low frame with a dark glazed lid
+function skylight(T, ux, uz, spot, y, w, rnd, fits) {
+  const hu = (0.5 + 0.5 * rnd()) * S;
+  const hv = (0.4 + 0.4 * rnd()) * S;
+  const cs = rectCorners(spot.x, spot.z, ux, uz, hu, hv);
+  if (!fits(cs)) return false;
+  boxAt(T, T.idx, cs, y, y + 0.22 * S, shade(CLUTTER, 0.95), w);
+  const lid = rectCorners(spot.x, spot.z, ux, uz, hu * 0.8, hv * 0.8);
+  const ly = y + 0.24 * S;
+  quadN(T, T.idx, { x: lid[0].x, y: ly, z: lid[0].z }, { x: lid[1].x, y: ly, z: lid[1].z }, { x: lid[2].x, y: ly, z: lid[2].z }, { x: lid[3].x, y: ly, z: lid[3].z }, 0, 1, 0, GLASS_LID, w);
+  return true;
 }
 
 // ------------------------------------------------------------ roof detail
@@ -724,6 +870,89 @@ function boxAt(T, IDX, cs, y0, y1, col, w, wallRow) {
     quadN(T, IDX, { x: A.x, y: y0, z: A.z }, { x: B.x, y: y0, z: B.z }, { x: B.x, y: y1, z: B.z }, { x: A.x, y: y1, z: A.z }, dz / l, 0, -dx / l, col, w, wallRow);
   }
   quadN(T, IDX, { x: cs[0].x, y: y1, z: cs[0].z }, { x: cs[1].x, y: y1, z: cs[1].z }, { x: cs[2].x, y: y1, z: cs[2].z }, { x: cs[3].x, y: y1, z: cs[3].z }, 0, 1, 0, col, w, wallRow);
+}
+
+// a projecting plinth course at the foot of a wall (street-level base band)
+function plinth(T, IDX, a, b, gmin, nx, nz, wc, w) {
+  const pw = 0.06 * S;
+  const col = shade(wc, 0.76);
+  const y1 = gmin + 0.5 * S;
+  const oa = { x: a.x + nx * pw, z: a.z + nz * pw };
+  const ob = { x: b.x + nx * pw, z: b.z + nz * pw };
+  quadN(T, IDX, { x: oa.x, y: gmin, z: oa.z }, { x: ob.x, y: gmin, z: ob.z }, { x: ob.x, y: y1, z: ob.z }, { x: oa.x, y: y1, z: oa.z }, nx, 0, nz, col, w);
+}
+
+// a thin fire wall rising over both gable ends of a gabled row house: it
+// reads as the party wall between terraced neighbours, close fabric only
+function partyWalls(T, IDX, R, ridge, top, wc, w) {
+  if (!R || !ridge) return;
+  const { ux, uz, u0, u1, v0, v1 } = R;
+  const hv = (v1 - v0) / 2;
+  const vc = (v0 + v1) / 2;
+  const at = (u, v) => ({ x: u * ux - v * uz, z: u * uz + v * ux });
+  const y1 = ridge.y + 0.3 * S;
+  const t = 0.26 * S;
+  const d = 0.03 * S;
+  const col = chimneyCol(wc);
+  for (const u of [u0, u1]) {
+    const sOut = u === u0 ? -1 : 1;
+    const c = at(u + sOut * (d + t / 2), vc);
+    boxAt(T, IDX, rectCorners(c.x, c.z, -uz, ux, hv, t / 2), top, y1, col, w);
+  }
+}
+
+// a courtyard: the flat roof cap with a rectangular hole, a low parapet and
+// a short interior well so the hole never shows through the building
+function courtyardRoof(T, IDX, pts, court, y, rc, wc, w) {
+  const { cx, cz, ux, uz, hu, hv, depth } = court;
+  const corner = (du, dv) => ({ x: cx + du * ux - dv * uz, z: cz + du * uz + dv * ux });
+  const hw = [corner(-hu, -hv), corner(hu, -hv), corner(hu, hv), corner(-hu, hv)];
+  const outer = pts.map((p) => new Vector2(p.x, p.z));
+  const holes = [hw.map((p) => new Vector2(p.x, p.z))];
+  const faces = ShapeUtils.triangulateShape(outer, holes);
+  const all = [...pts, ...hw];
+  const v0 = T.pos.length / 3;
+  for (const p of all) {
+    T.pos.push(p.x, y, p.z);
+    T.nor.push(0, 1, 0);
+    T.col.push(rc[0], rc[1], rc[2]);
+    T.wall.push(0, -1, 0, w);
+  }
+  for (const [a, b, c] of faces) {
+    const A = all[a];
+    const B = all[b];
+    const C = all[c];
+    const up = (B.z - A.z) * (C.x - A.x) - (B.x - A.x) * (C.z - A.z);
+    if (up >= 0) IDX.push(v0 + a, v0 + b, v0 + c);
+    else IDX.push(v0 + a, v0 + c, v0 + b);
+  }
+  const ph = 0.5 * S;
+  const yTop = y + ph;
+  const yBot = y - depth;
+  const wallCol = shade(wc, 0.48);
+  for (let i = 0; i < 4; i++) {
+    const A = hw[i];
+    const B = hw[(i + 1) % 4];
+    let nx = cx - (A.x + B.x) / 2;
+    let nz = cz - (A.z + B.z) / 2;
+    const l = Math.hypot(nx, nz) || 1;
+    nx /= l;
+    nz /= l;
+    quadN(T, IDX, { x: A.x, y: yTop, z: A.z }, { x: B.x, y: yTop, z: B.z }, { x: B.x, y: yBot, z: B.z }, { x: A.x, y: yBot, z: A.z }, nx, 0, nz, wallCol, w);
+    const ox = -nx * 0.12 * S;
+    const oz = -nz * 0.12 * S;
+    quadN(T, IDX, { x: A.x, y: yTop, z: A.z }, { x: B.x, y: yTop, z: B.z }, { x: B.x + ox, y: yTop, z: B.z + oz }, { x: A.x + ox, y: yTop, z: A.z + oz }, 0, 1, 0, shade(wc, 0.9), w);
+  }
+  const fv = T.pos.length / 3;
+  for (const p of hw) {
+    T.pos.push(p.x, yBot, p.z);
+    T.nor.push(0, 1, 0);
+    T.col.push(wallCol[0] * 0.7, wallCol[1] * 0.7, wallCol[2] * 0.7);
+    T.wall.push(0, -1, 0, w);
+  }
+  const upF = (hw[1].z - hw[0].z) * (hw[2].x - hw[0].x) - (hw[1].x - hw[0].x) * (hw[2].z - hw[0].z);
+  if (upF >= 0) IDX.push(fv, fv + 1, fv + 2, fv, fv + 2, fv + 3);
+  else IDX.push(fv, fv + 2, fv + 1, fv, fv + 3, fv + 2);
 }
 
 // the eave/cornice line: a thin overhanging band around the wall head, so

@@ -1189,7 +1189,7 @@ function shadowProxy(terrain) {
 // to the fogged edge. Vertex colour: an ambient-occlusion term from the
 // local concavity (folds darker, ridges a touch lighter).
 export function createGround(terrain) {
-  const { heightAt, bounds: b } = terrain;
+  const { heightAt, groundMeshAt, bounds: b } = terrain;
   const { xs, zs } = groundAxes(terrain);
   const nx = xs.length;
   const nz = zs.length;
@@ -1198,7 +1198,7 @@ export function createGround(terrain) {
     for (let i = 0; i < nx; i++) {
       const k = j * nx + i;
       pos[k * 3] = xs[i];
-      pos[k * 3 + 1] = heightAt(xs[i], zs[j]);
+      pos[k * 3 + 1] = groundMeshAt(xs[i], zs[j]);
       pos[k * 3 + 2] = zs[j];
     }
   }
@@ -1313,7 +1313,7 @@ export function createGround(terrain) {
           const k = j * nx + i;
           if (touched[k]) continue;
           touched[k] = 1;
-          pos[k * 3 + 1] = heightAt(xs[i], zs[j]);
+          pos[k * 3 + 1] = groundMeshAt(xs[i], zs[j]);
           n++;
         }
       }

@@ -16,6 +16,7 @@ const TILE_M = 1000; // 1 km: about 60 draw calls for the city, not 230
 const MAX_TRIS = 1_500_000;
 const SMALL_M2 = 30; // dropped first if over budget ...
 const FAR_M = 2500; // ... when farther than this from the centre
+const MIN_AREA_M2 = 2; // below this a footprint is a sliver: never extrude
 const SKIRT = 0.4; // world units the walls reach below the lowest ground point
 const FLAT = { shape: 'flat', planes: [], parapet: false, clutter: 0 }; // far LOD: a plain box
 // core tiles farther than this from the camera draw flat caps for their
@@ -314,6 +315,12 @@ export function buildBuildings(data, project, heightAt, masks = { outlines: [], 
     }
     if (area2 < 0) pts.reverse(); // positive area: (dz, -dx) is the outward normal
     const areaM2 = Math.abs(area2) / 2 / (S * S);
+    // a footprint below ~2 m² is degenerate: a sliver that would render as an
+    // inverted or z-fighting card, so it is dropped rather than extruded
+    if (areaM2 < MIN_AREA_M2) {
+      stats.degenerate++;
+      continue;
+    }
     const n = pts.length;
     const t = 2 * n + (n - 2);
     tris += t;

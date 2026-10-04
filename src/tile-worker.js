@@ -568,7 +568,7 @@ self.onmessage = async (ev) => {
     const t0 = performance.now();
     P = createProjection(m.origin, null, [], { ...m.grid, heights: Array.from(m.grid.heights) });
     // no landmark pads out here: the raw DEM, on the ground mesh's triangles
-    ground = makeGround(P.terrain.rawAt, Float64Array.from(m.axes.xs), Float64Array.from(m.axes.zs));
+    ground = makeGround(P.terrain.groundMeshRawAt, Float64Array.from(m.axes.xs), Float64Array.from(m.axes.zs));
     self.postMessage({ type: 'ready', ms: performance.now() - t0 });
     return;
   }

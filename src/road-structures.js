@@ -10,7 +10,9 @@
 //     arches instead (the medieval bridges on the Cávado);
 //   portalGeometry(T, p, opts)     a tunnel portal: head wall, pilasters, wing
 //     walls, a dark mouth, and a short hood over the first metres of the
-//     tunnel, where the vehicles disappear (road-network.js HID).
+//     tunnel, where the vehicles disappear (road-network.js HID);
+//   trafficLightGeometry(T, p)     a signal pole with a three-aspect head,
+//     at the kerb corner of an arm of a busy junction (roads.js).
 
 const M = 1 / 4; // world units per metre
 
@@ -221,6 +223,28 @@ export function bridgeGeometry(T, pts, opts) {
     }
   }
   return (T.idx.length - tris0) / 3;
+}
+
+// A traffic-light pole with a three-aspect head. p: { x, z, y, dx, dz } at
+// the kerb corner (dx, dz unit outward from the junction along the arm); the
+// head faces back down the arm, toward the traffic approaching the junction.
+export function trafficLightGeometry(T, { x, z, y, dx, dz, h = 3.3 }) {
+  const POLE = [0.13, 0.14, 0.15];
+  const HEAD = [0.04, 0.045, 0.05];
+  const LAMP = [
+    [0.86, 0.12, 0.1],
+    [0.92, 0.66, 0.12],
+    [0.14, 0.72, 0.3],
+  ];
+  const lx = dz;
+  const lz = -dx;
+  orientedBox(T, x, z, y, y + h * M, dx, dz, 0.07 * M, 0.07 * M, POLE);
+  const hy = y + (h - 0.85) * M;
+  orientedBox(T, x, z, hy, hy + 0.7 * M, dx, dz, 0.16 * M, 0.24 * M, HEAD);
+  for (let i = 0; i < 3; i++) {
+    const ly = hy + (0.06 + i * 0.2) * M;
+    orientedBox(T, x + dx * 0.17 * M + lx * 0.02 * M, z + dz * 0.17 * M + lz * 0.02 * M, ly, ly + 0.14 * M, dx, dz, 0.05 * M, 0.17 * M, LAMP[i]);
+  }
 }
 
 // A bus stop on a sidewalk: a small shelter (posts, glass back wall, roof,

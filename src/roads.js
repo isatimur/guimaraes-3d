@@ -8,9 +8,12 @@
 //     tunnel it is not drawn;
 //   - bridges: the deck's edge, parapets (railings on footbridges), piers
 //     down to the ground, abutments; tunnel portals with a dark mouth;
-//   - close range only: lane markings (dashed centre lines on two-way roads,
-//     lane lines and edge lines on the motorways), sidewalks in the centre,
-//     the islands of the roundabouts;
+//   - close range only: a procedural asphalt surface (mottling, patch
+//     repairs, tyre wear, a worn centre), lane markings (dashed centre lines
+//     on two-way roads, lane lines and edge lines on the motorways),
+//     sidewalks in the centre, filleted kerbs at the junctions and a kerb
+//     ramp at each crossing, painted/planted medians on the wide ways,
+//     signal poles at the busiest junctions, the islands of the roundabouts;
 //   - calçada portuguesa (streetscape.js calcadaMaterial): the pedestrian
 //     streets of the centre and the sidewalks are white limestone and black
 //     basalt cobbles, in the same meshes (no extra draw): a per-vertex
@@ -26,7 +29,7 @@ import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeome
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { S } from './geo.js';
 import { buildNetwork, surfaceOf } from './road-network.js';
-import { bridgeGeometry, portalGeometry, busStopGeometry, quad as embankmentQuad } from './road-structures.js';
+import { bridgeGeometry, portalGeometry, busStopGeometry, trafficLightGeometry, quad as embankmentQuad } from './road-structures.js';
 import { language } from './i18n.js';
 import { calcadaMaterial, calcadaPatternOf, CALCADA } from './streetscape.js';
 
@@ -71,24 +74,80 @@ const lin = (hex) => {
 };
 // pat: also a calçada pattern per vertex (aPat: pattern, metres across the
 // strip from its middle, half width in metres); `cur` is the pattern of the
-// strips being added
-const newT = (pat = false) => ({ pos: [], nor: [], col: [], idx: [], wall: null, pat: pat ? [] : null, cur: 0 });
+// strips being added. road: an asphalt lane reference per vertex (aRoad:
+// lateral metres from the centre line, half width metres, lane width metres,
+// wear 0..1); `cur` is unused.
+const newT = (pat = false, road = false) => ({ pos: [], nor: [], col: [], idx: [], wall: null, pat: pat ? [] : null, road: road ? [] : null, cur: 0 });
 function geometryOf(T) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(T.pos, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(T.nor, 3));
   g.setAttribute('color', new THREE.Float32BufferAttribute(T.col, 3));
   if (T.pat) g.setAttribute('aPat', new THREE.Float32BufferAttribute(T.pat, 3));
+  if (T.road) g.setAttribute('aRoad', new THREE.Float32BufferAttribute(T.road, 4));
   g.setIndex(T.pos.length / 3 > 65535 ? new THREE.Uint32BufferAttribute(T.idx, 1) : new THREE.Uint16BufferAttribute(T.idx, 1));
   g.computeBoundingSphere();
   return g;
+}
+
+// Asphalt: a procedural close-range treatment over the vertex colour —
+// fine mottling, broad patch repairs with a darker seam, faded tyre wear
+// along the wheel tracks (two ruts per lane), a lighter worn centre and a
+// little grime by the kerb. aRoad: lateral m, half width m, lane width m,
+// wear (0 keeps the vertex colour). Like calçada, it fades to the plain
+// colour once a pixel is wider than a few centimetres.
+const ASPHALT_GLSL = /* glsl */ `
+float aHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float aNoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(aHash(i), aHash(i + vec2(1.0, 0.0)), f.x), mix(aHash(i + vec2(0.0, 1.0)), aHash(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+float aFbm(vec2 p) { return aNoise(p) * 0.6 + aNoise(p * 2.03 + 11.3) * 0.3 + aNoise(p * 4.11 + 5.7) * 0.1; }
+vec3 asphalt(vec2 w, vec4 r) {
+  float px = max(length(fwidth(w)), 1e-4);
+#ifndef ASPHALT_LITE
+  float k = 1.0 - smoothstep(0.09, 0.55, px);
+#endif
+  float lat = r.x;
+  float hw = max(r.y, 0.5);
+  float lw = max(r.z, 1.2);
+  float tint = mix(0.84, 1.15, aFbm(w * 0.9));
+  float p = aNoise(w * 0.11 + 13.7);
+  float seam = smoothstep(0.46, 0.5, p) * (1.0 - smoothstep(0.5, 0.54, p));
+  float rep = smoothstep(0.5, 0.62, p) * 0.16 + seam * 0.28;
+  float a = abs(lat);
+  float lc = lw * (floor(a / lw) + 0.5);
+  float rut = min(abs(a - (lc - 0.85)), abs(a - (lc + 0.85)));
+  float track = 1.0 - smoothstep(0.08, 0.5, rut);
+  float laneMid = 1.0 - smoothstep(0.15, 0.7, abs(a - lc));
+  float centre = 1.0 - smoothstep(0.25, 1.15, a);
+  float grime = smoothstep(hw - 0.7, hw, a) * 0.12;
+  float f = tint * (1.0 + 0.1 * centre + 0.05 * laneMid) * (1.0 - 0.2 * track) - rep - grime;
+  return vec3(clamp(f, 0.66, 1.3));
+}`;
+
+export function asphaltMaterial({ polygonOffsetUnits = -3, roughness = 0.96, lite = false } = {}) {
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness, metalness: 0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits });
+  mat.customProgramCacheKey = () => `asphalt:${lite ? 1 : 0}`;
+  mat.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nattribute vec4 aRoad;\nvarying vec4 vRoad;\nvarying vec2 vAspW;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvRoad = aRoad;\nvAspW = (modelMatrix * vec4(position, 1.0)).xz;');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', `#include <common>\n${lite ? '#define ASPHALT_LITE\n' : ''}varying vec4 vRoad;\nvarying vec2 vAspW;\n${ASPHALT_GLSL}`)
+      .replace('#include <color_fragment>', `#include <color_fragment>\nif (vRoad.w > 0.01) diffuseColor.rgb *= mix(vec3(1.0), asphalt(vAspW * ${(1 / S).toFixed(1)}, vRoad), vRoad.w);`);
+  };
+  return mat;
 }
 
 // A flat strip along points i0..i1 of the network, offset `off` (world,
 // left of travel positive) with half width h, at height Y + lift. One quad
 // per segment, lengthened by `ext` at both ends so consecutive quads overlap
 // at the joints (opaque, so overlaps do not show). Skips hidden points.
-function strip(T, net, i0, i1, off, h, lift, col, ext = h) {
+// `rd`: { laneM, wear } fills the asphalt lane reference when T.road.
+function strip(T, net, i0, i1, off, h, lift, col, ext = h, rd = null) {
   const { X, Z, HID } = net;
   for (let i = i0; i < i1; i++) {
     if (HID[i] && HID[i + 1]) continue;
@@ -123,7 +182,70 @@ function strip(T, net, i0, i1, off, h, lift, col, ext = h) {
       const hm = h / S;
       T.pat.push(T.cur, hm, hm, T.cur, -hm, hm, T.cur, -hm, hm, T.cur, hm, hm);
     }
+    if (T.road && rd) {
+      const hm = h / S;
+      const la = (off + h) / S;
+      const lb = (off - h) / S;
+      T.road.push(la, hm, rd.laneM, rd.wear, lb, hm, rd.laneM, rd.wear, lb, hm, rd.laneM, rd.wear, la, hm, rd.laneM, rd.wear);
+    }
     // counter-clockwise from above
+    const up = (c[1][2] - c[0][2]) * (c[2][0] - c[0][0]) - (c[1][0] - c[0][0]) * (c[2][2] - c[0][2]);
+    if (up >= 0) T.idx.push(v, v + 1, v + 2, v, v + 2, v + 3);
+    else T.idx.push(v, v + 2, v + 1, v, v + 3, v + 2);
+  }
+}
+
+// A strip like strip() but only the part of the way within the along-distance
+// range [s0, s1] (world, from the way's start). Cuts a segment mid-way, so a
+// sidewalk can stop exactly at a junction corner; used for sidewalks/kerbs.
+function stripAlong(T, net, w, off, h, lift, col, s0, s1) {
+  const { X, Z, C, HID } = net;
+  const a = w.start;
+  const b = w.start + w.n - 1;
+  for (let i = a; i < b; i++) {
+    if (HID[i] && HID[i + 1]) continue;
+    const ca = C[i];
+    const cb = C[i + 1];
+    const dc = cb - ca;
+    if (dc < 1e-6) continue;
+    const d0 = Math.max(ca, s0);
+    const d1 = Math.min(cb, s1);
+    if (d1 <= d0) continue;
+    const u0 = (d0 - ca) / dc;
+    const u1 = (d1 - ca) / dc;
+    let dx = X[i + 1] - X[i];
+    let dz = Z[i + 1] - Z[i];
+    const L = Math.hypot(dx, dz);
+    if (L < 1e-5) continue;
+    dx /= L;
+    dz /= L;
+    const lx = dz;
+    const lz = -dx;
+    const ax = X[i] + (X[i + 1] - X[i]) * u0;
+    const az = Z[i] + (Z[i + 1] - Z[i]) * u0;
+    const bx = X[i] + (X[i + 1] - X[i]) * u1;
+    const bz = Z[i] + (Z[i + 1] - Z[i]) * u1;
+    const sy = net.surfaceY;
+    const yaL = sy(i, off + h) + (sy(i + 1, off + h) - sy(i, off + h)) * u0;
+    const yaR = sy(i, off - h) + (sy(i + 1, off - h) - sy(i, off - h)) * u0;
+    const ybL = sy(i, off + h) + (sy(i + 1, off + h) - sy(i, off + h)) * u1;
+    const ybR = sy(i, off - h) + (sy(i + 1, off - h) - sy(i, off - h)) * u1;
+    const c = [
+      [ax + lx * (off + h), yaL + lift, az + lz * (off + h)],
+      [ax + lx * (off - h), yaR + lift, az + lz * (off - h)],
+      [bx + lx * (off - h), ybR + lift, bz + lz * (off - h)],
+      [bx + lx * (off + h), ybL + lift, bz + lz * (off + h)],
+    ];
+    const v = T.pos.length / 3;
+    for (const p of c) {
+      T.pos.push(p[0], p[1], p[2]);
+      T.nor.push(0, 1, 0);
+      T.col.push(col[0], col[1], col[2]);
+    }
+    if (T.pat) {
+      const hm = h / S;
+      T.pat.push(T.cur, hm, hm, T.cur, -hm, hm, T.cur, -hm, hm, T.cur, hm, hm);
+    }
     const up = (c[1][2] - c[0][2]) * (c[2][0] - c[0][0]) - (c[1][0] - c[0][0]) * (c[2][2] - c[0][2]);
     if (up >= 0) T.idx.push(v, v + 1, v + 2, v, v + 2, v + 3);
     else T.idx.push(v, v + 2, v + 1, v, v + 3, v + 2);
@@ -189,6 +311,7 @@ function paintQuad(T, p, y, col) {
     T.nor.push(0, 1, 0);
     T.col.push(col[0], col[1], col[2]);
   }
+  pushPat(T, 4);
   if (UP(p) >= 0) T.idx.push(v, v + 1, v + 2, v, v + 2, v + 3);
   else T.idx.push(v, v + 2, v + 1, v, v + 3, v + 2);
 }
@@ -200,8 +323,98 @@ function paintTri(T, p, y, col) {
     T.nor.push(0, 1, 0);
     T.col.push(col[0], col[1], col[2]);
   }
+  pushPat(T, 3);
   if (UP(p) >= 0) T.idx.push(v, v + 1, v + 2);
   else T.idx.push(v, v + 2, v + 1);
+}
+// a triangle fan from p[0] over p[1..], facing up
+function paintFan(T, p, y, col) {
+  const v = T.pos.length / 3;
+  for (let k = 0; k < p.length; k++) {
+    T.pos.push(p[k][0], y[k], p[k][1]);
+    T.nor.push(0, 1, 0);
+    T.col.push(col[0], col[1], col[2]);
+  }
+  pushPat(T, p.length);
+  for (let k = 1; k + 1 < p.length; k++) {
+    if (UP([p[0], p[k], p[k + 1]]) >= 0) T.idx.push(v, v + k, v + k + 1);
+    else T.idx.push(v, v + k + 1, v + k);
+  }
+}
+// the pattern attribute of a painted patch (only the sideways geometry uses
+// aPat.y/z; the fillet sidewalk reads none of it)
+function pushPat(T, n) {
+  if (!T.pat) return;
+  for (let k = 0; k < n; k++) T.pat.push(T.cur, 0, 1);
+}
+// intersection of line (pa, a) and (pb, b): { t, u } along each, or null
+function meetLines(pax, paz, ax, az, pbx, pbz, bx, bz) {
+  const det = bx * az - ax * bz;
+  if (Math.abs(det) < 1e-6) return null;
+  const ex = pbx - pax;
+  const ez = pbz - paz;
+  return { t: (-ex * bz + bx * ez) / det, u: (ax * ez - az * ex) / det };
+}
+// the outer corner of two arms at a node: the edge intersection farthest from
+// the node, with the side (sa, sb) of each kerb line it lies on. null when the
+// arms are nearly straight on or the corner is degenerate.
+function cornerOf(jx, jz, A, B) {
+  if (Math.abs(A.ax * B.az - A.az * B.ax) < 0.4) return null;
+  const nax = A.az;
+  const naz = -A.ax;
+  const nbx = B.az;
+  const nbz = -B.ax;
+  let sa = 0;
+  let sb = 0;
+  let P = null;
+  let pd = 0;
+  for (const qa of [1, -1]) {
+    for (const qb of [1, -1]) {
+      const r = meetLines(jx + nax * qa * A.half, jz + naz * qa * A.half, A.ax, A.az, jx + nbx * qb * B.half, jz + nbz * qb * B.half, B.ax, B.az);
+      if (!r || r.t <= 0.2 || r.u <= 0.2) continue;
+      const px = nax * qa * A.half + A.ax * r.t;
+      const pz = naz * qa * A.half + A.az * r.t;
+      const d = Math.hypot(px, pz);
+      if (d > pd) {
+        P = r;
+        pd = d;
+        sa = qa;
+        sb = qb;
+      }
+    }
+  }
+  if (!P || P.t > 8 || P.u > 8) return null;
+  return { sa, sb, P };
+}
+// walked arms at a node: unit outward direction, half width and sidewalk
+// width; one entry per distinct direction, sorted by angle
+function walkedArms(net, n) {
+  const { X, Z } = net;
+  const nw = net.nodeWays[n];
+  if (nw.length < 4) return [];
+  const p0 = nw[1];
+  const jx = X[p0];
+  const jz = Z[p0];
+  const arms = [];
+  for (let k = 0; k < nw.length; k += 2) {
+    const wi = nw[k];
+    const w = net.ways[wi];
+    if (!WALKED.has(w.hw) || w.tunnel || w.bridge) continue;
+    const pi = nw[k + 1];
+    const j = pi <= w.start ? pi + 1 : pi - 1;
+    if (j < w.start || j > w.start + w.n - 1) continue;
+    let ax = X[j] - X[pi];
+    let az = Z[j] - Z[pi];
+    const L = Math.hypot(ax, az);
+    if (L < 1e-5) continue;
+    ax /= L;
+    az /= L;
+    if (arms.some((q) => q.ax * ax + q.az * az > 0.985)) continue;
+    const end = pi <= w.start ? 0 : pi >= w.start + w.n - 1 ? 1 : -1;
+    arms.push({ wi, pi, end, ax, az, half: (w.widthM / 2) * S, sw: sidewalkM(w.hw) * S });
+  }
+  arms.sort((a, b) => Math.atan2(a.az, a.ax) - Math.atan2(b.az, b.ax));
+  return arms;
 }
 // dashes around a closed loop of { x, z, rx, rz, y } (rx, rz: the unit radial
 // at the point, the dash width runs along it), dash/gap in metres
@@ -319,10 +532,18 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
     }
   });
 
-  // ---- street surfaces, one mesh per kind (draw order), vertex colours
-  const ORDER = ['foot', 'minor', 'rail', 'secondary', 'primary'];
-  // the minor streets carry the pedestrian ones: calçada-capable
-  const surf = Object.fromEntries(ORDER.map((k) => [k, newT(k === 'minor')]));
+  // ---- street surfaces, one mesh per kind (draw order), vertex colours.
+  // `minor` carries the car lanes (asphalt) and `calcada` the pedestrian
+  // streets of the centre, so the asphalt shader never sees a calçada way.
+  const ORDER = ['foot', 'minor', 'calcada', 'rail', 'secondary', 'primary'];
+  const surf = {
+    foot: newT(),
+    minor: newT(false, true),
+    calcada: newT(true),
+    rail: newT(),
+    secondary: newT(false, true),
+    primary: newT(false, true),
+  };
   let calcadaWays = 0;
   const colCache = new Map();
   const colOf = (hex) => {
@@ -330,21 +551,30 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
     if (!c) colCache.set(hex, (c = lin(hex)));
     return c;
   };
+  // how strongly the asphalt treatment shows on an OSM surface: full on
+  // asphalt (and the class default), light on the paved kinds, none on setts
+  const SETT_SF = new Set(['sett', 'cobblestone', 'unhewn_cobblestone', 'paving_stones', 'stone', 'gravel', 'fine_gravel', 'compacted', 'unpaved', 'ground', 'dirt', 'grass', 'pebblestone']);
+  const asphaltWear = (sf) => (SETT_SF.has(sf) ? 0 : sf && sf !== 'asphalt' && sf !== 'paved' && sf !== 'concrete' && sf !== 'concrete:lanes' ? 0.5 : 1);
   for (const w of net.ways) {
-    const T = surf[w.kind];
+    let T = surf[w.kind];
     if (!T) continue;
     // footways: only their bridges (the paths themselves are not in the core)
     // (and not the crossings on a road deck: the deck is their surface)
     if (w.kind === 'foot' && (!w.bridge || w.onDeck)) continue;
     const h = (w.widthM / 2) * S;
-    if (T.pat) {
+    const rd = T.road ? { laneM: w.cls.laneM, wear: asphaltWear(w.t.sf) } : null;
+    if (w.kind === 'minor') {
       // pedestrian streets of the centre: calçada (by name: waves on the
       // main squares, a diagonal net on the largos, a border on the ruas)
       const m = w.start + (w.n >> 1);
-      T.cur = w.hw === 'pedestrian' && !w.tunnel && X[m] * X[m] + Z[m] * Z[m] < SIDEWALK_R * SIDEWALK_R ? calcadaPatternOf(w.t.name, 'street') : 0;
-      if (T.cur) calcadaWays++;
+      const ped = w.hw === 'pedestrian' && !w.tunnel && X[m] * X[m] + Z[m] * Z[m] < SIDEWALK_R * SIDEWALK_R;
+      if (ped) {
+        T = surf.calcada;
+        T.cur = calcadaPatternOf(w.t.name, 'street');
+        if (T.cur) calcadaWays++;
+      }
     }
-    strip(T, net, w.start, w.start + w.n - 1, 0, h, RIBBON_LIFT, colOf(surfaceOf(w.f)));
+    strip(T, net, w.start, w.start + w.n - 1, 0, h, RIBBON_LIFT, colOf(surfaceOf(w.f)), h, rd);
   }
   let ribbonTris = 0;
   let order = 1;
@@ -353,7 +583,9 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
     if (!T.idx.length) return;
     const rm = T.pat
       ? calcadaMaterial({ polygonOffsetUnits: -3 - k, roughness: 0.92, lite })
-      : new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, metalness: 0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -3 - k });
+      : T.road
+        ? asphaltMaterial({ polygonOffsetUnits: -3 - k, roughness: 0.96, lite })
+        : new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, metalness: 0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -3 - k });
     materials.push(rm);
     const mesh = new THREE.Mesh(geometryOf(T), rm);
     mesh.name = `street-${kind}`;
@@ -584,6 +816,7 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
   const CROSS_LIFT = MARK_LIFT + 0.003;
   let crossings = 0;
   let mouths = 0;
+  const rampList = [];
   for (let n = 0; n < net.nNodes; n++) {
     const nw = net.nodeWays[n];
     if (nw.length < 6) continue;
@@ -652,6 +885,7 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
             );
           }
           crossings++;
+          if (WALKED.has(w.hw) && !w.bridge) rampList.push({ x: X[pi], z: Z[pi], dx, dz, off, half, sw: sidewalkM(w.hw) * S, yc, sl, ny: Y[pi] });
         }
         // the mouth marking on the approaching half (right of travel in)
         const diff = maxRank - rank;
@@ -696,22 +930,158 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
     }
   }
   // sidewalks in the city: calçada both sides of the streets (plain white
-  // limestone; the kerbs keep their granite colour)
+  // limestone; the kerbs keep their granite colour). At a junction corner the
+  // straight strip stops at the corner (the fillet below takes over), so a
+  // sidewalk never cuts straight across the carriageway it meets.
   const SW = newT(true);
   const swc = lin(SIDEWALK);
   const kerb = lin(KERB);
-  for (const w of net.ways) {
+  const trims = new Map();
+  {
+    const TRIM_R = 320;
+    for (let n = 0; n < net.nNodes; n++) {
+      const p0 = net.nodeWays[n][1];
+      if (p0 === undefined) continue;
+      const jx = X[p0];
+      const jz = Z[p0];
+      if (jx * jx + jz * jz > TRIM_R * TRIM_R) continue;
+      const arms = walkedArms(net, n);
+      const m = arms.length;
+      if (m < 2) continue;
+      for (let i = 0; i < m; i++) {
+        const A = arms[i];
+        const B = arms[(i + 1) % m];
+        const c = cornerOf(jx, jz, A, B);
+        if (!c) continue;
+        for (const [arm, sa, dist] of [[A, c.sa, c.P.t], [B, c.sb, c.P.u]]) {
+          if (arm.end < 0) continue;
+          const w = net.ways[arm.wi];
+          const d = Math.min(w.len, arm.end === 0 ? dist : w.len - dist);
+          let t = trims.get(arm.wi);
+          if (!t) trims.set(arm.wi, (t = { p: { a: 0, b: 0 }, m: { a: 0, b: 0 } }));
+          const side = sa > 0 ? t.p : t.m;
+          if (arm.end === 0) side.a = Math.max(side.a, d);
+          else side.b = Math.max(side.b, d);
+        }
+      }
+    }
+  }
+  for (let wi = 0; wi < net.ways.length; wi++) {
+    const w = net.ways[wi];
     if (!WALKED.has(w.hw) || w.tunnel || w.bridge) continue;
     const m = w.start + (w.n >> 1);
     if (X[m] * X[m] + Z[m] * Z[m] > SIDEWALK_R * SIDEWALK_R) continue;
     const half = (w.widthM / 2) * S;
     const sw = sidewalkM(w.hw) * S;
+    const t = trims.get(wi);
     for (const sgn of [1, -1]) {
+      const side = t ? (sgn > 0 ? t.p : t.m) : null;
+      const s0 = side ? side.a : 0;
+      const s1 = w.len - (side ? side.b : 0);
+      if (s1 <= s0) continue;
       SW.cur = CALCADA.sidewalk;
-      strip(SW, net, w.start, w.start + w.n - 1, sgn * (half + sw / 2 + 0.15 * S), sw / 2, RIBBON_LIFT + 0.02, swc, 0);
+      stripAlong(SW, net, w, sgn * (half + sw / 2 + 0.15 * S), sw / 2, RIBBON_LIFT + 0.02, swc, s0, s1);
       SW.cur = 0;
-      strip(SW, net, w.start, w.start + w.n - 1, sgn * (half + 0.08 * S), 0.12 * S, RIBBON_LIFT + 0.03, kerb, 0);
+      stripAlong(SW, net, w, sgn * (half + 0.08 * S), 0.12 * S, RIBBON_LIFT + 0.03, kerb, s0, s1);
     }
+  }
+  // ---- junction corners: a fillet between two walked arms, so the kerbs
+  // turn on a radius instead of meeting at a hard right angle; the sidewalk
+  // paving fills the corner and a kerb band follows the arc.
+  const KERBW = 0.12 * S;
+  const FIL_R = 320;
+  let corners = 0;
+  {
+    for (let n = 0; n < net.nNodes; n++) {
+      const nw = net.nodeWays[n];
+      if (nw.length < 4) continue;
+      const p0 = nw[1];
+      if (HID[p0]) continue;
+      const jx = X[p0];
+      const jz = Z[p0];
+      if (jx * jx + jz * jz > FIL_R * FIL_R) continue;
+      const arms = walkedArms(net, n);
+      const m = arms.length;
+      if (m < 2) continue;
+      for (let i = 0; i < m; i++) {
+        const A = arms[i];
+        const B = arms[(i + 1) % m];
+        const corner = cornerOf(jx, jz, A, B);
+        if (!corner) continue;
+        const { sa, sb, P } = corner;
+        const nax = A.az;
+        const naz = -A.ax;
+        const nbx = B.az;
+        const nbz = -B.ax;
+        const ha = A.half;
+        const hb = B.half;
+        const R = Math.min(1.7, Math.max(0.45, 0.8 * Math.min(ha, hb) + 0.2));
+        const pax = jx + nax * sa * ha;
+        const paz = jz + naz * sa * ha;
+        const pbx = jx + nbx * sb * hb;
+        const pbz = jz + nbz * sb * hb;
+        const C = meetLines(pax + nax * sa * R, paz + naz * sa * R, A.ax, A.az, pbx + nbx * sb * R, pbz + nbz * sb * R, B.ax, B.az);
+        if (!C || C.t < 0.2 || C.u < 0.2 || C.t > 9 || C.u > 9) continue;
+        const cx = pax + nax * sa * R + A.ax * C.t;
+        const cz = paz + naz * sa * R + A.az * C.t;
+        const tax = pax + A.ax * C.t;
+        const taz = paz + A.az * C.t;
+        const tbx = pbx + B.ax * C.u;
+        const tbz = pbz + B.az * C.u;
+        let a0 = Math.atan2(taz - cz, tax - cx);
+        let a1 = Math.atan2(tbz - cz, tbx - cx);
+        let da = a1 - a0;
+        while (da > Math.PI) da -= 2 * Math.PI;
+        while (da < -Math.PI) da += 2 * Math.PI;
+        const N = 6;
+        const y = Y[p0] + RIBBON_LIFT + 0.02;
+        const poly = [[pax + A.ax * P.t, paz + A.az * P.t]];
+        for (let k = 0; k <= N; k++) {
+          const a = a0 + (da * k) / N;
+          poly.push([cx + Math.cos(a) * R, cz + Math.sin(a) * R]);
+        }
+        SW.cur = CALCADA.sidewalk;
+        paintFan(SW, poly, poly.map(() => y), swc);
+        SW.cur = 0;
+        for (let k = 0; k < N; k++) {
+          const a = a0 + (da * k) / N;
+          const b2 = a0 + (da * (k + 1)) / N;
+          const inAx = cx + Math.cos(a) * R;
+          const inAz = cz + Math.sin(a) * R;
+          const outAx = cx + Math.cos(a) * (R + KERBW);
+          const outAz = cz + Math.sin(a) * (R + KERBW);
+          const inBx = cx + Math.cos(b2) * R;
+          const inBz = cz + Math.sin(b2) * R;
+          const outBx = cx + Math.cos(b2) * (R + KERBW);
+          const outBz = cz + Math.sin(b2) * (R + KERBW);
+          paintQuad(SW, [[inAx, inAz], [inBx, inBz], [outBx, outBz], [outAx, outAz]], [y + 0.01, y + 0.01, y + 0.01, y + 0.01], kerb);
+        }
+        corners++;
+      }
+    }
+    // kerb ramps: the kerb drops to the carriageway at each crossing end
+    let ramps = 0;
+    for (const r of rampList) {
+      const { dx, dz, half, off, yc, sl } = r;
+      const lx = dz;
+      const lz = -dx;
+      const D = 2.6 * S;
+      for (const sgn of [1, -1]) {
+        const inX = r.x + dx * (off - D / 2) + lx * sgn * (half - 0.4 * S);
+        const inZ = r.z + dz * (off - D / 2) + lz * sgn * (half - 0.4 * S);
+        const inX2 = r.x + dx * (off + D / 2) + lx * sgn * (half - 0.4 * S);
+        const inZ2 = r.z + dz * (off + D / 2) + lz * sgn * (half - 0.4 * S);
+        const outX = r.x + dx * (off - D / 2) + lx * sgn * (half + 0.6 * S);
+        const outZ = r.z + dz * (off - D / 2) + lz * sgn * (half + 0.6 * S);
+        const outX2 = r.x + dx * (off + D / 2) + lx * sgn * (half + 0.6 * S);
+        const outZ2 = r.z + dz * (off + D / 2) + lz * sgn * (half + 0.6 * S);
+        const yIn = yc + sl * sgn * (half - 0.4 * S) + CROSS_LIFT + 0.002;
+        const yOut = r.ny + RIBBON_LIFT + 0.024;
+        paintQuad(SW, [[inX, inZ], [inX2, inZ2], [outX2, outZ2], [outX, outZ]], [yIn, yIn, yOut, yOut], kerb);
+      }
+      ramps++;
+    }
+    counts.ramps = ramps;
   }
   // roundabouts: an aproned island (a paved apron ring around the green
   // centre) and a dashed ring marking along the inner edge of the carriageway
@@ -786,6 +1156,84 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
     busStopGeometry(BT, { x: X[i], z: Z[i], y: net.surfaceY(i, lat), dx: dx / L, dz: dz / L, side: -1, half, sw });
     busStops++;
   }
+  // ---- medians: a thin painted or planted central strip where a wide way
+  // has room beyond its lanes (a marked central area; topology untouched)
+  const MD = newT();
+  const medBase = lin(0xb9b4aa);
+  const medGreen = lin(0x4f6a3a);
+  let medians = 0;
+  for (const w of net.ways) {
+    if (!w.car || w.ow !== 0 || w.total < 3 || w.tunnel || w.bridge) continue;
+    const half = (w.widthM / 2) * S;
+    const room = half - (w.total / 2) * w.cls.laneM * S;
+    if (room < 0.1 || w.len < 30 * S) continue;
+    const mh = room >= 0.3 ? Math.min(0.35, room * 0.8) : Math.min(0.3, Math.max(0.16, room * 1.6));
+    const s0 = 5 * S;
+    const s1 = w.len - 5 * S;
+    let a = w.start;
+    while (a < w.start + w.n - 2 && net.C[a] < s0) a++;
+    let b = a;
+    while (b < w.start + w.n - 1 && net.C[b] < s1) b++;
+    if (b - a < 1) continue;
+    if (room >= 0.3) {
+      strip(MD, net, a, b, 0, mh + 0.12 * S, RIBBON_LIFT + 0.04, medBase, 0);
+      strip(MD, net, a, b, 0, mh, RIBBON_LIFT + 0.075, medGreen, 0);
+    } else {
+      strip(MD, net, a, b, 0, mh, RIBBON_LIFT + 0.025, medGreen, 0);
+    }
+    medians++;
+  }
+  // ---- traffic lights: a signal pole with a three-aspect head on each arm
+  // of the busiest painted junctions of the centre
+  const LT = newT();
+  const TL_R = 320;
+  const junc = [];
+  for (let n = 0; n < net.nNodes; n++) {
+    const nw = net.nodeWays[n];
+    if (nw.length < 6) continue;
+    const p0 = nw[1];
+    if (HID[p0]) continue;
+    const jx = X[p0];
+    const jz = Z[p0];
+    if (jx * jx + jz * jz > TL_R * TL_R) continue;
+    const arms = [];
+    const seen = new Set();
+    let maxRank = -1;
+    for (let k = 0; k < nw.length; k += 2) {
+      const wi = nw[k];
+      if (seen.has(wi)) continue;
+      seen.add(wi);
+      const w = net.ways[wi];
+      if (!paintArm(w)) continue;
+      const rank = RANK[w.hw] ?? 0;
+      if (rank > maxRank) maxRank = rank;
+      arms.push({ w, pi: nw[k + 1] });
+    }
+    if (arms.length < 3 || maxRank < 3) continue;
+    junc.push({ arms, score: arms.length * 4 + maxRank });
+  }
+  junc.sort((a, b) => b.score - a.score);
+  let signals = 0;
+  for (let ji = 0; ji < junc.length && signals < 40; ji++) {
+    for (const { w, pi } of junc[ji].arms) {
+      if (signals >= 40) break;
+      const j = pi <= w.start ? pi + 1 : pi - 1;
+      if (j < w.start || j > w.start + w.n - 1) continue;
+      let dx = X[j] - X[pi];
+      let dz = Z[j] - Z[pi];
+      const L = Math.hypot(dx, dz);
+      if (L < 1e-5) continue;
+      dx /= L;
+      dz /= L;
+      const half = (w.widthM / 2) * S;
+      const lat = half + 0.5 * S;
+      const x = X[pi] + dz * lat;
+      const z = Z[pi] - dx * lat;
+      const y = net.surfaceY(pi, lat) + RIBBON_LIFT + 0.02;
+      trafficLightGeometry(LT, { x, z, y, dx, dz });
+      signals++;
+    }
+  }
   const detailMeshes = [];
   const addDetail = (T, name, units, color) => {
     if (!T.idx.length) return 0;
@@ -805,8 +1253,12 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
   const mTris = addDetail(MT, 'lane-markings', -12, true);
   const iTris = addDetail(IT, 'roundabout-islands', -10, false);
   const bTris = addDetail(BT, 'bus-stops', -13, true);
+  const mdTris = addDetail(MD, 'medians', -8, false);
+  const ltTris = addDetail(LT, 'traffic-lights', -20, true);
   const busMesh = detail.getObjectByName('bus-stops');
   if (busMesh) busMesh.castShadow = true;
+  const tlMesh = detail.getObjectByName('traffic-lights');
+  if (tlMesh) tlMesh.castShadow = true;
 
   for (const [kind, st] of Object.entries(STYLE)) {
     const arr = buckets[kind];
@@ -875,9 +1327,12 @@ export function buildRoads(roads, project, heightAt, { waterRibbon = true, lite 
   }
   counts.ribbonTriangles = ribbonTris;
   counts.structureTriangles = structTris;
-  counts.detailTriangles = swTris + mTris + iTris + bTris;
+  counts.detailTriangles = swTris + mTris + iTris + bTris + mdTris + ltTris;
   counts.crossings = crossings;
   counts.mouthMarkings = mouths;
+  counts.corners = corners;
+  counts.medians = medians;
+  counts.signals = signals;
   counts.busStops = busStops;
   counts.bridges = net.bridges.length;
   counts.archBridges = archBridges;

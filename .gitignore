@@ -9,3 +9,6 @@ videos/
 .DS_Store
 *.log
 .vercel
+
+# local screenshot scratch
+.shots/
