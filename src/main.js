@@ -5,7 +5,7 @@ import './style.css';
 import { loadData, loadStory } from './data.js';
 import { createProjection, METRES_PER_UNIT } from './geo.js';
 import { installAtmosphereFog, createRenderer, createAtmosphere, createGround, FOG_UNIFORMS, TIMES, DEFAULT_TIME, DPR, deviceDpr } from './scene.js';
-import { setWaterLite } from './water.js';
+import { setWaterLite, seekWater, resumeWater } from './water.js';
 import { buildRoads } from './roads.js';
 import { buildLandmarks } from './landmarks.js';
 import { buildBuildings, BUILDING_UNIFORMS, setBuildingsLite } from './buildings.js';
@@ -272,6 +272,8 @@ async function start() {
     scene.add(nature.group);
     if (nature.landcover) ground.userData.setLandcover(nature.landcover, nature.landRect);
     debug.nature = nature.stats;
+    // seek-safe water clock: cinema / story scrubbing and deterministic shots
+    debug.water = { seek: seekWater, resume: resumeWater };
     if (probeLow) nature.setNearRadius(LITE ? 160 : 220);
     mark('nature');
     // the city around the core, streamed in once the core is on screen (tiles.js)

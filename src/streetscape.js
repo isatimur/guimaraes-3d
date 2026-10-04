@@ -480,6 +480,16 @@ const FURNITURE = {
       icoG(0.14, 0.46, 0.99, 0, 0xe0a33a),
       icoG(0.12, 0.0, 1.02, 0.08, 0xd0637a),
     ]),
+  // a flowering garden shrub for the parterre beds
+  shrub: () =>
+    merged([
+      icoG(0.62, 0, 0.42, 0, 0x4f7a34),
+      icoG(0.46, 0.42, 0.36, -0.22, 0x5a8438),
+      icoG(0.4, -0.38, 0.38, 0.24, 0x486e2e),
+      icoG(0.14, -0.22, 0.72, 0.1, 0xc94f6a),
+      icoG(0.13, 0.3, 0.76, 0.22, 0xe0a33a),
+      icoG(0.12, 0.1, 0.82, -0.3, 0xd0637a),
+    ]),
   // a cast-iron advertising (poster) column with a domed crown
   column: () =>
     merged([
@@ -739,6 +749,276 @@ function buildTerraces({ list, project, groundAt, okAt, put, spots, addSpot, ter
     if (ter.seats.length) terraces.push(ter);
   }
   return tables;
+}
+
+// ------------------------------------------------------------ grounds
+// Authored forecourt geometry (data/squares.json "grounds"): the formal
+const GCOL = {
+  lawn: new THREE.Color(0x6f9247),
+  lawn2: new THREE.Color(0x647f3d),
+  gravel: new THREE.Color(0xc0b7a2),
+  sett: new THREE.Color(0xa79d88),
+  soil: new THREE.Color(0x4b3c2a),
+  granite: new THREE.Color(0xa9a294),
+  graniteL: new THREE.Color(0xc2bcae),
+};
+const GW_MAXE = 2.5;
+const gwDist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
+function gwTri(G, a, b, c, heightAt, lift, col, depth = 0) {
+  const e = Math.max(gwDist(a, b), gwDist(b, c), gwDist(c, a));
+  if (e > GW_MAXE && depth < 5) {
+    const mid = (p, q) => ({ x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 });
+    const ab = mid(a, b);
+    const bc = mid(b, c);
+    const ca = mid(c, a);
+    gwTri(G, a, ab, ca, heightAt, lift, col, depth + 1);
+    gwTri(G, ab, b, bc, heightAt, lift, col, depth + 1);
+    gwTri(G, ca, bc, c, heightAt, lift, col, depth + 1);
+    gwTri(G, ab, bc, ca, heightAt, lift, col, depth + 1);
+    return;
+  }
+  const A = { x: a.x, y: heightAt(a.x, a.z) + lift, z: a.z };
+  const B = { x: b.x, y: heightAt(b.x, b.z) + lift, z: b.z };
+  const C = { x: c.x, y: heightAt(c.x, c.z) + lift, z: c.z };
+  const v = G.pos.length / 3;
+  for (const p of [A, B, C]) {
+    G.pos.push(p.x, p.y, p.z);
+    G.col.push(col.r, col.g, col.b);
+  }
+  const up = (B.z - A.z) * (C.x - A.x) - (B.x - A.x) * (C.z - A.z);
+  if (up >= 0) G.idx.push(v, v + 1, v + 2);
+  else G.idx.push(v, v + 2, v + 1);
+}
+function gwPanel(G, poly, heightAt, lift, col) {
+  if (!poly || poly.length < 3) return;
+  const contour = poly.map((p) => new THREE.Vector2(p.x, p.z));
+  if (THREE.ShapeUtils.isClockWise(contour)) contour.reverse();
+  const faces = THREE.ShapeUtils.triangulateShape(contour, []);
+  for (const [i, j, k] of faces) {
+    gwTri(G, { x: contour[i].x, z: contour[i].y }, { x: contour[j].x, z: contour[j].y }, { x: contour[k].x, z: contour[k].y }, heightAt, lift, col);
+  }
+}
+// the outline polygon of a buffered polyline (a path of width w)
+function gwLinePoly(line, w) {
+  const h = w / 2;
+  const left = [];
+  const right = [];
+  for (let i = 0; i < line.length; i++) {
+    const a = line[Math.max(0, i - 1)];
+    const b = line[Math.min(line.length - 1, i + 1)];
+    let dx = b.x - a.x;
+    let dz = b.z - a.z;
+    const L = Math.hypot(dx, dz) || 1;
+    dx /= L;
+    dz /= L;
+    left.push({ x: line[i].x - dz * h, z: line[i].z + dx * h });
+    right.push({ x: line[i].x + dz * h, z: line[i].z - dx * h });
+  }
+  return left.concat(right.reverse());
+}
+
+// Build every authored forecourt: panels (lawns, paths, beds) into one
+// draped mesh, solids (kerbs, walls, steps, parapets) into another, and the
+// trees, shrubs and benches through the shared instanced layers.
+function buildGrounds({ list, project, heightAt, put, benchSpot, okAt, groundAt, rnd, group, lift, S }) {
+  const G = { pos: [], col: [], idx: [] };
+  const parts = [];
+  const stats = { grounds: 0, lawns: 0, paths: 0, beds: 0, kerbs: 0, walls: 0, steps: 0, trees: 0, shrubs: 0, benches: 0, panels: 0, solids: 0 };
+  const wbox = (w, h, d, x, y, z, col, ry = 0) => {
+    const g = new THREE.BoxGeometry(w * S, h * S, d * S);
+    if (ry) g.rotateY(ry);
+    g.translate(x, y + (h * S) / 2, z);
+    parts.push(part(g, col));
+  };
+  const frame = (g) => {
+    const a = project(g.lat, g.lon);
+    let rot = 0;
+    if (Array.isArray(g.front)) {
+      const f = project(g.front[0], g.front[1]);
+      rot = Math.atan2(-(f.x - a.x), f.z - a.z);
+    }
+    const c = Math.cos(rot);
+    const s = Math.sin(rot);
+    return {
+      a,
+      rot,
+      to: (lx, lz) => ({ x: a.x + (lx * c - lz * s) * S, z: a.z + (lx * s + lz * c) * S }),
+      dir: (lx, lz) => ({ x: lx * c - lz * s, z: lx * s + lz * c }),
+    };
+  };
+  const ribbon = (line, o) => {
+    const w = o.w ?? 0.3;
+    const h = o.h ?? 0.22;
+    const sink = o.sink ?? 0.12;
+    const col = o.color ?? GCOL.granite;
+    for (let i = 0; i < line.length - 1; i++) {
+      const a = line[i];
+      const b = line[i + 1];
+      const L = gwDist(a, b);
+      if (L < 1e-3) continue;
+      const dx = (b.x - a.x) / L;
+      const dz = (b.z - a.z) / L;
+      const ry = Math.atan2(dx, dz);
+      const n = Math.max(1, Math.round(L / 1.4));
+      for (let k = 0; k < n; k++) {
+        const u = (k + 0.5) / n;
+        const x = a.x + dx * L * u;
+        const z = a.z + dz * L * u;
+        const y = heightAt(x, z);
+        wbox(w, h, L / n + 0.04, x, y - sink, z, col, ry);
+        if (o.coping) wbox(w + 0.16, 0.1, L / n + 0.04, x, y - sink + h, z, o.coping, ry);
+      }
+    }
+  };
+  const steps = (st, fr) => {
+    const n = Math.max(1, st.n || 3);
+    const w = st.w || 6;
+    const rise = st.rise ?? 0.16;
+    const tread = st.tread ?? 0.4;
+    const rad = ((st.dir || 0) * Math.PI) / 180;
+    const sdx = Math.sin(rad);
+    const sdz = Math.cos(rad);
+    const base = fr.to(st.x, st.z);
+    const y0 = heightAt(base.x, base.z);
+    const wd = fr.dir(sdx, sdz);
+    const ry = Math.atan2(wd.x, wd.z);
+    const bot = y0 - n * rise - 0.5;
+    for (let k = 0; k < n; k++) {
+      const p = fr.to(st.x + sdx * ((k + 0.5) * tread), st.z + sdz * ((k + 0.5) * tread));
+      const top = y0 - k * rise;
+      wbox(w, top - bot, tread + 0.06, p.x, bot, p.z, GCOL.granite, ry);
+      wbox(w + 0.1, 0.06, tread + 0.1, p.x, top - 0.02, p.z, GCOL.graniteL, ry);
+    }
+  };
+  for (const g of list || []) {
+    if (!g || !Number.isFinite(g.lat) || !Number.isFinite(g.lon)) continue;
+    const fr = frame(g);
+    stats.grounds++;
+    for (const l of g.lawns || []) {
+      const poly = (l.poly || l).map((q) => fr.to(q[0], q[1]));
+      gwPanel(G, poly, heightAt, lift, rnd() < 0.5 ? GCOL.lawn : GCOL.lawn2);
+      stats.lawns++;
+    }
+    for (const p of g.paths || []) {
+      const col = p.kind === 'sett' ? GCOL.sett : GCOL.gravel;
+      const line = p.line ? p.line.map((q) => fr.to(q[0], q[1])) : null;
+      const poly = line ? gwLinePoly(line, p.w || 4) : (p.poly || []).map((q) => fr.to(q[0], q[1]));
+      gwPanel(G, poly, heightAt, lift, col);
+      stats.paths++;
+    }
+    for (const b of g.beds || []) {
+      const poly = (b.poly || b).map((q) => fr.to(q[0], q[1]));
+      gwPanel(G, poly, heightAt, lift, GCOL.soil);
+      stats.beds++;
+      const lp = b.poly || b;
+      const localPoly = lp.map((q) => ({ x: q[0], z: q[1] }));
+      let x0 = Infinity;
+      let x1 = -Infinity;
+      let z0 = Infinity;
+      let z1 = -Infinity;
+      for (const q of lp) {
+        x0 = Math.min(x0, q[0]);
+        x1 = Math.max(x1, q[0]);
+        z0 = Math.min(z0, q[1]);
+        z1 = Math.max(z1, q[1]);
+      }
+      for (let x = x0 + 1.2; x < x1; x += 2.3) {
+        for (let z = z0 + 1.2; z < z1; z += 2.3) {
+          if (rnd() > 0.55 || !pip(localPoly, x, z)) continue;
+          const p = fr.to(x + (rnd() - 0.5) * 1.2, z + (rnd() - 0.5) * 1.2);
+          const y = groundAt(p.x, p.z);
+          if (Number.isNaN(y) || !okAt(p.x, p.z, y)) continue;
+          put('shrub', p.x, y, p.z, rnd() * 6.28, 0.8 + rnd() * 0.5);
+          stats.shrubs++;
+        }
+      }
+    }
+    for (const k of g.kerbs || []) {
+      const line = (k.line || k).map((q) => fr.to(q[0], q[1]));
+      ribbon(line, { w: k.w ?? 0.3, h: k.h ?? 0.22, sink: 0.12, color: GCOL.granite });
+      stats.kerbs++;
+    }
+    for (const w of g.walls || []) {
+      const line = (w.line || w).map((q) => fr.to(q[0], q[1]));
+      ribbon(line, { w: w.w ?? 0.5, h: w.h ?? 1.0, sink: w.sink ?? 0.45, color: GCOL.granite, coping: GCOL.graniteL });
+      stats.walls++;
+    }
+    for (const v of g.viewpoints || []) {
+      const line = (v.line || v).map((q) => fr.to(q[0], q[1]));
+      ribbon(line, { w: v.w ?? 0.45, h: v.h ?? 0.9, sink: 0.4, color: GCOL.granite, coping: GCOL.graniteL });
+      const mid = line[Math.floor(line.length / 2)];
+      for (const b of v.benches || []) {
+        const p = fr.to(b[0], b[1]);
+        const y = groundAt(p.x, p.z);
+        if (Number.isNaN(y) || !okAt(p.x, p.z, y)) continue;
+        benchSpot(p.x, y, p.z, Math.atan2(-(p.x - mid.x), -(p.z - mid.z)));
+        stats.benches++;
+      }
+      stats.walls++;
+    }
+    for (const st of g.steps || []) {
+      steps(st, fr);
+      stats.steps++;
+    }
+    for (const t of g.trees || []) {
+      const p = fr.to(t[0], t[1]);
+      const y = heightAt(p.x, p.z) + lift - 0.05;
+      if (!okAt(p.x, p.z, y)) continue;
+      put('tree', p.x, y, p.z, rnd() * 6.28, 0.8 + rnd() * 0.4, Math.floor(rnd() * 4));
+      stats.trees++;
+    }
+    for (const row of g.treeRows || []) {
+      if (!Array.isArray(row) || row.length < 2) continue;
+      const pts = row.map((q) => fr.to(q[0], q[1]));
+      for (let i = 0; i < pts.length - 1; i++) {
+        const L = gwDist(pts[i], pts[i + 1]);
+        for (let s = 0; s <= L; s += 9 * S) {
+          const x = pts[i].x + ((pts[i + 1].x - pts[i].x) * s) / L;
+          const z = pts[i].z + ((pts[i + 1].z - pts[i].z) * s) / L;
+          const y = heightAt(x, z) + lift - 0.05;
+          if (!okAt(x, z, y)) continue;
+          put('tree', x, y, z, rnd() * 6.28, 0.8 + rnd() * 0.35, Math.floor(rnd() * 4));
+          stats.trees++;
+        }
+      }
+    }
+    for (const b of g.benches || []) {
+      const p = fr.to(b[0], b[1]);
+      const y = groundAt(p.x, p.z);
+      if (Number.isNaN(y) || !okAt(p.x, p.z, y)) continue;
+      const a = ((b[2] || 0) * Math.PI) / 180;
+      const wd = fr.dir(Math.sin(a), Math.cos(a));
+      benchSpot(p.x, y, p.z, Math.atan2(wd.x, wd.z));
+      stats.benches++;
+    }
+  }
+  if (G.idx.length) {
+    const geo = new THREE.BufferGeometry();
+    const n = G.pos.length / 3;
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(G.pos, 3));
+    geo.setAttribute('normal', new THREE.Float32BufferAttribute(new Float32Array(n * 3).map((_, i) => (i % 3 === 1 ? 1 : 0)), 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(G.col, 3));
+    geo.setIndex(n > 65535 ? new THREE.Uint32BufferAttribute(G.idx, 1) : new THREE.Uint16BufferAttribute(G.idx, 1));
+    geo.computeBoundingSphere();
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.96, metalness: 0, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.name = 'grounds-panels';
+    mesh.receiveShadow = true;
+    group.add(mesh);
+    stats.panels = G.idx.length / 3;
+  }
+  if (parts.length) {
+    const geo = mergeGeometries(parts);
+    geo.computeBoundingSphere();
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.name = 'grounds-solid';
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    group.add(mesh);
+    stats.solids = triCount(geo);
+  }
+  return stats;
 }
 
 function furnitureMaterial(uniforms, key) {
@@ -1648,6 +1928,11 @@ function build(ctx, group, doc, pois, stats, squares) {
     if (placeCivic('signboard', p.x, p.z, q.rot || 0, q.sc || 1, 0.1 * S)) civic.signs++;
   }
 
+  // ---- the landmarks' forecourts: parterres, paths, kerbs, walls, steps,
+  // beds, tree rows and benches (data/squares.json "grounds")
+  const groundsOk = (x, z, y) => nearC(x, z) && !solidAt(x, z) && !blockedAt(x, z, y, 0.5 * S);
+  const groundsStats = buildGrounds({ list: squares?.grounds, project, heightAt, put, benchSpot, okAt: groundsOk, groundAt, rnd, group, lift: RIBBON_LIFT + 0.01, S });
+
   // ---- objects
   const uniforms = { uStNight: { value: 0 }, uStGlow: { value: 1 } };
   const layers = [];
@@ -1817,6 +2102,7 @@ function build(ctx, group, doc, pois, stats, squares) {
     squareTriangles: Math.round(squareTris),
     monuments: monumentsN,
     civic,
+    grounds: groundsStats,
     spots: spots.x.length,
     signs: signs.items.length,
     people: people?.stats ?? null,

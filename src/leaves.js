@@ -1,7 +1,8 @@
 // Falling leaves in autumn, blossom petals in spring (3d-falling-leaves
 // skill, MengTo): instanced 3D leaves in world space near the camera.
 //
-//   - four silhouettes in one padded atlas (oak, lime, plane, a petal): a
+//   - six silhouettes in one padded atlas (oak, lime, plane, chestnut,
+//     osier, a petal): a
 //     two-sided, lightly folded card, paler on its back (gl_FrontFacing),
 //     lit by the scene sun with a faint transmission when backlit;
 //   - closed-form motion on the GPU: every leaf has persistent seeded
@@ -28,7 +29,7 @@ import { FOG_UNIFORMS, WEATHER_UNIFORMS, CLOUD_GLSL } from './scene.js';
 import { S } from './geo.js';
 
 const CELL = 128;
-const CELLS = 4; // oak, lime, plane, petal
+const CELLS = 6; // oak, lime, plane, chestnut, osier, petal
 
 // ------------------------------------------------------------ atlas
 // R: silhouette, G: veins (darker), B: base-to-tip shade. Data, not colour.
@@ -116,7 +117,38 @@ function leafAtlas() {
     veins(2, [[[0, 104], [0, 26]], [[0, 90], [34, 56]], [[0, 90], [-34, 56]], [[0, 90], [30, 100]], [[0, 90], [-30, 100]]]);
     stem(2);
   }
-  // 3: a petal, rounded with a notch
+  // 3: chestnut, long and sharply serrated
+  {
+    const pts = [];
+    const n = 80;
+    for (let k = 0; k <= n; k++) {
+      const t = k / n;
+      const side = t <= 0.5 ? 1 : -1;
+      const u = t <= 0.5 ? t * 2 : (1 - t) * 2;
+      const taper = Math.sin(Math.PI * Math.min(1, u * 0.72 + 0.12));
+      const serr = 1 + 0.09 * Math.sin(u * Math.PI * 13);
+      pts.push([side * taper * 26 * serr, CELL - 16 - u * 100]);
+    }
+    outline(3, pts);
+    veins(3, [[[0, CELL - 20], [0, 18]], [[0, 62], [18, 48]], [[0, 62], [-18, 48]], [[0, 40], [15, 28]], [[0, 40], [-15, 28]]]);
+    stem(3);
+  }
+  // 4: osier willow, narrow and silvery-margined
+  {
+    const pts = [];
+    const n = 64;
+    for (let k = 0; k <= n; k++) {
+      const t = k / n;
+      const side = t <= 0.5 ? 1 : -1;
+      const u = t <= 0.5 ? t * 2 : (1 - t) * 2;
+      const w = Math.sin(Math.PI * Math.min(1, u * 0.8 + 0.08)) * (0.42 + 0.58 * Math.min(1, u * 2.2));
+      pts.push([side * w * 22, CELL - 18 - u * 96]);
+    }
+    outline(4, pts);
+    veins(4, [[[0, CELL - 18], [0, 14]], [[0, 74], [14, 58]], [[0, 74], [-14, 58]], [[0, 50], [12, 34]], [[0, 50], [-12, 34]]]);
+    stem(4);
+  }
+  // 5: a petal, rounded with a notch
   {
     const pts = [];
     const n = 48;
@@ -125,8 +157,8 @@ function leafAtlas() {
       const notch = 1 - 0.18 * Math.exp(-Math.pow((a - Math.PI) * 3, 2));
       pts.push([Math.sin(a) * 30 * (0.55 + 0.45 * Math.cos(a) * -1 + 0.45), 70 - Math.cos(a) * 44 * notch]);
     }
-    outline(3, pts);
-    veins(3, [[[0, 110], [0, 60]]], 1.5);
+    outline(5, pts);
+    veins(5, [[[0, 110], [0, 60]]], 1.5);
   }
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.NoColorSpace;
@@ -232,7 +264,7 @@ void main() {
   vN = R * normal;
   vPos = wpos;
   // petals use the petal cell whatever the leaf shape
-  vUv = vec2((mix(aShape.x, 3.0, petal) + uv.x) / ${CELLS.toFixed(1)}, uv.y);
+  vUv = vec2((mix(aShape.x, 5.0, petal) + uv.x) / ${CELLS.toFixed(1)}, uv.y);
   vPetal = petal;
   vPal = aShape.y;
   vec4 mvPosition = viewMatrix * vec4(wpos, 1.0);
@@ -297,7 +329,7 @@ export function createLeaves({ field, capacity = 1500 }) {
     const omega = (1.1 + r() * 2.4) * (r() < 0.5 ? -1 : 1);
     // fall 0.18..0.38 units/s (0.7..1.5 m/s), slip up to 0.3 units/s
     rate.set([omega, 0.25 + r() * 0.5, 0.18 + r() * 0.2, 0.12 + r() * 0.18], i * 4);
-    shape.set([Math.floor(r() * 3), r(), r() * Math.PI * 2, 0.75 + r() * 0.5], i * 4);
+    shape.set([Math.floor(r() * 5), r(), r() * Math.PI * 2, 0.75 + r() * 0.5], i * 4);
   }
   geo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seed, 4));
   geo.setAttribute('aRate', new THREE.InstancedBufferAttribute(rate, 4));

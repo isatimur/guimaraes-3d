@@ -9,7 +9,10 @@
 //   - foliage (nature.js): per species and per crown: fresh green and
 //     blossom in spring, deep green in summer, ochre and rust on the
 //     broadleaf crowns in autumn while the eucalyptus and pines stay green,
-//     bare shrunken crowns in winter (the shadows follow);
+//     bare shrunken crowns in winter (the shadows follow). Each species
+//     carries a signed timing phase, so the chestnut and poplar turn before
+//     the plane and the osier leafs out last; the reeds, hedges and
+//     meadows follow the same weights;
 //   - ground (scene.js): grass and field tints, the woods turning in patches;
 //   - snow (scene.js chunk patch): settled snow above ~450 m (Sameiro, the
 //     top of Bom Jesus), a light dusting on the roofs, frost below;

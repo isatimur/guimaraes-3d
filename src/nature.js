@@ -28,15 +28,29 @@ const DENSITY = { forest: 1, scrub: 0.45, park: 0.8, garden: 0.4, orchard: 0.8, 
 const HILLS = () => CITY.nature?.hills || [];
 const HILL_BOOST = 6;
 
-// species: 0 maritime pine, 1 eucalyptus, 2 broadleaf (oak, plane),
-// 3 shrub, 4 a patch of closed woodland canopy (seven crowns)
+// species: 0 maritime pine, 1 eucalyptus, 2 broadleaf oak, 3 shrub,
+// 4 closed woodland canopy, then the Minho broadleaves (5 chestnut,
+// 6 plane, 7 poplar, 8 willow / osier) and the understory (9 reed,
+// 10 hedgerow, 11 wildflower meadow). The first five keep their indices:
+// the streamed tiles in src/tile-worker.js pick from the same tables.
 const SPECIES = [
   { h: [14, 22], w: 0.55, tint: 0x334221, trunk: 0x5a4030 },
   { h: [20, 32], w: 0.7, tint: 0x4d5a3a, trunk: 0x8c806c },
   { h: [10, 18], w: 1.05, tint: 0x42592a, trunk: 0x54443a },
   { h: [2.5, 4.5], w: 1.7, tint: 0x4d5a2c, trunk: 0x4a3e30 },
   { h: [15, 24], w: 1.9, tint: 0x384d24, trunk: 0x4f3d30 },
+  { h: [12, 20], w: 1.0, tint: 0x3f5c26, trunk: 0x5a4535 },
+  { h: [14, 22], w: 1.15, tint: 0x466a2c, trunk: 0x7d7462 },
+  { h: [16, 26], w: 0.55, tint: 0x4e6f2c, trunk: 0x9a9480 },
+  { h: [8, 15], w: 1.1, tint: 0x5d7f43, trunk: 0x7a6f5a },
+  { h: [1.4, 2.4], w: 0.6, tint: 0x7d8a44, trunk: 0x6a7a3a },
+  { h: [1.5, 2.2], w: 1.0, tint: 0x3f5c24, trunk: 0x4a3e30 },
+  { h: [0.8, 1.6], w: 0.7, tint: 0x6f8f3a, trunk: 0x5a6a34 },
 ];
+// The tree species the land-cover scatter draws from; 9..11 are placed
+// by hand (riverbanks, field hedges, meadows) and never enter the leaf
+// field or the streamed tiles.
+const TREE_SPECIES = 9;
 // Seasons (src/seasons.js, WEATHER_UNIFORMS.seasonW), per species:
 //   pal:   crown colours, sRGB: spring, summer, autumn A, autumn B, winter
 //          (for the deciduous crowns: the bare twig mass);
@@ -44,29 +58,44 @@ const SPECIES = [
 //   bare:  share of crowns that drop their leaves: in winter they shrink to
 //          half size and turn twig-grey, so the trunks show;
 //   bloom: share of trees that blossom in spring (lime and fruit trees in
-//          the avenues, gardens and orchards).
+//          the avenues, gardens and orchards);
+//   phase: signed timing, -1 leads and +1 lags: an early species leafs out
+//          and turns before a late one (chestnut early, plane late).
 // Eucalyptus and the maritime pine stay green all year.
 const SEASON_CROWNS = [
-  { pal: [0x3c4d25, 0x334221, 0x34411f, 0x34411f, 0x2d3721], share: 1, bare: 0, bloom: 0 },
-  { pal: [0x56653f, 0x4d5a3a, 0x4d5a3a, 0x4b5839, 0x48533b], share: 1, bare: 0, bloom: 0 },
-  { pal: [0x587e38, 0x3c5625, 0xa87530, 0x874626, 0x5e5249], share: 1, bare: 1, bloom: 0.6 },
-  { pal: [0x607e33, 0x4a5829, 0x7e6a2e, 0x6a4a24, 0x524c36], share: 0.5, bare: 0.5, bloom: 0.4 },
-  { pal: [0x52722c, 0x33491f, 0x86682e, 0x684824, 0x4f473b], share: 0.4, bare: 0.4, bloom: 0.12 },
+  { pal: [0x3c4d25, 0x334221, 0x34411f, 0x34411f, 0x2d3721], share: 1, bare: 0, bloom: 0, phase: 0 },
+  { pal: [0x56653f, 0x4d5a3a, 0x4d5a3a, 0x4b5839, 0x48533b], share: 1, bare: 0, bloom: 0, phase: 0 },
+  { pal: [0x587e38, 0x3c5625, 0xa87530, 0x874626, 0x5e5249], share: 1, bare: 1, bloom: 0.6, phase: 0 },
+  { pal: [0x607e33, 0x4a5829, 0x7e6a2e, 0x6a4a24, 0x524c36], share: 0.5, bare: 0.5, bloom: 0.4, phase: 0 },
+  { pal: [0x52722c, 0x33491f, 0x86682e, 0x684824, 0x4f473b], share: 0.4, bare: 0.4, bloom: 0.12, phase: 0 },
+  { pal: [0x6f8f3a, 0x3f5c26, 0xb0802a, 0x94481f, 0x5b4c40], share: 1, bare: 1, bloom: 0.15, phase: -0.55 },
+  { pal: [0x6f9440, 0x466a2c, 0xc08a2a, 0x7d5a1e, 0x60544a], share: 1, bare: 1, bloom: 0.1, phase: 0.6 },
+  { pal: [0x7aa03c, 0x4e6f2c, 0xd0a52e, 0xa8701f, 0x5e5648], share: 1, bare: 1, bloom: 0.05, phase: -0.35 },
+  { pal: [0x8fae55, 0x5d7f43, 0xc4b055, 0x9a8a3a, 0x6d6a4e], share: 1, bare: 1, bloom: 0.05, phase: 0.5 },
+  { pal: [0x6f8a3c, 0x7d8a44, 0xb09a4a, 0x9a7f38, 0x7a6f48], share: 1, bare: 0, bloom: 0, phase: 0.2 },
+  { pal: [0x5f8434, 0x3f5c24, 0x5a6b2c, 0x4a5a24, 0x46512c], share: 0.6, bare: 0, bloom: 0, phase: 0.1 },
+  { pal: [0x7fae3e, 0x9aa83c, 0xb59a3e, 0x9a7a30, 0x6e6238], share: 1, bare: 0, bloom: 0, phase: -0.2 },
 ];
+// Land-cover mixes, species 0..8 (see the site rules below for how the
+// valley and the riverbanks tilt this farther). Row sums are 1.
 const MIX = {
-  forest: [0.14, 0.12, 0.04, 0.08, 0.62],
-  scrub: [0.04, 0.04, 0.12, 0.8, 0],
-  park: [0.18, 0.03, 0.55, 0.05, 0.19],
-  garden: [0.15, 0, 0.7, 0.15, 0],
-  orchard: [0, 0, 0.3, 0.7, 0],
-  grass: [0.2, 0.1, 0.7, 0, 0],
-  farmland: [0.1, 0.1, 0.8, 0, 0],
+  forest: [0.1, 0.1, 0.18, 0.06, 0.3, 0.1, 0.04, 0.06, 0.06],
+  scrub: [0.03, 0.03, 0.14, 0.62, 0, 0.06, 0.03, 0.05, 0.04],
+  park: [0.12, 0.03, 0.34, 0.05, 0.1, 0.1, 0.16, 0.05, 0.05],
+  garden: [0.1, 0, 0.4, 0.12, 0, 0.12, 0.12, 0.08, 0.06],
+  orchard: [0, 0, 0.3, 0.2, 0, 0.5, 0, 0, 0],
+  grass: [0.12, 0.06, 0.34, 0, 0, 0.18, 0.1, 0.12, 0.08],
+  farmland: [0.05, 0.05, 0.25, 0, 0, 0.25, 0.1, 0.15, 0.15],
 };
 // On the upper Penha slopes the maritime pine takes over from the
 // broadleaves; PINE_Y is the world height (0 at the city centre) where the
-// switch starts. Rock outcrops sit higher still.
+// switch starts. Rock outcrops sit higher still. Below VALLEY_Y the lower
+// slopes get the chestnut groves and the warm broadleaves; within
+// RIVER_REACH of a water line the osier willows and poplars line the bank.
 const PINE_Y = 38;
 const ROCK_Y = 55;
+const VALLEY_Y = 14;
+const RIVER_REACH = 9; // world units: 36 m either side of a water line
 const CELLS = SPECIES.length; // billboard atlas cells
 
 function lcg(seed) {
@@ -182,6 +211,38 @@ function cone(geos, cx, cy, cz, r, h, color, seed, seg = 8) {
   geos.push(g);
 }
 
+// A wildflower head: a tiny baked-colour blob that keeps its own hue against
+// the season (aCenter.w < 0: no tint, no winter shrink), for the meadows.
+function flower(geos, cx, cy, cz, r, hex, seed) {
+  const g = new THREE.IcosahedronGeometry(r, 0).toNonIndexed();
+  g.translate(cx, cy, cz);
+  const rnd = lcg(seed);
+  const p = g.attributes.position;
+  const n = new Float32Array(p.count * 3);
+  const c = new Float32Array(p.count * 3);
+  const col = new THREE.Color(hex);
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i) - cx;
+    const y = p.getY(i) - cy;
+    const z = p.getZ(i) - cz;
+    const l = Math.hypot(x, y, z) || 1;
+    n[i * 3] = x / l;
+    n[i * 3 + 1] = y / l;
+    n[i * 3 + 2] = z / l;
+    const shade = 0.8 + rnd() * 0.35;
+    c[i * 3] = col.r * shade;
+    c[i * 3 + 1] = col.g * shade;
+    c[i * 3 + 2] = col.b * shade;
+  }
+  g.setAttribute('normal', new THREE.BufferAttribute(n, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(c, 3));
+  g.setAttribute('aCrown', new THREE.BufferAttribute(new Float32Array(p.count), 1));
+  const ctr = new Float32Array(p.count * 4);
+  for (let i = 0; i < p.count; i++) ctr.set([cx, cy, cz, -1], i * 4);
+  g.setAttribute('aCenter', new THREE.BufferAttribute(ctr, 4));
+  geos.push(g);
+}
+
 // Trunks reach 0.25 (a quarter of the clump height) below the base, so on a
 // hillside the downhill trunks of a clump still meet the ground.
 const TRUNK_FOOT = 0.25;
@@ -256,7 +317,7 @@ function clumpGeometry(species) {
     crown(geos, 0.42, 0.30, 0.16, 0.34, 0.30, r() * 1e6, white);
     crown(geos, -0.3, 0.28, -0.36, 0.32, 0.28, r() * 1e6, white);
     crown(geos, 0.12, 0.20, -0.16, 0.24, 0.22, r() * 1e6, white);
-  } else {
+  } else if (species === 4) {
     // closed woodland: a varied, layered canopy patch on a disc; the trunks
     // are hidden under it, two short ones show at the edge
     const spots = [[0, 0, 1, 0.34, 0.28], [0.5, 0.18, 0.88, 0.30, 0.24], [-0.44, 0.3, 0.94, 0.28, 0.26], [0.12, 0.58, 0.8, 0.26, 0.24], [-0.24, -0.5, 0.9, 0.30, 0.26]];
@@ -265,6 +326,51 @@ function clumpGeometry(species) {
       crown(geos, x, h * 0.72, z, rx, ry, r() * 1e6, white);
       if (i === 0) crown(geos, x, h * 0.92, z, rx * 0.6, ry * 0.7, r() * 1e6, white);
     });
+  } else if (species === 5) {
+    // chestnut: a tall, slightly upright lobed crown on a broad trunk
+    trunk(geos, 0, 0, 0.5, 0.03, bark);
+    crown(geos, 0, 0.58, 0, 0.40, 0.32, r() * 1e6, white);
+    crown(geos, 0.15, 0.76, 0.08, 0.26, 0.2, r() * 1e6, white);
+    crown(geos, -0.19, 0.56, -0.13, 0.25, 0.2, r() * 1e6, white);
+    crown(geos, 0.0, 0.9, -0.03, 0.15, 0.13, r() * 1e6, white);
+  } else if (species === 6) {
+    // plane: broad, spreading, four wide lobes over a mottled trunk
+    trunk(geos, 0, 0, 0.42, 0.04, bark);
+    crown(geos, 0, 0.54, 0, 0.5, 0.3, r() * 1e6, white);
+    crown(geos, 0.27, 0.66, 0.1, 0.3, 0.21, r() * 1e6, white);
+    crown(geos, -0.3, 0.6, -0.12, 0.3, 0.21, r() * 1e6, white);
+    crown(geos, 0, 0.82, 0, 0.23, 0.17, r() * 1e6, white);
+  } else if (species === 7) {
+    // poplar: a fastigiate column of small, stacked crowns
+    trunk(geos, 0, 0, 0.55, 0.022, bark);
+    crown(geos, 0, 0.5, 0, 0.22, 0.33, r() * 1e6, white);
+    crown(geos, 0.05, 0.72, 0.03, 0.19, 0.27, r() * 1e6, white);
+    crown(geos, -0.04, 0.9, -0.02, 0.14, 0.19, r() * 1e6, white);
+    crown(geos, 0.02, 0.99, 0, 0.08, 0.12, r() * 1e6, white);
+  } else if (species === 8) {
+    // osier willow: a rounded crown with lower, drooping side lobes
+    trunk(geos, 0, 0, 0.4, 0.038, bark);
+    crown(geos, 0, 0.52, 0, 0.46, 0.34, r() * 1e6, white);
+    crown(geos, 0.3, 0.38, 0.14, 0.26, 0.28, r() * 1e6, white);
+    crown(geos, -0.3, 0.4, -0.1, 0.26, 0.28, r() * 1e6, white);
+    crown(geos, 0.05, 0.76, 0.02, 0.2, 0.17, r() * 1e6, white);
+  } else if (species === 9) {
+    // reed: a tight tuft of thin blades, tallest down the middle
+    const spots = [[0, 0], [0.1, 0.06], [-0.09, 0.05], [0.04, -0.1], [-0.06, -0.08]];
+    spots.forEach(([x, z], i) => cone(geos, x, 0.48 - i * 0.03, z, 0.035, 0.94 - i * 0.07, white, r() * 1e6, 4));
+  } else if (species === 10) {
+    // hedgerow: a low, dense, clipped run of lobes
+    crown(geos, 0, 0.27, 0, 0.5, 0.32, r() * 1e6, white);
+    crown(geos, 0.32, 0.25, 0.05, 0.32, 0.26, r() * 1e6, white);
+    crown(geos, -0.34, 0.23, -0.04, 0.32, 0.26, r() * 1e6, white);
+    crown(geos, 0.05, 0.3, 0.2, 0.26, 0.22, r() * 1e6, white);
+  } else {
+    // wildflower meadow: tall grass blades with a scatter of flower heads
+    const blades = [[0, 0], [0.12, 0.05], [-0.1, 0.07], [0.05, -0.11], [-0.06, -0.08], [0.16, -0.02], [-0.16, 0]];
+    blades.forEach(([x, z], i) => cone(geos, x, 0.44, z, 0.028, 0.88 - (i % 3) * 0.1, white, r() * 1e6, 4));
+    flower(geos, 0.14, 0.84, 0.04, 0.035, 0xe8c33a, r() * 1e6);
+    flower(geos, -0.12, 0.9, -0.06, 0.03, 0xeae7d0, r() * 1e6);
+    flower(geos, 0.02, 0.78, 0.12, 0.028, 0xd98a9a, r() * 1e6);
   }
   return merge(geos);
 }
@@ -350,6 +456,63 @@ function slopeAt(x, z, heightAt, step = 2) {
   return { gx, gz, slope: Math.hypot(gx, gz) / (2 * step) };
 }
 
+// River and stream centrelines as world segments, bucketed by a grid so the
+// scatter can ask "how far to the water" in constant-ish time. The bank
+// band around these picks the osier and the reeds.
+function waterSegments(data, project) {
+  const segs = [];
+  for (const l of data.lines || []) {
+    if (l.k !== 'river' && l.k !== 'stream') continue;
+    const w = ((l.w || 3) + 2) * S;
+    for (let i = 1; i < l.p.length; i++) {
+      const a = project(l.p[i - 1][0], l.p[i - 1][1]);
+      const b = project(l.p[i][0], l.p[i][1]);
+      segs.push({ ax: a.x, az: a.z, bx: b.x, bz: b.z, w });
+    }
+  }
+  return segs;
+}
+
+function segmentIndex(segs, cell = 32) {
+  const map = new Map();
+  const key = (i, j) => (i * 73856093) ^ (j * 19349663);
+  const put = (i, j, s) => {
+    const k = key(i, j);
+    const a = map.get(k);
+    if (a) a.push(s);
+    else map.set(k, [s]);
+  };
+  for (const s of segs) {
+    const x0 = Math.floor(Math.min(s.ax, s.bx) / cell);
+    const x1 = Math.floor(Math.max(s.ax, s.bx) / cell);
+    const z0 = Math.floor(Math.min(s.az, s.bz) / cell);
+    const z1 = Math.floor(Math.max(s.az, s.bz) / cell);
+    for (let i = x0; i <= x1; i++) for (let j = z0; j <= z1; j++) put(i, j, s);
+  }
+  return { map, cell, key };
+}
+
+function waterDist(index, x, z, reach) {
+  const { map, cell, key } = index;
+  const ci = Math.floor(x / cell);
+  const cj = Math.floor(z / cell);
+  let best = reach;
+  for (let di = -1; di <= 1; di++) {
+    for (let dj = -1; dj <= 1; dj++) {
+      const a = map.get(key(ci + di, cj + dj));
+      if (!a) continue;
+      for (const s of a) {
+        const vx = s.bx - s.ax;
+        const vz = s.bz - s.az;
+        const t = Math.max(0, Math.min(1, ((x - s.ax) * vx + (z - s.az) * vz) / (vx * vx + vz * vz || 1)));
+        const d = Math.hypot(x - (s.ax + vx * t), z - (s.az + vz * t));
+        if (d < best) best = d;
+      }
+    }
+  }
+  return best;
+}
+
 // Socalcos: the dry-stone terrace walls of the Minho hillside. A scatter of
 // small cultivated plots (lavradas) on the lower slopes below the sanctuary;
 // each plot is a fan of contour-following granite walls with a row of vines
@@ -431,7 +594,7 @@ function buildTerraces({ hills, heightAt, blocked, oc, OCC }) {
       oc.fill();
     }
   }
-  return { walls, rows };
+  return { walls, rows, polys };
 }
 
 // The terrace walls and vine rows of every plot, one merged mesh.
@@ -609,6 +772,66 @@ function billboardAtlas() {
     for (const [x, h, rx] of [[18, 0.72, 18], [40, 0.86, 20], [64, 1, 22], [88, 0.84, 20], [110, 0.74, 17]]) {
       stem(x, H, H - H * h * 0.5, 3, 105);
       blob(x, H - H * h * 0.68, rx, H * h * 0.3);
+    }
+  });
+  cell(5, () => {
+    // chestnut: a tall, slightly pointed lobed crown
+    stem(64, H, H - 52, 5, 110);
+    blob(64, H - 82, 38, 34);
+    blob(60, H - 108, 24, 20);
+    blob(84, H - 66, 24, 24);
+    blob(44, H - 64, 22, 22);
+  });
+  cell(6, () => {
+    // plane: a broad, spreading crown of wide lobes
+    stem(64, H, H - 42, 6, 115);
+    blob(64, H - 70, 48, 30);
+    blob(40, H - 56, 26, 24);
+    blob(90, H - 58, 26, 24);
+    blob(64, H - 100, 24, 18);
+  });
+  cell(7, () => {
+    // poplar: a fastigiate column
+    stem(64, H, H - 60, 4, 150);
+    blob(64, H - 58, 17, 40);
+    blob(64, H - 96, 14, 30);
+    blob(64, H - 122, 10, 20);
+  });
+  cell(8, () => {
+    // osier willow: rounded with lower drooping lobes
+    stem(64, H, H - 46, 6, 120);
+    blob(64, H - 74, 44, 34);
+    blob(38, H - 54, 24, 26);
+    blob(90, H - 56, 24, 26);
+    blob(64, H - 104, 22, 17);
+  });
+  cell(9, () => {
+    // reed: thin blades with a seed head
+    for (const [x, h] of [[52, 0.82], [64, 1], [76, 0.88], [58, 0.9], [70, 0.86]]) {
+      ctx.fillStyle = 'rgb(150,150,150)';
+      ctx.fillRect(x - 1, H - H * h, 2, H * h);
+      ctx.fillStyle = 'rgb(200,200,200)';
+      ctx.fillRect(x - 2, H - H * h - 8, 4, 9);
+    }
+  });
+  cell(10, () => {
+    // hedgerow: a low, wide clipped band
+    blob(40, H - 22, 30, 22);
+    blob(64, H - 26, 30, 24);
+    blob(88, H - 22, 30, 22);
+    blob(112, H - 20, 22, 20);
+  });
+  cell(11, () => {
+    // meadow: a low tuft with pale flower specks
+    for (const [x, h] of [[48, 0.5], [64, 0.62], [80, 0.55], [56, 0.58], [72, 0.52]]) {
+      ctx.fillStyle = 'rgb(140,140,140)';
+      ctx.fillRect(x - 1, H - H * h, 2, H * h);
+    }
+    ctx.fillStyle = 'rgb(235,235,235)';
+    for (const [x, y] of [[48, 0.5], [64, 0.62], [80, 0.55]]) {
+      ctx.beginPath();
+      ctx.arc(x, H - H * y - 4, 4, 0, 6.283);
+      ctx.fill();
     }
   });
   const tex = new THREE.CanvasTexture(cv);
@@ -812,6 +1035,11 @@ export function buildNature(opts) {
   const terraces = buildTerraces({ hills, heightAt, blocked, oc, OCC });
   if (terraces) occ = oc.getImageData(0, 0, ow, oh).data;
 
+  // ---- water lines, for the site rules and the riverbank scatter
+  const segs = waterSegments(data, project);
+  const waterGrid = segmentIndex(segs);
+  const inRect = (x, z) => x >= rect.x0 && x <= rect.x1 && z >= rect.zN && z <= rect.zS;
+
   // ---- scatter
   const boostAt = (x, z) => {
     let k = 1;
@@ -839,6 +1067,27 @@ export function buildNature(opts) {
   const rnd = lcg(20260928);
   const trees = []; // { x, y, z, h, rot, s, tint }
   const tint = new THREE.Color();
+  const samples = { 8: [], 9: [], 10: [], 11: [] };
+  const seen = { 8: 0, 9: 0, 10: 0, 11: 0 };
+  const addRecord = (s, x, z, hW, gy, o = {}) => {
+    tint.set(SPECIES[s].tint).multiplyScalar(0.8 + rnd() * 0.4);
+    tint.offsetHSL((rnd() - 0.5) * 0.03, 0, 0);
+    if (samples[s] && seen[s]++ % 8 === 0 && samples[s].length < 8) samples[s].push([Math.round(x), Math.round(z)]);
+    trees.push({
+      x,
+      // sink the base a little: the trunk foot stays in the ground on a slope
+      y: gy - Math.min(0.35, hW * 0.12),
+      z,
+      h: hW,
+      s,
+      rot: o.rot ?? rnd() * Math.PI * 2,
+      tint: [tint.r, tint.g, tint.b],
+      phase: rnd() * 6.283,
+      wx: o.wx ?? 0.84 + rnd() * 0.32,
+      wz: o.wz ?? 0.84 + rnd() * 0.32,
+      wy: o.wy ?? 0.92 + rnd() * 0.16,
+    });
+  };
   for (const a of cands) {
     const want = (budget * a.weight) / weightSum;
     let n = Math.floor(want) + (rnd() < want % 1 ? 1 : 0);
@@ -876,6 +1125,12 @@ export function buildNature(opts) {
       if (gy > PINE_Y) {
         const p = Math.min(0.8, (gy - PINE_Y) / 28);
         if ((s === 1 || s === 2 || s === 4) && rnd() < p) s = 0;
+      } else if (waterDist(waterGrid, x, z, RIVER_REACH) < RIVER_REACH) {
+        // the wet bank: osier willow and poplar take over from the oak
+        if (s === 2 || s === 5 || s === 6) s = rnd() < 0.68 ? 8 : 7;
+      } else if (gy < VALLEY_Y) {
+        // the lower valley: chestnut groves and warm broadleaves
+        if (s === 2 && rnd() < 0.35) s = 5 + Math.floor(rnd() * 3);
       }
       const sp = SPECIES[s];
       const hM = sp.h[0] + rnd() * (sp.h[1] - sp.h[0]);
@@ -886,27 +1141,172 @@ export function buildNature(opts) {
         continue;
       }
       grid.set(key(gi, gj), { x, z });
-      tint.set(sp.tint).multiplyScalar(0.8 + rnd() * 0.4);
-      tint.offsetHSL((rnd() - 0.5) * 0.03, 0, 0);
-      // per-instance squash: no two crowns share a width / height ratio
-      trees.push({
-        x,
-        // sink the base a little: the trunk foot stays in the ground on a slope
-        y: gy - Math.min(0.35, hM * S * 0.12),
-        z,
-        h: hM * S,
-        s,
-        rot: rnd() * Math.PI * 2,
-        tint: [tint.r, tint.g, tint.b],
-        phase: rnd() * 6.283,
-        wx: 0.84 + rnd() * 0.32,
-        wz: 0.84 + rnd() * 0.32,
-        wy: 0.92 + rnd() * 0.16,
-      });
+      addRecord(s, x, z, hM * S, gy);
       n--;
     }
   }
+
+  // ---- riverbank: reeds and osier right on the water, distinct from the
+  // upland wood. Each bank sample puts a reed tuft at the waterline and,
+  // now and then, an osier willow a little way back.
+  {
+    const step = 4.5; // world units between bank samples
+    const minD = 2.4;
+    const grid = new Map();
+    const key = (i, j) => (i * 73856093) ^ (j * 19349663);
+    const near = (x, z) => {
+      const gi = Math.floor(x / minD);
+      const gj = Math.floor(z / minD);
+      for (let di = -1; di <= 1; di++) {
+        for (let dj = -1; dj <= 1; dj++) {
+          const q = grid.get(key(gi + di, gj + dj));
+          if (q && Math.hypot(q.x - x, q.z - z) < minD) return true;
+        }
+      }
+      return false;
+    };
+    let reeds = 0;
+    let willows = 0;
+    for (const s of segs) {
+      const len = Math.hypot(s.bx - s.ax, s.bz - s.az);
+      if (len < 1) continue;
+      const tx = (s.bx - s.ax) / len;
+      const tz = (s.bz - s.az) / len;
+      const n = Math.max(1, Math.round(len / step));
+      for (let i = 0; i < n; i++) {
+        const t = (i + 0.5) / n;
+        const cx = s.ax + (s.bx - s.ax) * t;
+        const cz = s.az + (s.bz - s.az) * t;
+        const wide = rnd() < 0.28;
+        const off = s.w + (wide ? 3 + rnd() * 5 : 0.6 + rnd() * 2.2);
+        const side = rnd() < 0.5 ? -1 : 1;
+        const x = cx - tz * side * off;
+        const z = cz + tx * side * off;
+        if (!inRect(x, z) || blocked(x, z) || near(x, z)) continue;
+        grid.set(key(Math.floor(x / minD), Math.floor(z / minD)), { x, z });
+        const y = heightAt(x, z);
+        if (wide) {
+          addRecord(8, x, z, (7 + rnd() * 6) * S, y);
+          willows++;
+        } else {
+          addRecord(9, x, z, (1.4 + rnd()) * S, y);
+          reeds++;
+        }
+      }
+    }
+    stats.reeds = reeds;
+    stats.bankWillows = willows;
+  }
+
+  // ---- hedgerows: the Minho bouças, low clipped runs along field edges
+  // and around the socalcos plots, connecting them.
+  {
+    let hedges = 0;
+    const placed = new Map();
+    const key = (i, j) => (i * 73856093) ^ (j * 19349663);
+    const overlap = (x, z) => {
+      const gi = Math.floor(x / 3);
+      const gj = Math.floor(z / 3);
+      for (let di = -1; di <= 1; di++) {
+        for (let dj = -1; dj <= 1; dj++) {
+          const q = placed.get(key(gi + di, gj + dj));
+          if (q && Math.hypot(q.x - x, q.z - z) < 3.2) return true;
+        }
+      }
+      return false;
+    };
+    const mark = (x, z) => placed.set(key(Math.floor(x / 3), Math.floor(z / 3)), { x, z });
+    const hedgeLine = (x0, z0, x1, z1, guard) => {
+      const len = Math.hypot(x1 - x0, z1 - z0);
+      if (len < 5) return;
+      const hW = (1.5 + rnd() * 0.7) * S;
+      const segLen = hW * (3.4 + rnd() * 1.8);
+      const n = Math.max(1, Math.round(len / (segLen * 0.72)));
+      const rot = Math.atan2(-(z1 - z0), x1 - x0);
+      for (let i = 0; i < n; i++) {
+        const t = (i + 0.5) / n;
+        const x = x0 + (x1 - x0) * t;
+        const z = z0 + (z1 - z0) * t;
+        if (!inRect(x, z) || overlap(x, z)) continue;
+        if (guard && blocked(x, z)) continue;
+        mark(x, z);
+        addRecord(10, x, z, hW, heightAt(x, z), { rot, wx: segLen / hW, wz: 1.15, wy: 0.95 });
+        hedges++;
+      }
+    };
+    for (const poly of terraces?.polys || []) {
+      if (rnd() > 0.62) continue;
+      hedgeLine(poly[0].x, poly[0].z, poly[1].x, poly[1].z, false);
+      if (rnd() < 0.5) hedgeLine(poly[2].x, poly[2].z, poly[3].x, poly[3].z, false);
+    }
+    for (const a of cands) {
+      if (a.k !== 'farmland' && a.k !== 'grass') continue;
+      const ring = a.rings[0];
+      let cx = 0;
+      let cz = 0;
+      for (const p of ring) {
+        cx += p.x;
+        cz += p.z;
+      }
+      cx /= ring.length;
+      cz /= ring.length;
+      if (heightAt(cx, cz) > VALLEY_Y + 10 || rnd() > 0.34) continue;
+      const edges = [];
+      for (let i = 0; i < ring.length; i++) {
+        const p = ring[i];
+        const q = ring[(i + 1) % ring.length];
+        const l = Math.hypot(q.x - p.x, q.z - p.z);
+        if (l > 8 && l < 90) edges.push([p, q, l]);
+      }
+      edges.sort((u, v) => v[2] - u[2]);
+      for (const [p, q] of edges.slice(0, rnd() < 0.4 ? 2 : 1)) hedgeLine(p.x, p.z, q.x, q.z, true);
+    }
+    stats.hedges = hedges;
+  }
+
+  // ---- wildflower meadows: patches of taller grass and flowers on the
+  // lower slopes, in clumps so they read as meadows, not a finer scatter.
+  {
+    let meadows = 0;
+    for (const a of cands) {
+      if (a.k !== 'grass' && a.k !== 'farmland') continue;
+      const ring = a.rings[0];
+      let cx = 0;
+      let cz = 0;
+      for (const p of ring) {
+        cx += p.x;
+        cz += p.z;
+      }
+      cx /= ring.length;
+      cz /= ring.length;
+      if (heightAt(cx, cz) > VALLEY_Y + 8 || rnd() > 0.3) continue;
+      const xs = ring.map((p) => p.x);
+      const zs = ring.map((p) => p.z);
+      const bx1 = Math.max(...xs);
+      const bx0 = Math.min(...xs);
+      const bz1 = Math.max(...zs);
+      const bz0 = Math.min(...zs);
+      const patches = 1 + (rnd() < 0.4 ? 1 : 0);
+      for (let k = 0; k < patches; k++) {
+        const px = cx + (rnd() - 0.5) * (bx1 - bx0) * 0.5;
+        const pz = cz + (rnd() - 0.5) * (bz1 - bz0) * 0.5;
+        const rad = 6 + rnd() * 10;
+        const count = 10 + Math.floor(rnd() * 16);
+        for (let i = 0; i < count; i++) {
+          const ang = rnd() * 6.283;
+          const rr = Math.sqrt(rnd()) * rad;
+          const x = px + Math.cos(ang) * rr;
+          const z = pz + Math.sin(ang) * rr;
+          if (!inRect(x, z) || !inRings(x, z, a.rings) || blocked(x, z)) continue;
+          addRecord(11, x, z, (0.8 + rnd() * 0.8) * S, heightAt(x, z));
+          meadows++;
+        }
+      }
+    }
+    stats.meadows = meadows;
+  }
   stats.trees = trees.length;
+  stats.samples = samples;
 
   // ---- tree meshes (near) and billboards (far)
   const bySpecies = SPECIES.map(() => []);
@@ -1172,6 +1572,7 @@ function buildLeafField(trees, rect, heightAt) {
   const cnt = new Float32Array(n * 4);
   const hgt = new Float32Array(n * 4);
   for (const t of trees) {
+    if (t.s >= TREE_SPECIES) continue; // understory never seeds the leaf field
     const i = Math.floor((t.x - rect.x0) / FIELD_UNIT);
     const j = Math.floor((t.z - rect.zN) / FIELD_UNIT);
     if (i < 0 || j < 0 || i >= w || j >= h) continue;
@@ -1253,7 +1654,7 @@ function seasonUniforms(s) {
   speciesUniforms[s] = {
     uPal: { value: sc.pal.map((h) => new THREE.Color(h)) },
     uBase: { value: new THREE.Color(SPECIES[s].tint) },
-    uKind: { value: new THREE.Vector3(sc.share, sc.bare, sc.bloom) },
+    uKind: { value: new THREE.Vector4(sc.share, sc.bare, sc.bloom, sc.phase || 0) },
   };
   return speciesUniforms[s];
 }
@@ -1263,7 +1664,7 @@ function seasonUniforms(s) {
 const TREE_VERT_PARS = /* glsl */ `
 uniform float uTime;
 uniform vec4 seasonW;
-uniform vec3 uKind; // x palette share, y bare share, z bloom share
+uniform vec4 uKind; // x palette share, y bare share, z bloom share, w timing phase
 attribute vec4 aCenter;
 float tHash(vec2 p) {
   vec3 q = fract(vec3(p.xyx) * 0.1031);
@@ -1282,8 +1683,10 @@ float tHC = fract(tHI * 7.31 + aCenter.w * 3.17);
 float tCrown = step(0.0, aCenter.w);
 float tPal = tCrown * step(tHC, uKind.x);
 float tBare = tCrown * step(tHC, uKind.y);
+// bare crowns wait longer in late species
+float tBareW = clamp(seasonW.w - clamp(uKind.w, 0.0, 1.0) * 0.25, 0.0, 1.0);
 // winter: bare crowns shrink to a twig mass; autumn thins them a little
-transformed = mix(transformed, aCenter.xyz, tBare * (seasonW.w * 0.5 + seasonW.z * 0.08));
+transformed = mix(transformed, aCenter.xyz, tBare * (tBareW * 0.5 + seasonW.z * 0.08));
 // wind: the crown sways, more toward the top; phase from the position
 float sway = sin(uTime * 1.3 + wp.x * 0.05 + wp.y * 0.07) + 0.4 * sin(uTime * 2.9 + wp.y * 0.11);
 float bend = position.y * position.y * 0.035;
@@ -1291,7 +1694,9 @@ transformed.x += sway * bend;
 transformed.z += sway * bend * 0.6;
 `;
 // Crown colour for the season, resolved from the authored palette every
-// frame (never from last frame's colour, so nothing drifts).
+// frame (never from last frame's colour, so nothing drifts). A per-species
+// phase leads or lags the global weights, so the chestnut turns before the
+// plane and the osier leafs out last.
 const TREE_SEASON_COLOR = /* glsl */ `
 {
   vec3 vary = aTint / max(uBase, vec3(1e-3)); // this tree's own variation
@@ -1300,7 +1705,10 @@ const TREE_SEASON_COLOR = /* glsl */ `
   vec3 cFall = mix(uPal[2], uPal[3], fract(tHC * 5.3 + tHI));
   // one tree in six turns late: still half green
   cFall = mix(cFall, mix(cSum, uPal[2], 0.5), step(0.83, fract(tHI * 13.7)));
-  vec3 own = seasonW.x * uPal[0] + seasonW.y * cSum + seasonW.z * cFall + seasonW.w * uPal[4];
+  float ph = clamp(uKind.w, -1.0, 1.0);
+  vec4 lw = vec4(max(seasonW.x - ph * 0.32, 0.0), seasonW.y, max(seasonW.z - ph * 0.30, 0.0), seasonW.w);
+  lw /= max(lw.x + lw.y + lw.z + lw.w, 1e-3);
+  vec3 own = lw.x * uPal[0] + lw.y * cSum + lw.z * cFall + lw.w * uPal[4];
   vec3 leaf = mix(ever, own, tPal) * vary;
   // spring blossom: whole trees, in specks over the crown
   float bloom = step(tHI, uKind.z) * seasonW.x * aCrown;
@@ -1384,7 +1792,7 @@ function billboardMaterial(uniforms, atlas) {
       uniform vec4 seasonW;
       uniform vec3 uBPal[${CELLS * 5}];
       uniform vec3 uBBase[${CELLS}];
-      uniform vec3 uBKind[${CELLS}];
+      uniform vec4 uBKind[${CELLS}];
       attribute vec4 aInst;
       attribute vec4 aInfo;
       attribute vec3 aTint;
@@ -1401,17 +1809,20 @@ function billboardMaterial(uniforms, atlas) {
       vec3 seasonTint(int s, vec3 tint, vec3 base) {
         float h = bHash(aInst.xz * 0.37 + 0.11);
         float hc = fract(h * 7.31 + 1.7);
-        vec3 k = uBKind[s];
+        vec4 k = uBKind[s];
         float pal = step(hc, k.x);
         vec3 cSum = uBPal[s * 5 + 1];
         vec3 ever = cSum * (seasonW.x * vec3(1.06, 1.1, 1.0) + vec3(seasonW.y) + seasonW.z * vec3(1.0, 0.97, 0.92) + seasonW.w * vec3(0.86, 0.88, 0.9));
         vec3 cFall = mix(uBPal[s * 5 + 2], uBPal[s * 5 + 3], fract(hc * 5.3 + h));
         cFall = mix(cFall, mix(cSum, uBPal[s * 5 + 2], 0.5), step(0.83, fract(h * 13.7)));
-        vec3 own = seasonW.x * uBPal[s * 5] + seasonW.y * cSum + seasonW.z * cFall + seasonW.w * uBPal[s * 5 + 4];
+        float ph = clamp(k.w, -1.0, 1.0);
+        vec4 lw = vec4(max(seasonW.x - ph * 0.32, 0.0), seasonW.y, max(seasonW.z - ph * 0.30, 0.0), seasonW.w);
+        lw /= max(lw.x + lw.y + lw.z + lw.w, 1e-3);
+        vec3 own = lw.x * uBPal[s * 5] + lw.y * cSum + lw.z * cFall + lw.w * uBPal[s * 5 + 4];
         vec3 c = mix(ever, own, pal) * tint / max(base, vec3(1e-3));
         float bloom = step(h, k.z) * seasonW.x;
         c = mix(c, vec3(0.84, 0.66, 0.7), bloom * 0.45);
-        vBare = step(hc, k.y) * seasonW.w;
+        vBare = step(hc, k.y) * clamp(seasonW.w - clamp(k.w, 0.0, 1.0) * 0.25, 0.0, 1.0);
         return c;
       }
       void main() {

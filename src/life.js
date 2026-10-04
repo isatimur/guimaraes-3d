@@ -984,36 +984,58 @@ function buildFountains({ project, heightAt, items, mobile }) {
     emitters.push({ ...f, site, x: qx, z: qz, y: top + (spout ? 0.9 * S : 0.05), spout, h: f.h ?? 1.6, r: f.r ?? 1.1 });
   }
   // particles per emitter
-  const counts = emitters.map((e) => (e.spout ? 40 : e.id === 'praca-republica' ? 520 : e.h >= 2.4 ? 260 : e.h >= 1.7 ? 190 : 140));
+  const counts = emitters.map((e) => (e.spout ? 40 : e.id === 'praca-republica' ? 520 : e.h >= 2.4 ? 360 : e.h >= 1.7 ? 260 : 140));
   const scale = mobile ? 0.5 : 1;
   const total = counts.reduce((s, n) => s + Math.round(n * scale), 0);
   const O = new Float32Array(total * 3);
   const Vv = new Float32Array(total * 3);
   const T = new Float32Array(total * 3); // life, phase, site
+  const K = new Float32Array(total); // 0 jet, 1 splash ring, 2 mist
   const rnd = lcg(4242);
   let k = 0;
   emitters.forEach((e, ei) => {
     const n = Math.round(counts[ei] * scale);
     const si = SITES.indexOf(e.site);
     for (let i = 0; i < n; i++) {
-      let vx;
-      let vy;
-      let vz;
+      let vx = 0;
+      let vy = 0;
+      let vz = 0;
       let ox = e.x;
       let oz = e.z;
+      let kind = 0;
       if (e.spout) {
         // a small arc forward into the basin below the spout
         const v = (0.9 + rnd() * 0.4) * S;
         vx = down.x * v + (rnd() - 0.5) * 0.15 * S;
         vz = down.z * v + (rnd() - 0.5) * 0.15 * S;
         vy = (0.2 + rnd() * 0.3) * S;
+      } else if (e.id !== 'praca-republica' && i % 11 === 0) {
+        // mist: slow, soft puffs drifting above the basin
+        kind = 2;
+        const a = rnd() * Math.PI * 2;
+        const rr = e.r * S * (0.2 + 0.8 * rnd());
+        ox += Math.cos(a) * rr;
+        oz += Math.sin(a) * rr;
+        vx = (rnd() - 0.5) * 0.12 * S;
+        vz = (rnd() - 0.5) * 0.12 * S;
+        vy = (0.18 + 0.28 * rnd()) * S;
+      } else if (e.id !== 'praca-republica' && i % 7 === 0) {
+        // splash ring: fine droplets skimming out over the surface
+        kind = 1;
+        const a = rnd() * Math.PI * 2;
+        const rr = e.r * 1.5 * S;
+        vx = (Math.cos(a) * rr) / 0.75;
+        vz = (Math.sin(a) * rr) / 0.75;
+        vy = (0.05 + 0.08 * rnd()) * S;
       } else {
-        // the central jet; on the Praça also a ring of jets leaning inward
+        // the central jet; the two fountains also throw side arcs, and on the
+        // Praça a ring of jets leans inward
         const ring = e.id === 'praca-republica' && i % 3 === 0;
-        const h = (ring ? 1.6 : e.h) * S * (0.75 + 0.25 * rnd());
+        const arc = !ring && e.id !== 'praca-republica' && i % 2 === 0;
+        const h = (ring ? 1.6 : arc ? e.h * 0.5 : e.h) * S * (0.75 + 0.25 * rnd());
         const v0 = Math.sqrt(2 * GRAVITY * h);
         const flight = (2 * v0) / GRAVITY;
-        const ang = rnd() * Math.PI * 2;
+        const ang = arc ? i * 2.399963 : rnd() * Math.PI * 2;
         if (ring) {
           const rr = e.r * 0.62 * S;
           ox += Math.cos(ang) * rr;
@@ -1021,6 +1043,14 @@ function buildFountains({ project, heightAt, items, mobile }) {
           const inward = (rr * 0.7) / flight;
           vx = -Math.cos(ang) * inward;
           vz = -Math.sin(ang) * inward;
+        } else if (arc) {
+          // leaves the nozzle already leaning out, so the arcs read as side
+          // jets rather than a wider central plume
+          const rr = e.r * 2.0 * S;
+          ox += Math.cos(ang) * e.r * 0.22 * S;
+          oz += Math.sin(ang) * e.r * 0.22 * S;
+          vx = (Math.cos(ang) * rr) / flight;
+          vz = (Math.sin(ang) * rr) / flight;
         } else {
           const spread = ((e.r * 0.5 * S) / flight) * Math.sqrt(rnd());
           vx = Math.cos(ang) * spread;
@@ -1028,10 +1058,11 @@ function buildFountains({ project, heightAt, items, mobile }) {
         }
         vy = v0;
       }
-      const life = e.spout ? 0.9 : (2 * vy) / GRAVITY + 0.12;
+      const life = kind === 1 ? 0.75 : kind === 2 ? 1.1 + rnd() * 0.6 : e.spout ? 0.9 : (2 * vy) / GRAVITY + 0.12;
       O.set([ox, e.y, oz], k * 3);
       Vv.set([vx, vy, vz], k * 3);
       T.set([life, rnd(), si], k * 3);
+      K[k] = kind;
       k++;
     }
   });
@@ -1039,6 +1070,7 @@ function buildFountains({ project, heightAt, items, mobile }) {
   geo.setAttribute('position', new THREE.BufferAttribute(O, 3));
   geo.setAttribute('aVel', new THREE.BufferAttribute(Vv, 3));
   geo.setAttribute('aLife', new THREE.BufferAttribute(T, 3));
+  geo.setAttribute('aKind', new THREE.BufferAttribute(K, 1));
   const uniforms = {
     uLifeTime: LIFE_UNIFORMS.uLifeTime,
     uHeight: { value: 900 },
@@ -1057,20 +1089,27 @@ function buildFountains({ project, heightAt, items, mobile }) {
       uniform float uHide[${SITES.length}];
       attribute vec3 aVel;
       attribute vec3 aLife;
+      attribute float aKind;
       varying float vA;
       void main() {
         float life = aLife.x;
         float age = mod(uLifeTime + aLife.y * life, life);
-        vec3 p = position + aVel * age - vec3(0.0, 0.5 * uG * age * age, 0.0);
+        // splash rings skim the surface (no gravity); mist barely falls
+        float grav = uG * (aKind > 1.5 ? 0.12 : (aKind > 0.5 ? 0.0 : 1.0));
+        vec3 p = position + aVel * age - vec3(0.0, 0.5 * grav * age * age, 0.0);
         vec4 mv = viewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
         float d = -mv.z;
         float hide = 0.0;
         for (int i = 0; i < ${SITES.length}; i++) if (abs(aLife.z - float(i)) < 0.5) hide = uHide[i];
-        // droplets of about 12 cm, 1 .. 4.5 px
-        gl_PointSize = hide > 0.5 ? 0.0 : clamp(0.03 * projectionMatrix[1][1] * uHeight * 0.5 / d, 1.0, 4.5);
+        // droplets of about 12 cm; mist puffs are larger and softer
+        float px = 0.03 * projectionMatrix[1][1] * uHeight * 0.5 / d;
+        if (aKind > 1.5) px *= 2.4;
+        else if (aKind > 0.5) px *= 0.7;
+        gl_PointSize = hide > 0.5 ? 0.0 : clamp(px, 1.0, aKind > 1.5 ? 9.0 : 4.5);
         float k = age / life;
-        vA = (1.0 - smoothstep(0.75, 1.0, k)) * smoothstep(0.0, 0.05, k) * (1.0 - smoothstep(300.0, 700.0, d));
+        float alphaK = aKind > 1.5 ? 0.3 : (aKind > 0.5 ? 0.6 : 1.0);
+        vA = (1.0 - smoothstep(0.75, 1.0, k)) * smoothstep(0.0, 0.05, k) * (1.0 - smoothstep(300.0, 700.0, d)) * alphaK;
       }`,
     fragmentShader: /* glsl */ `
       uniform vec3 uColor;
