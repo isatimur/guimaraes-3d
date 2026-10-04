@@ -220,7 +220,7 @@ async function start() {
   const city = buildBuildings(buildings, project, heightAt, {
     outlines: outlines.filter(Boolean),
     plans: fits.filter((f) => !f.fallback).map((f) => f.plan),
-  });
+  }, { tileM: LITE ? 2000 : 0 }); // lite: larger core tiles -> fewer draw calls
   scene.add(city.group);
   debug.buildings = city.stats;
   mark('buildings');

@@ -489,4 +489,11 @@
 {"id":"w1374797159","name":"","kind":"toilets","lat":41.43983,"lon":-8.30431},
 {"id":"w1374797182","name":"","kind":"toilets","lat":41.44096,"lon":-8.30202},
 {"id":"w334526786","name":"","kind":"toilets","lat":41.44693,"lon":-8.28021},
-{"id":"w343674319","name":"","kind":"toilets","lat":41.42643,"lon":-8.26763}]}
+{"id":"w343674319","name":"","kind":"toilets","lat":41.42643,"lon":-8.26763},
+{"id":"curated-plataforma-artes","name":"Plataforma das Artes e da Criatividade","kind":"museum","lat":41.443,"lon":-8.29765},
+{"id":"curated-vila-flor","name":"Centro Cultural Vila Flor","kind":"museum","lat":41.43732,"lon":-8.29505},
+{"id":"curated-dona-julia","name":"Restaurante Dona Júlia","kind":"restaurant","lat":41.44221,"lon":-8.29568,"cuisine":"regional"},
+{"id":"curated-miradouro-castelo","name":"Miradouro do Castelo","kind":"viewpoint","lat":41.44785,"lon":-8.29045},
+{"id":"curated-miradouro-penha","name":"Miradouro da Penha","kind":"viewpoint","lat":41.4318,"lon":-8.26985},
+{"id":"curated-miradouro-santa-marinha","name":"Miradouro de Santa Marinha","kind":"viewpoint","lat":41.44295,"lon":-8.2766},
+{"id":"curated-turismo-sao-tiago","name":"Posto de Informação Turística de São Tiago","kind":"information","lat":41.44336,"lon":-8.29689}]}

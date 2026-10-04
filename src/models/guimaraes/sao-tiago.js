@@ -80,6 +80,20 @@ function saoTiago(k, { footprint, dims }) {
     k.prism(offset(p.pts, 0.18), -1.2, 3.4, G);
     polyCornice(k, p.pts, eave - 0.5, corniceProfile('eave', 0.5), GL, { minLen: 2 });
     k.hipRoof(b.w - 0.4, b.d - 0.4, rise, 'terracotta', b.cx, eave, b.cz, { over: 0.6, mat: MAT.tile });
+    // ridge tiles along the longer axis and a couple of chimneys
+    const alongX = b.w >= b.d;
+    const rl = alongX ? b.w - 0.8 : b.d - 0.8;
+    for (let u = -rl / 2 + 0.6; u < rl / 2 - 0.4; u += 1.3) {
+      if (alongX) k.box(1.05, 0.16, 0.5, 'terracotta', b.cx + u, eave + rise - 0.05, b.cz);
+      else k.box(0.5, 0.16, 1.05, 'terracotta', b.cx, eave + rise - 0.05, b.cz + u);
+    }
+    for (const s of [-1, 1]) {
+      const chx = b.cx + (alongX ? s * b.w * 0.32 : s * b.w * 0.18);
+      const chz = b.cz + (alongX ? s * b.d * 0.22 : s * b.d * 0.3);
+      k.box(0.9, 1.7, 0.9, 'plaster', chx, eave + 0.2, chz);
+      k.box(1.15, 0.28, 1.15, GL, chx, eave + 1.9, chz);
+      k.cyl(0.16, 0.2, 0.4, 6, 'terracotta', chx, eave + 2.18, chz);
+    }
     const fe = facadeEdge(p.pts, dir);
     if (!fe) continue;
     k.push({ x: fe.mx, y: 0, z: fe.mz, ry: fe.ry });
@@ -90,6 +104,16 @@ function saoTiago(k, { footprint, dims }) {
       k.arcade(fe.len, 3.4, 0.5, n, (fe.len / n) * 0.68, 2.9, G, 0, 0, 0.14, { mat: MAT.ashlar });
       k.box(fe.len - 0.6, 2.9, 0.2, 'dark', 0, 0, -0.22);
       k.box(fe.len, 0.4, 0.7, GL, 0, 3.4, 0.16);
+      // pier capitals and keystones, then a moulded arch band
+      for (let i = 0; i <= n; i++) {
+        const u = -fe.len / 2 + (i * fe.len) / n;
+        k.box(0.62, 0.34, 0.62, GL, u, 2.52, 0.1, { mat: MAT.ashlar });
+      }
+      for (let i = 0; i < n; i++) {
+        const u = -fe.len / 2 + ((i + 0.5) * fe.len) / n;
+        k.box(0.34, 0.4, 0.28, GL, u, 2.95, 0.2, { mat: MAT.ashlar });
+      }
+      k.box(fe.len, 0.22, 0.34, GL, 0, 3.1, 0.16, { mat: MAT.ashlar });
     } else {
       // a plain shop/portal door
       k.box(1.1, 2.9, 0.16, GL, 0, 0.1, 0.16);
@@ -110,6 +134,10 @@ function saoTiago(k, { footprint, dims }) {
         shuttered(k, u, y, 1.15, 1.65, 0.14, { balcony: bal, emit: k.rnd() > 0.7 ? 0.22 : 0.08, shutters: !bal });
       }
     }
+    // a wrought-iron wall lantern on the facade axis
+    k.box(0.1, 0.5, 0.1, 'iron', 0, 3.85, 0.34);
+    k.box(0.26, 0.34, 0.26, 'window', 0, 4.25, 0.46, { emit: 0.85, mat: MAT.flat });
+    k.cone(0.2, 0.16, 4, 'iron', 0, 4.6, 0.46);
     k.pop();
     // the side and back walls get cheap punched windows, unlit
     punchedWindows(k, p.pts, 0, {
@@ -136,6 +164,12 @@ function saoTiago(k, { footprint, dims }) {
     k.cyl(0.32, 0.42, 1.5, 8, G, fx, 0.55, fz);
     k.lathe(PROFILES.basin, 10, GL, fx, 1.9, fz, { sr: 0.85, sh: 0.7, smooth: true });
     k.cyl(0.1, 0.16, 0.9, 6, 'water', fx, 2.5, fz, { emit: 0.5 });
+    // four bronze spouts on the pedestal and a coping ring on the basin
+    for (let i = 0; i < 4; i++) {
+      const a = (i * Math.PI) / 2 + Math.PI / 4;
+      k.cyl(0.07, 0.09, 0.9, 5, 'bronze', fx + Math.cos(a) * 0.5, 0.9, fz + Math.sin(a) * 0.5, { rx: 0.5 * Math.sin(a), rz: 0.5 * Math.cos(a) });
+    }
+    k.cyl(1.95, 1.98, 0.18, 8, GL, fx, 0.42, fz);
     k.marker('fountain', fx, 0.5, fz, { kind: 'jet', r: 1.65, jet: 2.2 });
   }
 }

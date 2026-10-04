@@ -84,6 +84,9 @@ function alberto(k, { footprint, dims }) {
     [[gx0, gz0], [gx1, gz0]], [[gx1, gz0], [gx1, gz1]],
     [[gx1, gz1], [gx0, gz1]], [[gx0, gz1], [gx0, gz0]],
   ]) leanTo(k, a, bb, eave - 2.6, eave - 0.2, 2.2);
+  // ridge tiles on the two long ranges (hip ridge runs along the long side)
+  for (let x = 10.6 - 10; x <= 10.6 + 10; x += 1.25) k.box(1.05, 0.16, 0.5, 'terracotta', x, eave + 2.45, 14.0);
+  for (let x = -20.7 - 5; x <= -20.7 + 5; x += 1.25) k.box(1.05, 0.16, 0.5, 'terracotta', x, eave + 2.45, -19.3);
 
   // ---- cloister garth: gravel, cross parterre, statue
   k.box(gx1 - gx0 + 0.2, 0.16, gz1 - gz0 + 0.2, 'sand', gcx, 0, gcz, { mat: MAT.smooth });
@@ -107,13 +110,25 @@ function alberto(k, { footprint, dims }) {
     const n = Math.max(2, Math.round(len / 2.6));
     k.push({ x: cx, z: cz, ry: s.ry });
     k.arcade(len, 3.9, 0.5, n, (len / n) * 0.66, 2.9, L, 0, 0, 0, { mat: MAT.ashlar });
-    // piers between the arches
-    for (let i = 0; i <= n; i++) k.box(0.55, 3.9, 0.7, D, -len / 2 + (i * len) / n, 0, 0.05);
+    // recessed walkway behind the arches
+    k.box(len, 3.6, 0.2, 'dark', 0, 0, -0.5);
+    // piers between the arches, each a pair of Romanesque columns on a base
+    // with a carved capital and a moulded abacus
+    for (let i = 0; i <= n; i++) {
+      const u = -len / 2 + (i * len) / n;
+      k.box(0.7, 0.45, 0.8, D, u, 0, 0.1, { mat: MAT.ashlar });
+      k.box(1.0, 0.3, 0.95, L, u, 3.55, 0.08, { mat: MAT.ashlar });
+      for (const d of [-1, 1]) {
+        k.cyl(0.2, 0.23, 2.9, 8, L, u + d * 0.2, 0.45, 0.12, { smooth: true });
+        k.cyl(0.28, 0.2, 0.32, 8, T, u + d * 0.2, 3.35, 0.12, { smooth: true });
+      }
+    }
     // upper gallery: a framed window over each bay
     for (let i = 0; i < n; i++) {
       const u = -len / 2 + ((i + 0.5) * len) / n;
       k.box(1.9, 2.5, 0.14, G, u, 4.6, -0.02);
       k.box(1.3, 2.0, 0.08, 'glass', u, 4.9, 0.06, { emit: 0.12 });
+      k.box(2.2, 0.22, 0.3, L, u, 7.0, 0.02, { mat: MAT.ashlar });
     }
     k.pop();
   }

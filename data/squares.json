@@ -64,5 +64,57 @@
         [41.442927, -8.292641, 300, 3]
       ]
     }
+  ],
+  "monuments": [
+    { "id": "afonso-henriques", "kind": "statue", "lat": 41.4469079, "lon": -8.2917358, "rot": 0.35, "name": "D. Afonso Henriques" },
+    { "id": "mumadona-dias", "kind": "statue", "lat": 41.4450176, "lon": -8.2908616, "rot": -0.5, "name": "Condessa Mumadona Dias" },
+    { "id": "martins-sarmento", "kind": "bust", "lat": 41.4455457, "lon": -8.2928757, "rot": 0.2, "name": "Busto de Martins Sarmento" },
+    { "id": "colina-sagrada", "kind": "padrao", "lat": 41.44757, "lon": -8.29092, "rot": 0.1, "h": 4.6, "name": "Padrão da Colina Sagrada" }
+  ],
+  "flags": [
+    { "lat": 41.44755, "lon": -8.29098, "country": "pt", "rot": 0.1 },
+    { "lat": 41.44749, "lon": -8.29083, "country": "pt", "rot": 0.1 },
+    { "lat": 41.44743, "lon": -8.29068, "country": "pt", "rot": 0.1 },
+    { "lat": 41.44762, "lon": -8.2911, "country": "guimaraes", "rot": 0.1 },
+    { "lat": 41.44683, "lon": -8.29158, "country": "pt", "rot": -0.4 },
+    { "lat": 41.44698, "lon": -8.2919, "country": "guimaraes", "rot": -0.4 }
+  ],
+  "stalls": [
+    { "lat": 41.4414, "lon": -8.29578, "rot": 1.5 },
+    { "lat": 41.44147, "lon": -8.29566, "rot": 1.5 },
+    { "lat": 41.44154, "lon": -8.29554, "rot": 1.5 },
+    { "lat": 41.44161, "lon": -8.29542, "rot": 1.5 },
+    { "lat": 41.44358, "lon": -8.29335, "rot": 1.5 },
+    { "lat": 41.44355, "lon": -8.29315, "rot": 1.5 },
+    { "lat": 41.44352, "lon": -8.29295, "rot": 1.5 }
+  ],
+  "kiosks": [
+    { "lat": 41.4438653, "lon": -8.2969924, "rot": 0.2, "name": "Tabacaria Airosa" },
+    { "lat": 41.4413054, "lon": -8.2936497, "rot": -0.3, "name": "Quiosque das Escadinhas" }
+  ],
+  "planters": [
+    { "lat": 41.4446449, "lon": -8.2901297, "rot": 0.2 },
+    { "lat": 41.4445688, "lon": -8.2901081, "rot": 0.0 },
+    { "lat": 41.4445056, "lon": -8.2900855, "rot": 0.0 },
+    { "lat": 41.4444411, "lon": -8.2901014, "rot": -0.2 },
+    { "lat": 41.442, "lon": -8.29574, "rot": 1.5 },
+    { "lat": 41.44196, "lon": -8.29554, "rot": 1.5 },
+    { "lat": 41.44192, "lon": -8.29534, "rot": 1.5 },
+    { "lat": 41.44344, "lon": -8.29342, "rot": 1.5 },
+    { "lat": 41.4434, "lon": -8.29304, "rot": 1.5 },
+    { "lat": 41.44298, "lon": -8.29285, "rot": 1.5 },
+    { "lat": 41.44288, "lon": -8.29267, "rot": 1.5 }
+  ],
+  "columns": [
+    { "lat": 41.4417, "lon": -8.2955, "rot": 0 },
+    { "lat": 41.44344, "lon": -8.29325, "rot": 0 },
+    { "lat": 41.44294, "lon": -8.29273, "rot": 0 }
+  ],
+  "signs": [
+    { "lat": 41.44746, "lon": -8.29072, "rot": 0.1 },
+    { "lat": 41.44678, "lon": -8.29165, "rot": 1.4 },
+    { "lat": 41.44198, "lon": -8.2958, "rot": 1.5 },
+    { "lat": 41.44347, "lon": -8.29318, "rot": 1.5 },
+    { "lat": 41.4429, "lon": -8.29278, "rot": 1.5 }
   ]
 }

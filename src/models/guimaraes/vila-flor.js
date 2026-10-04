@@ -78,8 +78,22 @@ function vilaFlor(k, { footprint, dims }) {
   pediment(k, 5.6, 1.5, 0.5, GL, 0, 5.4, 0.3, { frame: 0.28 });
   cartouche(k, 1.5, 1.7, 0.3, GL, 0, 7.3, 0.5);
   k.pop();
+  // long-and-short granite quoins on the two front corners
+  for (const cx of [ob.x0, ob.x1]) {
+    for (let c = 0; c < 8; c++) k.box(c % 2 ? 1.0 : 0.55, 0.72, 0.5, GL, cx, 0.55 + c * 0.8, ob.z1 + 0.24, { jit: 0.05 });
+  }
   // hipped tile roof and the parapet of statues along both long fronts
   k.hipRoof(ob.w - 0.6, ob.d - 1.0, 2.4, 'terracotta', 0, eave, 0, { over: 0.7, mat: MAT.tile });
+  // dormers on the north and south roof slopes, each with a small pediment
+  for (let i = -2; i <= 2; i++) {
+    for (const sz of [1, -1]) {
+      const dz = sz * (ob.d * 0.3);
+      k.box(1.5, 1.5, 1.1, 'plaster', i * (ob.w / 5), eave + 0.7, dz);
+      k.box(1.7, 0.2, 1.3, GL, i * (ob.w / 5), eave + 2.2, dz);
+      k.box(0.9, 0.8, 0.1, 'glass', i * (ob.w / 5), eave + 1.1, dz + sz * 0.58, { emit: 0.14 });
+      k.box(1.4, 0.2, 0.7, GL, i * (ob.w / 5), eave + 2.4, dz + sz * 0.35, { rx: sz * 0.35 });
+    }
+  }
   for (let i = 0; i <= 8; i++) {
     const x = -ob.w / 2 + (ob.w * i) / 8;
     k.statue(1.1, GL, x, eave + 0.2, ob.z1 - 0.25, { seg: 4 });
@@ -98,6 +112,10 @@ function vilaFlor(k, { footprint, dims }) {
     k.add(new THREE.PlaneGeometry(b.w - 6, hGrand - 5), 'glass', { x: b.cx, y: 2.4 + (hGrand - 5) / 2, z: b.z1 + 0.08, emit: 0.15, mat: MAT.flat });
     for (let i = 0; i <= 5; i++) k.box(0.16, hGrand - 4, 0.22, 'steel', b.x0 + 3 + ((b.w - 6) * i) / 5, -1.8, b.z1 + 0.12, { mat: MAT.metal });
     k.box(b.w - 5, 0.6, 1.0, 'white', b.cx, hGrand - 2.2, b.z1 + 0.3);
+    // steel entrance canopy on slender columns over the foyer
+    k.box(b.w - 7, 0.4, 3.2, 'white', b.cx, 3.6, b.z1 + 1.7);
+    for (const s of [-1, 1]) k.box(0.32, 3.6, 0.32, 'steel', b.cx + s * (b.w / 2 - 4.2), -1, b.z1 + 2.9, { mat: MAT.metal });
+    k.box(3.0, 0.12, 1.6, 'glass', b.cx, 4.05, b.z1 + 2.4, { emit: 0.16, mat: MAT.flat });
     // steel fly tower over the stage (reaches the 15 m ridge)
     k.box(b.w * 0.55, hGrand, b.d * 0.45, 'steel', b.cx, -1, b.cz, { mat: MAT.metal });
     k.box(b.w * 0.55 + 0.5, 0.4, b.d * 0.45 + 0.5, GD, b.cx, hGrand, b.cz);

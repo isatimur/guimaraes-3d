@@ -73,6 +73,11 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
   group.name = 'tiles';
   scene.add(group);
 
+  // the core groups this module drives (cast shadow / LOD): held, not
+  // re-found with getObjectByName every 15 frames, which walks the scene
+  let coreGroup = scene.getObjectByName('buildings');
+  let landmarkGroup = scene.getObjectByName('landmarks');
+
   const NEAR_M = mobile ? 2000 : 4000;
   const MEM_CAP = (mobile ? 120 : 350) * 1048576;
   const TREE_CAP = nature?.streamCap ?? 0;
@@ -672,10 +677,11 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
     if (frames % 15 === 0) {
       // The OSM core (buildings.js) and the landmarks follow the same rule.
       // Set every time: main.js also sets the core's flag (at 4000 units).
-      const core = scene.getObjectByName('buildings');
-      if (core) for (const m of core.children) if (m.isMesh) m.castShadow = cast;
-      core?.userData.updateLod?.(camera.position, focus || camera.position);
-      scene.getObjectByName('landmarks')?.traverse((m) => {
+      if (!coreGroup) coreGroup = scene.getObjectByName('buildings');
+      if (coreGroup) for (const m of coreGroup.children) if (m.isMesh) m.castShadow = cast;
+      coreGroup?.userData.updateLod?.(camera.position, focus || camera.position);
+      if (!landmarkGroup) landmarkGroup = scene.getObjectByName('landmarks');
+      landmarkGroup?.traverse((m) => {
         if (!m.isMesh) return;
         if (m.userData.castOrig === undefined) m.userData.castOrig = m.castShadow || !cast; // meshes seen while off keep their casting
         m.castShadow = cast && m.userData.castOrig;

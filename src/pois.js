@@ -294,7 +294,7 @@ export function installPois(debug) {
 
 // ------------------------------------------------------------ signs
 // icon slots in the atlas, and the sign colour of each group (sRGB)
-const ICON = { cafe: 0, restaurant: 1, fast_food: 2, bar: 3, pub: 3, wine: 3, ice_cream: 4, bakery: 5, pastry: 5, pharmacy: 6, toilets: 7, atm: 8, bank: 8, clothes: 9, gift: 9, supermarket: 9, books: 10, museum: 11, gallery: 11, information: 12, hotel: 13 };
+const ICON = { cafe: 0, restaurant: 1, fast_food: 2, bar: 3, pub: 3, wine: 3, ice_cream: 4, bakery: 5, pastry: 5, pharmacy: 6, toilets: 7, atm: 8, bank: 8, clothes: 9, gift: 9, supermarket: 9, books: 10, museum: 11, gallery: 11, information: 12, viewpoint: 12, hotel: 13 };
 const ICON_COLOR = [0xd98b2b, 0xc8682f, 0xd0532f, 0x9c3b62, 0xd46a9a, 0xc79a3a, 0x239957, 0x5f6b7a, 0x2f67b0, 0x23838a, 0x7a5a2e, 0x6c4fb0, 0x2b78c8, 0x46509e];
 export const SIGN_KINDS = Object.keys(ICON);
 

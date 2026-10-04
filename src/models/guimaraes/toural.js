@@ -40,8 +40,9 @@ function bay(k, x, y, w, h, z, o = {}) {
   for (const s of [-1, 1]) k.box(w * 0.4, h * 0.92, 0.07, 'wood', x + s * (w / 2 + w * 0.22), y + h * 0.04, z + 0.24);
 }
 
-// A terrace of `n` house fronts along an OSM edge: granite shopfronts,
-// plaster upper storeys, tile roofs, built inside the square.
+// A terrace of `n` house fronts along an OSM edge: granite shopfronts or
+// round-arched arcades, plaster upper storeys, tile roofs, built inside the
+// square. The wider fronts carry an arcade, the narrow ones a shopfront.
 function terrace(k, e, depth, h, n) {
   const pitch = e.len / n;
   for (let i = 0; i < n; i++) {
@@ -56,14 +57,30 @@ function terrace(k, e, depth, h, n) {
     k.box(pitch - 0.1, 3.2, depth + 0.16, G, 0, 0, 0);
     k.cornice(pitch, corniceProfile('eave', 0.4), GL, 0, hh - 0.4, 0);
     k.hipRoof(pitch - 0.1, depth, 1.4, 'terracotta', 0, hh, 0, { over: 0.35, mat: MAT.tile });
-    // shopfront and two shuttered upper windows on the inward face
+    // granite pilasters between the bays and a moulded string course
+    for (const pu of [-pitch / 2, pitch / 2]) k.box(0.5, hh - 3.4, 0.35, GL, pu, 3.2, depth / 2 - 0.02, { mat: MAT.ashlar });
+    k.box(pitch, 0.3, depth + 0.2, GL, 0, 3.2, 0, { mat: MAT.ashlar });
+    // ground floor: an arcade of round arches on the wider fronts, else a shop
     const zf = depth / 2 + 0.02;
-    const sw = pitch * 0.62;
-    k.box(sw, 2.7, 0.14, 'dark', 0, 0.05, zf);
-    k.box(sw * 0.7, 1.8, 0.08, 'wood', 0, 0.3, zf + 0.08);
-    k.box(sw + 0.3, 0.22, 0.3, GL, 0, 2.75, zf + 0.06);
+    if (pitch >= 6.5) {
+      k.arcade(pitch - 0.9, 3.1, 0.45, 2, pitch * 0.31, 2.65, G, 0, 0, zf - 0.1, { mat: MAT.ashlar });
+      k.box(pitch - 1.0, 2.65, 0.2, 'dark', 0, 0, zf - 0.5);
+      for (const cu of [-pitch / 4, pitch / 4]) k.box(0.5, 0.28, 0.5, GL, cu, 2.38, zf - 0.12, { mat: MAT.ashlar });
+    } else {
+      const sw = pitch * 0.62;
+      k.box(sw, 2.7, 0.14, 'dark', 0, 0.05, zf);
+      k.box(sw * 0.7, 1.8, 0.08, 'wood', 0, 0.3, zf + 0.08);
+      k.box(sw + 0.3, 0.22, 0.3, GL, 0, 2.75, zf + 0.06);
+    }
+    // door, stone steps and upper shuttered windows
+    k.box(1.1, 2.5, 0.12, 'wood', pitch * 0.32, 0.05, zf + 0.04);
+    k.box(1.6, 0.18, 0.7, GL, pitch * 0.32, 0.02, zf + 0.3);
     bay(k, 0, 4.2, 1.0, 1.5, zf, {});
     if (hh > 12) bay(k, 0, 7.4, 1.0, 1.6, zf, {});
+    // chimney and ridge tiles
+    k.box(0.8, 1.6, 0.8, 'plaster', pitch * 0.28, hh + 0.3, 0);
+    k.box(1.0, 0.24, 1.0, GL, pitch * 0.28, hh + 1.9, 0);
+    for (let r = -depth / 2 + 0.6; r < depth / 2 - 0.4; r += 1.1) k.box(0.5, 0.16, 1.05, 'terracotta', 0, hh + 1.4, r);
     k.pop();
   }
 }

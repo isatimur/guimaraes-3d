@@ -31,6 +31,9 @@ const MAX_FETCH = 4;
 // 4 km is about a pixel. 60 m² cost ~655k tris in the overview; 100 m²
 // costs ~561k and the overview looks the same.
 const FAR_MIN_M2 = 100;
+// lite: the core's smallest annexes (below this) are skipped: they are a
+// seventh of the footprint count and a few pixels wide over a phone view
+const SMALL_MS_M2 = 30;
 const CAST_U = 3000 * S; // shadows while the camera is within 3 km of the focus
 const VFAR_U = 6000 * S; // far LOD beyond this from the camera: roof-only houses
 const FOCUS_KEEP_U = 3000 * S; // ... and only beyond this from the focus
@@ -178,7 +181,7 @@ const MID_U = 1400 * S;
 
 // plain arrays -> typed arrays with bounds
 function pack(T, tint) {
-  if (!T.idx.length) return null;
+  if (!T || !T.idx.length) return null;
   let ranges = null;
   let list = T.idx;
   if (T.near && (T.near.length || T.farCap.length)) {
@@ -395,6 +398,13 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
         if (!raw) continue;
         const f = footprint(raw);
         if (!f) continue;
+        // lite: skip the smallest annexes and sheds (J.minM2); a 30 m² box
+        // is a few pixels over the phone's overview, and they are a seventh
+        // of the core's footprint count
+        if (J.minM2 && f.areaM2 < J.minM2) {
+          stats.droppedSmall = (stats.droppedSmall || 0) + 1;
+          continue;
+        }
         const m = masks.test(f);
         if (m) {
           if (m === 1) stats.masked++;
@@ -447,6 +457,7 @@ export function createMsBuildings({ scene, camera, terrain, heightAt, proj, foot
       n: 0,
       cents: coreCents,
       seed: 0x4d5300,
+      minM2: lite ? SMALL_MS_M2 : 0,
       decode: (b) => (Array.isArray(b.p) && b.p.length >= 3 && b.h > 0 ? b.p.map((q) => proj.project(q[0], q[1])) : null),
       h: (b) => b.h,
       tileOf(f) {

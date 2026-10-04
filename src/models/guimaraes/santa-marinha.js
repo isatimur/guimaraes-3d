@@ -38,6 +38,30 @@ function ringRoof(k, lo, hi, y0, y1, color) {
   k.add(g, color, { flat: true, mat: 2 });
 }
 
+// A Siza-Vieira pousada volume across the monastery court: a low white
+// rendered bar with a deep shadowed loggia, full-height glazing on slender
+// columns and a thin flat roof with a dark fascia. w along x, d along z.
+function pousadaWing(k, cx, cz, w, d, h, ry = 0) {
+  const poly = rect(0, 0, w, d);
+  k.push({ x: cx, z: cz, ry });
+  k.prism(poly, -0.6, h + 0.6, 'white', { mat: 3 });
+  k.prism(offset(poly, 0.1), -0.6, 0.6, 'graniteLight', { mat: 1 });
+  // recessed loggia on the court face (+z): dark reveal behind a colonnade
+  k.box(w - 1.4, h - 1.4, 1.0, 'dark', 0, 0.45, d / 2 - 0.5, { mat: 0 });
+  const bays = Math.max(2, Math.floor(w / 2.6));
+  for (let i = 0; i < bays; i++) {
+    const u = -w / 2 + ((i + 0.5) * w) / bays;
+    k.box((w / bays) * 0.78, h - 1.9, 0.08, 'glass', u, h * 0.42, d / 2 - 0.05, { emit: 0.16, mat: 0 });
+    k.box(0.16, h - 1.3, 0.22, 'white', -w / 2 + (i * w) / bays, h * 0.5, d / 2 + 0.06);
+  }
+  k.box(0.16, h - 1.3, 0.22, 'white', w / 2, h * 0.5, d / 2 + 0.06);
+  // thin flat roof plate and its fascia
+  k.prism(offset(poly, 0.65), h, 0.35, 'white', { mat: 3 });
+  k.box(w + 1.5, 0.3, 0.5, 'dark', 0, h + 0.35, d / 2 + 0.75, { mat: 0 });
+  k.box(0.4, 0.3, d + 1.5, 'dark', w / 2 + 0.75, h + 0.35, 0, { mat: 0 });
+  k.pop();
+}
+
 function santaMarinha(k, { footprint, dims }) {
   const H = dims?.height_m ?? {};
   const hChurch = H.church_tower ?? 22;
@@ -122,6 +146,19 @@ function santaMarinha(k, { footprint, dims }) {
   }
   k.end('height');
 
+  // -------------------------------------------------- the pousada volumes
+  // Siza-Vieira's low white wing and its glazed linking pavilion, set into
+  // the court between the monastery range and the church terrace
+  pousadaWing(k, -30, 6, 32, 5, 5.5);
+  pousadaWing(k, -49, 6, 7, 6, 5.0, Math.PI / 2);
+  // pool terrace with a granite kerb on the garden's south-west side
+  k.prism(rect(-18, 20, 13, 7), 0.08, 0.3, 'graniteLight', { mat: 8, holes: [rect(-18, 20, 10, 4)] });
+  k.prism(rect(-18, 20, 10, 4), 0.1, 0.3, 'water', { emit: 0.28 });
+  for (let i = 0; i < 4; i++) k.box(0.5, 0.35, 1.4, 'white', -22 + i * 2.4, 0.12, 24.2, { mat: 0 });
+  // a slender pergola over the loungers
+  for (let i = -3; i <= 3; i++) k.box(0.14, 2.6, 0.14, 'white', -18 + i * 2.2, 0.1, 25.6);
+  k.box(14.5, 0.12, 0.12, 'white', -18, 2.7, 25.6);
+
   // ------------------------------------------------------------ garden
   // formal parterre in the court west of the monastery, clipped hedges and
   // gravel walks; trees in the wider garden (within the model extent)
@@ -133,6 +170,10 @@ function santaMarinha(k, { footprint, dims }) {
   }
   k.prism(rect(-30, 16, 26, 1.4), 0.1, 0.3, 'sand');
   k.prism(rect(-30, 16, 1.4, 16), 0.1, 0.3, 'sand');
+  // clipped box parterre and a small water basin in the parterre centre
+  k.prism(rect(-30, 16, 6, 4), 0.1, 0.7, 'hedge', { mat: 5, holes: [rect(-30, 16, 3, 1.6)] });
+  k.prism(rect(-30, 16, 3.4, 1.9), 0.1, 0.35, 'graniteLight', { holes: [rect(-30, 16, 2.8, 1.3)] });
+  k.prism(rect(-30, 16, 2.6, 1.1), 0.36, 0.05, 'water', { emit: 0.3 });
   for (const [x, z] of [[-52, 24], [-46, 28], [10, 22], [20, 26], [30, 20], [-30, -22], [-18, -25]]) {
     k.tree(x, 0, z, 6.5, { kind: 'round', spread: 0.24 });
   }

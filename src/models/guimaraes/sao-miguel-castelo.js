@@ -78,6 +78,11 @@ function saoMiguel(k, { footprint, dims }) {
   // ---- roofs: gabled nave and chancel (ridge along z)
   k.gableRoof(2 * x1 + 0.15, zW - zStep - 0.2, nRise, 'terracotta', 0, eaves, (zW + zStep) / 2, { over: 0.2, mat: MAT.tile });
   k.gableRoof(7.3, zStep - zE - 0.2, cRise, 'terracotta', 0.05, eaves, (zStep + zE) / 2, { over: 0.2, mat: MAT.tile });
+  // ridge tiles along both gables and a small stone cross on the chancel apex
+  for (let z = zStep + 0.4; z < zW - 0.3; z += 1.1) k.box(0.5, 0.15, 1.05, 'terracotta', 0, eaves + nRise - 0.05, z);
+  for (let z = zE + 0.4; z < zStep - 0.3; z += 1.05) k.box(0.5, 0.15, 1.0, 'terracotta', 0.05, eaves + cRise - 0.05, z);
+  k.box(0.18, 0.75, 0.18, L, 0.05, eaves + cRise, zE + 0.05);
+  k.box(0.5, 0.14, 0.14, L, 0.05, eaves + cRise + 0.5, zE + 0.05);
   // masonry west gable (covers the roof end)
   const gs = new THREE.Shape();
   gs.moveTo(-x1, 0);
@@ -110,10 +115,19 @@ function saoMiguel(k, { footprint, dims }) {
     const r = 1.35;
     k.box(0.42, 0.24, 0.28, L, Math.cos(a) * r, 2.85 - 0.95 + Math.sin(a) * r, zW + 0.06, { rz: a - Math.PI / 2, jit: 0.05 });
   }
+  // colonnettes with capitals flanking the portal
+  for (const sx of [-1, 1]) {
+    k.box(0.4, 0.18, 0.46, L, sx * 1.28, 0, zW + 0.18, { mat: MAT.ashlar });
+    k.cyl(0.11, 0.13, 2.15, 7, L, sx * 1.28, 0.15, zW + 0.2, { smooth: true });
+    k.cyl(0.17, 0.11, 0.24, 7, T, sx * 1.28, 2.28, zW + 0.2, { smooth: true });
+    k.box(0.46, 0.16, 0.5, L, sx * 1.28, 2.5, zW + 0.18, { mat: MAT.ashlar });
+  }
   // the small round window above the portal, in a squared frame
   k.box(1.15, 1.15, 0.22, T, 0, 4.15, zW + 0.11);
   k.cyl(0.42, 0.42, 0.3, 10, L, 0, 4.15, zW + 0.06, { rx: Math.PI / 2 });
   k.cyl(0.3, 0.3, 0.1, 10, 'dark', 0, 4.15, zW + 0.2, { rx: Math.PI / 2 });
+  // chevron (zig-zag) string course across the gable below the slit
+  for (let i = 0; i < 7; i++) k.box(0.42, 0.15, 0.2, i % 2 ? L : T, -1.5 + i * 0.5, 5.02, zW + 0.06, { rz: i % 2 ? 0.5 : -0.5, jit: 0.04 });
   // narrow slit window higher on the gable
   k.box(0.22, 0.95, 0.16, 'graniteDark', 0, 5.6, zW + 0.02);
 

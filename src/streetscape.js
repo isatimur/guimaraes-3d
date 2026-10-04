@@ -443,6 +443,89 @@ const FURNITURE = {
   // a parasol; the instance colour tints it
   umbrella: () => merged([cylG(0.025, 0.025, 2.3, 4, 0, 0, 0, 0xe8e4da), coneG(1.35, 0.42, 8, 0, 1.98, 0, 0xf6f2ea), cylG(1.35, 1.35, 0.12, 8, 0, 1.86, 0, 0xf6f2ea)]),
   tree: () => merged([cylG(0.12, 0.2, 3.6, 5, 0, -0.3, 0, 0x5b4636), icoG(2.1, 0, 4.9, 0, 0x4f6d30), icoG(1.5, 0.7, 5.9, -0.4, 0x5a7a36), icoG(1.3, -0.8, 5.5, 0.6, 0x48662b)]),
+  // a market stall: a timber frame with a canvas gable roof and a counter
+  stall: () =>
+    merged([
+      boxG(0.09, 2.2, 0.09, -1.45, 0, -0.95, 0x6b4a2f),
+      boxG(0.09, 2.2, 0.09, 1.45, 0, -0.95, 0x6b4a2f),
+      boxG(0.09, 2.2, 0.09, -1.45, 0, 0.95, 0x6b4a2f),
+      boxG(0.09, 2.2, 0.09, 1.45, 0, 0.95, 0x6b4a2f),
+      boxG(3.1, 0.12, 2.15, 0, 2.18, 0, 0x7a5537),
+      part(new THREE.BoxGeometry(3.5, 0.07, 1.5).rotateX(0.36).translate(0, 2.6, -0.55), 0xc0392b),
+      part(new THREE.BoxGeometry(3.5, 0.07, 1.5).rotateX(-0.36).translate(0, 2.6, 0.55), 0xc0392b),
+      boxG(2.85, 0.92, 1.35, 0, 0.01, 0.15, 0x8a6a45),
+      boxG(2.95, 0.1, 1.45, 0, 0.93, 0.15, 0xe0d3b0),
+      boxG(2.95, 0.42, 0.05, 0, 0.5, 0.85, 0x7a5537),
+    ]),
+  // a small timber kiosk with a hipped roof and a serving hatch
+  kiosk: () =>
+    merged([
+      boxG(2.3, 2.5, 1.9, 0, 0, 0, 0x6f4d33),
+      boxG(2.5, 0.4, 2.1, 0, 0.02, 0, 0x5a3d28),
+      boxG(1.7, 0.95, 0.06, 0, 1.05, 0.96, 0x241f1b),
+      boxG(2.0, 0.1, 0.35, 0, 1.0, 1.0, 0x8a6a45),
+      part(new THREE.BoxGeometry(2.9, 0.09, 1.35).rotateX(0.42).translate(0, 3.0, -0.55), 0x8a5a36),
+      part(new THREE.BoxGeometry(2.9, 0.09, 1.35).rotateX(-0.42).translate(0, 3.0, 0.55), 0x8a5a36),
+      cylG(0.045, 0.045, 0.35, 5, 0, 2.55, 0, IRON),
+    ]),
+  // a granite flower box with greenery and blooms
+  planter: () =>
+    merged([
+      boxG(1.6, 0.62, 0.72, 0, 0, 0, 0xaba495),
+      boxG(1.62, 0.1, 0.74, 0, 0.6, 0, 0x8f8a7c),
+      boxG(1.46, 0.18, 0.58, 0, 0.56, 0, 0x5a3a22),
+      icoG(0.34, -0.48, 0.82, 0, 0x4f7a34),
+      icoG(0.31, 0.46, 0.8, 0.04, 0x547f37),
+      icoG(0.15, -0.48, 1.02, 0, 0xc94f6a),
+      icoG(0.14, 0.46, 0.99, 0, 0xe0a33a),
+      icoG(0.12, 0.0, 1.02, 0.08, 0xd0637a),
+    ]),
+  // a cast-iron advertising (poster) column with a domed crown
+  column: () =>
+    merged([
+      cylG(0.6, 0.66, 0.26, 10, 0, 0, 0, 0x8a847a),
+      cylG(0.5, 0.5, 2.4, 10, 0, 0.26, 0, 0x2c463a),
+      cylG(0.505, 0.505, 1.6, 10, 0, 0.62, 0, 0xe9e3d3),
+      cylG(0.58, 0.52, 0.2, 10, 0, 2.66, 0, 0x2c463a),
+      part(new THREE.ConeGeometry(0.62, 0.5, 10, 1, true).translate(0, 3.11, 0), 0x2c463a),
+      part(new THREE.SphereGeometry(0.12, 8, 6).translate(0, 3.42, 0), 0x2c463a),
+    ]),
+  // a tourist information sign: a post with a printed map board
+  signboard: () =>
+    merged([
+      cylG(0.05, 0.065, 2.3, 6, 0, 0, 0, IRON),
+      boxG(1.15, 0.78, 0.06, 0, 2.0, 0, 0x24406b),
+      boxG(1.03, 0.66, 0.02, 0, 2.06, 0.05, 0xf2ecda),
+      boxG(0.55, 0.05, 0.02, 0, 2.42, 0.07, 0x9aa0a6),
+      boxG(0.55, 0.05, 0.02, 0, 2.28, 0.07, 0x9aa0a6),
+      boxG(0.28, 0.24, 0.02, -0.28, 2.12, 0.07, 0x3b7a4a),
+    ]),
+  // the national flag on a pole (baked; grey pole, green/red field)
+  flagpt: () =>
+    merged([
+      cylG(0.05, 0.075, 6.2, 6, 0, 0, 0, 0xb8b3a7),
+      part(new THREE.SphereGeometry(0.09, 8, 6).translate(0, 6.32, 0), 0xd8b24a),
+      boxG(0.56, 0.9, 0.03, 0.28, 5.25, 0, 0x1a7a3c),
+      boxG(0.84, 0.9, 0.03, 0.98, 5.25, 0, 0xd12a2a),
+      part(new THREE.TorusGeometry(0.22, 0.028, 6, 12).rotateY(Math.PI / 2).translate(0.76, 5.7, 0), 0xe8c34a),
+      icoG(0.15, 0.72, 5.7, 0.01, 0xe8c34a),
+      boxG(0.22, 0.28, 0.045, 0.72, 5.58, 0.02, 0xf2ecda),
+      boxG(0.14, 0.18, 0.05, 0.72, 5.62, 0.03, 0xd12a2a),
+    ]),
+  // the municipal flag (white with a green border and the shield)
+  flagguimaraes: () =>
+    merged([
+      cylG(0.05, 0.075, 6.2, 6, 0, 0, 0, 0xb8b3a7),
+      part(new THREE.SphereGeometry(0.09, 8, 6).translate(0, 6.32, 0), 0xd8b24a),
+      boxG(1.4, 0.9, 0.03, 0.7, 5.25, 0, 0xf0ede2),
+      boxG(1.4, 0.1, 0.035, 0.7, 5.25, 0, 0x1a7a3c),
+      boxG(1.4, 0.1, 0.035, 0.7, 6.05, 0, 0x1a7a3c),
+      boxG(0.1, 0.7, 0.035, 0.02, 5.35, 0, 0x1a7a3c),
+      boxG(0.1, 0.7, 0.035, 1.38, 5.35, 0, 0x1a7a3c),
+      icoG(0.17, 0.7, 5.7, 0.01, 0xe8c34a),
+      boxG(0.2, 0.26, 0.05, 0.7, 5.58, 0.02, 0xf2ecda),
+      boxG(0.12, 0.16, 0.06, 0.7, 5.62, 0.03, 0x24406b),
+    ]),
 };
 const UMBRELLA_COLORS = [0xf3efe6, 0xb23a2e, 0x24452f, 0x23324f, 0xe7d9b0, 0x8a2433].map((h) => new THREE.Color(h));
 
@@ -521,6 +604,61 @@ function buildCoretoGeo(r = 3.1, postH = 3.1) {
   parts.push(cylG(0.05, 0.05, 0.5, 6, 0, postTop + 0.16 + 1.5, 0, IRON));
   parts.push(part(new THREE.SphereGeometry(0.16, 7, 5).translate(0, postTop + 0.16 + 1.95, 0), IRON));
   return merged(parts);
+}
+
+// A civic statue: a stepped granite base, a pedestal and a bronze figure with
+// a raised arm and a sword (D. Afonso Henriques, Condessa Mumadona Dias).
+function buildStatueGeo({ bronze = 0x6f6a4e } = {}) {
+  const stone = 0xb3ad9e;
+  const dark = 0x8f8a7c;
+  return merged([
+    boxG(2.5, 0.3, 2.5, 0, -0.06, 0, dark),
+    boxG(2.05, 0.3, 2.05, 0, 0.24, 0, stone),
+    boxG(1.5, 0.36, 1.5, 0, 0.54, 0, dark),
+    boxG(1.05, 2.5, 1.05, 0, 0.9, 0, stone),
+    boxG(1.32, 0.22, 1.32, 0, 3.4, 0, dark),
+    boxG(0.24, 1.0, 0.3, -0.19, 3.62, 0, bronze),
+    boxG(0.24, 1.0, 0.3, 0.19, 3.62, 0, bronze),
+    boxG(0.72, 0.34, 0.46, 0, 4.62, 0, bronze),
+    boxG(0.62, 1.05, 0.44, 0, 4.96, 0, bronze),
+    boxG(0.86, 0.2, 0.46, 0, 5.98, 0, bronze),
+    cylG(0.06, 0.06, 1.05, 5, -0.44, 4.85, -0.06, bronze),
+    cylG(0.07, 0.07, 1.1, 5, 0.44, 5.0, -0.02, bronze),
+    icoG(0.19, 0, 6.34, 0, bronze),
+    boxG(0.3, 0.1, 0.3, 0, 6.5, 0, bronze),
+    boxG(0.06, 1.5, 0.06, 0.55, 6.0, 0.02, bronze),
+    boxG(0.34, 0.05, 0.06, 0.55, 6.75, 0.02, bronze),
+  ]);
+}
+
+// A small bust on a pedestal (Busto de Martins Sarmento).
+function buildBustGeo() {
+  const stone = 0xb3ad9e;
+  const dark = 0x8f8a7c;
+  const bronze = 0x6f6a4e;
+  return merged([
+    boxG(1.05, 0.9, 1.05, 0, -0.02, 0, dark),
+    boxG(0.78, 0.5, 0.78, 0, 0.88, 0, stone),
+    boxG(0.66, 0.4, 0.5, 0, 1.38, 0, bronze),
+    icoG(0.21, 0, 1.94, 0, bronze),
+    cylG(0.24, 0.32, 0.24, 8, 0, 1.62, 0, bronze),
+  ]);
+}
+
+// A granite padrão: a stepped base and a shaft with a small cross. Distinct
+// from the Padrão do Salado, which the landmark layer builds.
+function buildPadraoGeo(h = 4.6) {
+  const stone = 0xb3ad9e;
+  const dark = 0x8f8a7c;
+  return merged([
+    cylG(1.0, 1.16, 0.32, 8, 0, -0.06, 0, dark),
+    cylG(0.78, 0.9, 0.3, 8, 0, 0.26, 0, stone),
+    cylG(0.5, 0.56, 0.34, 8, 0, 0.56, 0, dark),
+    cylG(0.28, 0.34, h - 2.0, 8, 0, 0.9, 0, stone),
+    cylG(0.46, 0.3, 0.3, 8, 0, h - 1.1, 0, dark),
+    boxG(0.14, 0.72, 0.14, 0, h - 0.8, 0, stone),
+    boxG(0.52, 0.14, 0.14, 0, h - 0.34, 0, stone),
+  ]);
 }
 
 function triCount(g) {
@@ -638,6 +776,9 @@ async function fetchSquares() {
 }
 
 const TERRACE_KINDS = new Set(['cafe', 'restaurant', 'bar', 'pub', 'ice_cream', 'pastry', 'bakery', 'fast_food']);
+// the weekly market days of the centre (0 Mo .. 6 Su) and its opening band
+const MARKET_DAYS = new Set([2, 5, 6]);
+const MARKET_HOURS = [8, 20];
 // lane types and their weight for the spawning people
 const LANE = { pedestrian: 0, sidewalk: 1, square: 2, carfree: 3, path: 4 };
 const LANE_WEIGHT = [3, 1, 2.6, 2.2, 0.6];
@@ -1459,6 +1600,54 @@ function build(ctx, group, doc, pois, stats, squares) {
     }
   }
 
+  // ---- civic objects: market stalls, kiosks, flags, planters, poster
+  // columns and information signs, authored in data/squares.json on real
+  // OSM lat/lon and draped here. Market stalls only stand on market days
+  // (see update); kiosks and the rest are permanent.
+  const civic = { flags: 0, stalls: 0, kiosks: 0, planters: 0, columns: 0, signs: 0 };
+  const placeCivic = (type, x, z, rot, sc, deco = 0.4 * S) => {
+    const tryAt = (xx, zz) => {
+      const y = groundAt(xx, zz);
+      if (Number.isNaN(y) || !nearC(xx, zz) || solidAt(xx, zz) || cars.near(xx, zz, deco)) return false;
+      put(type, xx, y, zz, rot, sc);
+      return true;
+    };
+    if (tryAt(x, z)) return true;
+    // the authored spot is on a wall or a carriageway: nudge it to the
+    // nearest clear ground within a few metres
+    for (const r of [1, 2, 3.5, 5, 7]) {
+      for (let a = 0; a < 8; a++) {
+        const ang = (a / 8) * Math.PI * 2;
+        if (tryAt(x + Math.cos(ang) * r * S, z + Math.sin(ang) * r * S)) return true;
+      }
+    }
+    return false;
+  };
+  for (const f of squares?.flags || []) {
+    const p = project(f.lat, f.lon);
+    if (placeCivic(f.country === 'guimaraes' ? 'flagguimaraes' : 'flagpt', p.x, p.z, f.rot || 0, f.sc || 1, 0.2 * S)) civic.flags++;
+  }
+  for (const s of squares?.stalls || []) {
+    const p = project(s.lat, s.lon);
+    if (placeCivic('stall', p.x, p.z, s.rot || 0, s.sc || 1)) civic.stalls++;
+  }
+  for (const k of squares?.kiosks || []) {
+    const p = project(k.lat, k.lon);
+    if (placeCivic('kiosk', p.x, p.z, k.rot || 0, k.sc || 1)) civic.kiosks++;
+  }
+  for (const q of squares?.planters || []) {
+    const p = project(q.lat, q.lon);
+    if (placeCivic('planter', p.x, p.z, q.rot || 0, q.sc || 1, 0.2 * S)) civic.planters++;
+  }
+  for (const q of squares?.columns || []) {
+    const p = project(q.lat, q.lon);
+    if (placeCivic('column', p.x, p.z, q.rot || 0, q.sc || 1, 0.3 * S)) civic.columns++;
+  }
+  for (const q of squares?.signs || []) {
+    const p = project(q.lat, q.lon);
+    if (placeCivic('signboard', p.x, p.z, q.rot || 0, q.sc || 1, 0.1 * S)) civic.signs++;
+  }
+
   // ---- objects
   const uniforms = { uStNight: { value: 0 }, uStGlow: { value: 1 } };
   const layers = [];
@@ -1508,6 +1697,18 @@ function build(ctx, group, doc, pois, stats, squares) {
     squareTris += triCount(geo);
     return true;
   };
+  let monumentsN = 0;
+  const MONUMENT_GEO = {
+    statue: () => buildStatueGeo(),
+    bust: () => buildBustGeo(),
+    padrao: (m) => buildPadraoGeo(m.h || 4.6),
+  };
+  for (const m of squares?.monuments || []) {
+    const build = MONUMENT_GEO[m.kind];
+    if (!build) continue;
+    const p = project(m.lat, m.lon);
+    if (addMonument(build(m), p.x, p.z, m.rot || 0, m.kind + '-' + m.id)) monumentsN++;
+  }
   for (const sq of squares?.squares || []) {
     for (const f of sq.fountains || []) {
       const p = project(f.lat, f.lon);
@@ -1614,6 +1815,8 @@ function build(ctx, group, doc, pois, stats, squares) {
     squareBenches,
     squareTables,
     squareTriangles: Math.round(squareTris),
+    monuments: monumentsN,
+    civic,
     spots: spots.x.length,
     signs: signs.items.length,
     people: people?.stats ?? null,
@@ -1666,9 +1869,11 @@ function build(ctx, group, doc, pois, stats, squares) {
       for (const L of layers) fillLayer(L, fxp, fzp, R_FURN);
     }
     let fn = 0;
+    const marketOpen = MARKET_DAYS.has(clk.weekday) && clk.hour >= MARKET_HOURS[0] && clk.hour < MARKET_HOURS[1];
     for (const L of layers) {
-      // parasols close at night
+      // parasols close at night, market stalls stand only on market days
       if (L.type === 'umbrella') L.mesh.visible = fOn && L.shown > 0 && night < 0.6;
+      if (L.type === 'stall') L.mesh.visible = fOn && L.shown > 0 && marketOpen;
       if (L.mesh.visible) fn += L.shown;
     }
     if (calcadaMesh) calcadaMesh.visible = camDist < (lite ? 450 : 900);

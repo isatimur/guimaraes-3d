@@ -10,7 +10,7 @@
 // on the real outline so the model covers the campus extent exactly.
 import * as THREE from 'three';
 import { ribbonWindows } from '../parts.js';
-import { bbox, clean, offset, centroid, area } from '../geom.js';
+import { bbox, clean, offset, centroid, area, edges, rect } from '../geom.js';
 
 const CONCRETE = 'graniteLight';
 const CONCRETE_DARK = 'graniteGrey';
@@ -72,17 +72,34 @@ function uminho(k, { footprint, dims }) {
     const h = Math.min(isG2 ? hTotal : (p.height_m ?? 7), 15.2);
     const wall = a > 1200 ? CONCRETE : a > 300 ? (Math.abs(c[0]) % 2 > 1 ? CONCRETE : WHITE) : WHITE;
     if (isG2) k.begin('height');
-    k.prism(pts, -0.8, h + 0.4 + 0.8, wall, { mat: 3 });
+    // main volume: plinth, banded concrete frame, flat deck and parapet
+    k.prism(pts, -0.8, h + 0.8, wall, { mat: 3 });
+    k.prism(offset(pts, 0.22), -0.8, 1.5, CONCRETE_DARK, { mat: 1 });
+    k.prism(offset(pts, 0.1), h * 0.5, 0.3, CONCRETE_DARK, { mat: 1 });
     k.prism(pts, h, 0.4, 'lead'); // flat dark roof deck
-    k.prism(offset(pts, 0.18), h - 0.5, 0.5, CONCRETE_DARK); // eaves band
+    k.prism(offset(pts, 0.18), h + 0.4, 0.5, CONCRETE, { mat: 1 }); // parapet upstand
     const storeys = Math.max(1, Math.round(h / 3.2));
     if (a > 60) ribbonWindows(k, pts, 0, {
       storeys, first: 1.0, storey: 3.2, h: 1.5, margin: 1.4,
       minLen: a > 900 ? 9 : 6, emit: 0.12, trim: CONCRETE_DARK, out: 0.05,
     });
+    // bigger teaching blocks: a ground colonnade and a glazed entrance atrium
+    if (a > 400) {
+      const fe = edges(pts).reduce((x, e) => (e.len > (x?.len ?? 0) ? e : x), null);
+      if (fe) {
+        k.push({ x: fe.mx + fe.nx * 0.05, y: 0, z: fe.mz + fe.nz * 0.05, ry: fe.ry });
+        const n = Math.max(3, Math.floor(fe.len / 5));
+        for (let i = 0; i <= n; i++) k.box(0.35, 3.6, 0.35, CONCRETE, -fe.len / 2 + (i * fe.len) / n, 0, 0.15, { mat: 1 });
+        k.box(fe.len, 0.5, 0.6, CONCRETE, 0, 3.6, 0.15, { mat: 1 });
+        k.box(Math.min(9, fe.len * 0.3), 4.6, 1.4, 'glass', 0, 0, 0.75, { emit: 0.16, mat: 0 });
+        k.box(Math.min(10, fe.len * 0.34), 0.35, 2.4, CONCRETE, 0, 4.6, 0.9, { mat: 1 });
+        k.pop();
+      }
+    }
     // roof plant on the big flat blocks
     const b = bbox(pts);
     if (a > 700) k.box(Math.min(6, b.w * 0.2), 0.9, Math.min(4, b.d * 0.2), WHITE, b.cx, h + 0.4, b.cz);
+    if (a > 1600) k.box(Math.min(4, b.w * 0.14), 1.6, Math.min(3, b.d * 0.16), CONCRETE_DARK, b.cx + 4, h + 0.4, b.cz - 2);
     if (isG2) k.end('height');
   }
 
@@ -92,8 +109,45 @@ function uminho(k, { footprint, dims }) {
     band(k, p.pts, 2.4, 0.08, 'graniteGrey', { mat: 8, step: 10 });
   }
   // --- garden and pond
-  for (const p of footprint.partsOf('garden')) k.prism(clean(p.pts, 0.5), -0.1, 0.25, 'grass', { mat: 5 });
-  for (const p of footprint.partsOf('water')) k.prism(clean(p.pts, 0.4), -0.1, 0.4, 'water', { mat: 7, emit: 0.2 });
+  for (const p of footprint.partsOf('garden')) {
+    const gp = clean(p.pts, 0.5);
+    k.prism(gp, -0.1, 0.25, 'grass', { mat: 5 });
+    const gb = bbox(gp);
+    if (gb.w > 40) {
+      // clipped hedges and a gravel walk across the larger gardens
+      for (let i = 0; i < Math.floor(gb.w / 22); i++) {
+        const hx = gb.x0 + 12 + i * 22;
+        k.box(9, 0.7, 2.2, 'hedge', hx, 0.15, gb.cz, { mat: 5 });
+      }
+      k.box(gb.w - 8, 0.14, 3, 'graniteGrey', gb.cx, 0.15, gb.cz - 6, { mat: 8 });
+    }
+  }
+  for (const p of footprint.partsOf('water')) {
+    const wp = clean(p.pts, 0.4);
+    k.prism(wp, -0.1, 0.4, 'water', { mat: 7, emit: 0.2 });
+    // a timber deck and rail on one edge of the campus pond
+    const wb = bbox(wp);
+    if (wb.w > 8) k.box(wb.w * 0.5, 0.1, 2.2, 'wood', wb.cx, 0.3, wb.z0 - 1.1, { mat: 8 });
+  }
+
+  // --- the entrance plaza and car park on the Alameda frontage
+  {
+    const b = bbox(O);
+    const pz = b.z1 - 14;
+    k.prism(rect(b.cx, pz, 40, 18), 0.02, 0.14, 'graniteGrey', { mat: 8 });
+    k.prism(rect(b.cx, pz, 8, 8), 0.16, 0.3, 'graniteLight', { holes: [rect(b.cx, pz, 5, 5)] });
+    k.prism(rect(b.cx, pz, 5, 5), 0.2, 0.05, 'water', { emit: 0.28 });
+    for (let i = -3; i <= 3; i++) {
+      k.box(0.16, 5.2, 0.16, 'steel', b.cx + i * 6, 0.1, pz, { mat: 9 });
+      k.sphere(0.34, 0xefdca0, b.cx + i * 6, 5.4, pz, { seg: 7, rings: 4, emit: 0.6 });
+    }
+    // parking bays with low kerbs on the west side of the plaza
+    for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) {
+      const x = b.x0 + 14 + i * 3.0;
+      const z = pz + 8 + r * 6;
+      k.box(2.6, 0.06, 5.0, 'graniteGrey', x, 0.05, z, { mat: 8 });
+    }
+  }
   k.end('main');
 }
 

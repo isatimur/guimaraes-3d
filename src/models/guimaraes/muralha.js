@@ -132,15 +132,34 @@ function muralha(k, { footprint, dims }) {
   k.box(towerW - 0.5, 0.2, towerD - 0.5, D, tcx, towerH - 1.7, tcz); // walk
   merlonsRect(k, tcx, tcz, towerW - 0.5, towerD - 0.5, towerH - 1.5, 1.6, tT, G);
 
-  // ---- curtain wall stub running east from the tower
-  k.box(x1 - (x0 + towerW) + 0.4, wallTop + 0.8, wallT, G, (x0 + towerW + x1) / 2, 0, wallZ, { jit: 0.02 });
-  k.box(x1 - (x0 + towerW), 0.2, wallT + 0.3, T, (x0 + towerW + x1) / 2, wallTop - 0.4, wallZ);
+  // ---- curtain wall stub running east from the tower, with a postern gate
+  const wallLen = x1 - (x0 + towerW) + 0.4;
+  const wallMid = (x0 + towerW + x1) / 2;
+  k.gate(wallLen, wallTop + 0.8, wallT, [{ x: 0, w: 2.4, h: 3.6 }], G, wallMid, 0, wallZ, { mat: MAT.ashlar });
+  k.surround({ x: 0, y: 0, w: 2.4, h: 3.6, arch: 'round' }, 0.4, 0.45, T, wallZ + wallT / 2 + 0.05);
+  k.surround({ x: 0, y: 0, w: 2.4, h: 3.6, arch: 'round' }, 0.4, 0.45, T, wallZ - wallT / 2 - 0.5);
+  k.box(wallLen, 0.2, wallT + 0.3, T, wallMid, wallTop - 0.4, wallZ);
   merlonsX(k, x0 + towerW - 0.2, x1, wallZ, wallTop, 1.5, wallT * 0.9, G);
+  // arrow loops on both faces of the wall
+  for (const lx of [x0 + towerW + 3.0, x0 + towerW + 7.0, x1 - 2.5]) {
+    for (const sz of [-1, 1]) {
+      k.box(0.18, 1.0, 0.22, 'dark', lx, 4.2, wallZ + sz * (wallT / 2 + 0.02), { mat: MAT.flat });
+      k.box(0.5, 0.22, 0.24, T, lx, 5.2, wallZ + sz * (wallT / 2 + 0.03), { jit: 0.05 });
+    }
+  }
   // walk surface and a couple of wall buttresses
-  k.box(x1 - (x0 + towerW), 0.16, wallT - 0.5, D, (x0 + towerW + x1) / 2, wallTop - 0.35, wallZ);
+  k.box(x1 - (x0 + towerW), 0.16, wallT - 0.5, D, wallMid, wallTop - 0.35, wallZ);
   for (const bx of [x0 + towerW + 3.2, x1 - 2.2]) {
     k.box(1.1, wallTop * 0.8, 0.5, L, bx, 0, wallZ + wallT / 2, { jit: 0.04 });
     k.box(1.1, wallTop * 0.8, 0.5, L, bx, 0, wallZ - wallT / 2, { jit: 0.04 });
+  }
+  // a corbelled look-out turret on the east end of the walk
+  {
+    const tx = x1 - 1.2;
+    for (let i = 0; i < 4; i++) k.box(0.5, 0.4, 0.5, T, tx, wallTop - 0.2 + i * 0.45, wallZ, { jit: 0.05 });
+    k.box(2.0, 2.0, 2.0, G, tx, wallTop + 1.6, wallZ);
+    k.box(2.3, 0.22, 2.3, L, tx, wallTop + 3.6, wallZ);
+    merlonsRect(k, tx, wallZ, 1.8, 1.8, wallTop + 3.8, 1.3, 0.75, G);
   }
 
   // ---- tower face: round-arched door, arrow slits, the inscription

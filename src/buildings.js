@@ -247,7 +247,10 @@ export function attrsOf(b, pts, reversed) {
 }
 
 // masks: { outlines: [[{x,z}]], plans: [{cx,cz,ux,uz,hu,hv}] } in world units
-export function buildBuildings(data, project, heightAt, masks = { outlines: [], plans: [] }) {
+// opts: { tileM } groups the fabric into fewer, larger meshes (the lite
+// tier trades culling granularity for draw calls).
+export function buildBuildings(data, project, heightAt, masks = { outlines: [], plans: [] }, opts = {}) {
+  const tileM = opts.tileM || TILE_M;
   const group = new THREE.Group();
   group.name = 'buildings';
   const stats = { input: 0, built: 0, skippedOutline: 0, skippedPlan: 0, droppedSmall: 0, degenerate: 0, tiles: 0, triangles: 0, vertices: 0 };
@@ -327,7 +330,7 @@ export function buildBuildings(data, project, heightAt, masks = { outlines: [], 
   // --- pass 2: geometry per tile
   const tiles = new Map();
   const tileOf = (it) => {
-    const key = `${Math.floor(it.cx / S / TILE_M)},${Math.floor(it.cz / S / TILE_M)}`;
+    const key = `${Math.floor(it.cx / S / tileM)},${Math.floor(it.cz / S / tileM)}`;
     let t = tiles.get(key);
     if (!t) tiles.set(key, (t = { key, pos: [], nor: [], col: [], wall: [], idx: [], near: [], farCap: [], roofs: { pos: [], nor: [], col: [], wall: [], idx: [] } }));
     return t;

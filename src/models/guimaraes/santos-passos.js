@@ -44,6 +44,16 @@ function santosPassos(k, { footprint, dims }) {
   k.prism(offset(O, 0.2), -2, 2.0, GD);
   polyCornice(k, O, eave - 0.6, corniceProfile('eave', 0.6), GL, { minLen: 2 });
   roofOver(k, O, eave, 4.2, 'terracotta', 'gable', { over: 0.5 });
+  // ridge tiles and two roof dormers along the nave
+  {
+    const ob2 = bbox(O);
+    const alongX = ob2.w >= ob2.d;
+    const rl = alongX ? ob2.w - 1.4 : ob2.d - 1.4;
+    for (let u = -rl / 2 + 0.7; u < rl / 2 - 0.5; u += 1.3) {
+      if (alongX) k.box(1.05, 0.16, 0.5, 'terracotta', ob2.cx + u, eave + 4.15, ob2.cz);
+      else k.box(0.5, 0.16, 1.05, 'terracotta', ob2.cx, eave + 4.15, ob2.cz + u);
+    }
+  }
   // tall round-arched nave windows between pilasters on the long sides
   for (const e of edges(O)) {
     if (e.len < 10 || Math.abs(e.nx) < 0.7) continue;
@@ -77,10 +87,18 @@ function santosPassos(k, { footprint, dims }) {
     k.push({ x: (x0 + x1) / 2, z: zF, ry: 0 });
     k.surround({ x: 0, y: 0.2, w: 2.7, h: 4.2, arch: 'round' }, 0.4, 0.35, GL, 0);
     k.surround({ x: 0, y: 7.0, w: 1.9, h: 3.4, arch: 'round' }, 0.32, 0.3, GL, 0);
+    // twin niches with statues flanking the portal, a tablet over the door
+    for (const s of [-1, 1]) {
+      k.wall(1.4, 2.7, 0.35, G, [{ x: 0, y: 0.35, w: 0.85, h: 1.9, arch: 'round', pane: 'dark', inset: 0.2 }], s * 3.5, 2.7, 0.3);
+      k.statue(1.6, GL, s * 3.5, 3.4, 0.5, { seg: 5, pose: 'hold' });
+    }
+    k.box(2.2, 0.7, 0.16, GL, 0, 5.1, 0.42, { mat: MAT.smooth });
     k.box(fw + 0.4, 0.5, 0.7, GL, 0, eave - 0.5, 0.2);
     k.cornice(fw + 0.8, corniceProfile('classic', 0.7), GL, 0, eave, 0.1);
     // broad segmental pediment between the towers, to the real 18 m
     pediment(k, fw - 1.2, hPed - (eave + 0.7), 0.8, GL, 0, eave + 0.7, 0.15, { frame: 0.35, tympanum: 'plaster' });
+    k.box(0.2, 1.3, 0.2, 'iron', 0, hPed, 0.2);
+    k.box(0.75, 0.15, 0.15, 'iron', 0, hPed + 0.95, 0.2);
     k.pop();
     // the two slender towers, tops at the real 30 m
     const capH = Math.max(3.6, hTop - 26.5);
@@ -101,6 +119,9 @@ function santosPassos(k, { footprint, dims }) {
         sideWindows: false,
         urns: 'pinnacle',
         cross: true,
+        clock: true,
+        balustrade: true,
+        belfryBody: 'plaster',
       });
     }
     k.end('height');
