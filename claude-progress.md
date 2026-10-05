@@ -111,3 +111,20 @@ updates it automatically.
 - Evidence captured: `/tmp/h-rain.png`, `/tmp/h-partly.png`, `/tmp/reg-cinema.png`, `/tmp/reg-story.png`, `/tmp/reg-mobile.png`, `/tmp/paco-grounds.png` (grounds stats: 4 forecourts, 10 lawns, 7 paths, 10 beds).
 - Known risk or unresolved issue: none new.
 - Next best step: wave 8b (clouds + sun shafts tuning) when capacity allows, then Phase C finer DEM.
+
+### Session 006
+
+- Date: 2026-10-05
+- Goal: act on the sibling-city review (/tmp/review/compare.md), Guimarães and shared-engine sections.
+- Completed:
+  - API: `api/_city.js`, `adsb.js`, `route.js`, `guide.js` default to `guimaraes`; host map in `src/city.js` lists the Guimarães hosts; `window.__city` aliases `window.__braga` (kept, six modules read it) (`ac90141`).
+  - Cinema: `cities/guimaraes.json` has `cinema_order` (18 ids, castle at dawn to the stadium at night); `src/tour.js` prefers it. The "not in CINEMA_ORDER" warning in the review was barcelos'; Guimarães never printed it (`e27dab7`).
+  - Dead code and warnings: `block.js` removed; the three `toNonIndexed` warnings came from `IcosahedronGeometry` (already non-indexed) in `src/nature.js`, now guarded. Fit drift (castelo 10.8, penha 14.3, santos-passos 10.7, vila-flor 10.1 %) is documented in `FIT_RULES.drift` (`src/fit.js`); the models are larger than the OSM extent, never smaller, so the never-shrink rule holds.
+  - Sky (wave 8b minimum): sunset and morning presets lifted in `src/scene.js`. The default time is `morning`; the review's "dusk-dark" overview was the low-sun preset. Mean map luma 71.6 to 89.6 (default), 73.2 to 104.1 (`#time=sunset`) (`ddc48ec`).
+  - SEO: robots.txt, sitemap.xml (home + 18 `/p/` pages), JSON-LD, hreflang (`?lang=pt|en|ru`), favicon.ico, branded 404 (`1d01a6e`). Porto has no hreflang, favicon.ico or 404; those are extra here.
+  - Engine sync: `scripts/sync-engine.mjs` (3-way by blob hash; states same|behind|ahead|diverged; `--dry-run`, `--apply`, `--record`; `*.conflict` for diverged); base moved to `scripts/engine-base.json` (`3b98e36`). Dry run against braga HEAD ff52a90: same 39, behind 0, ahead 41, diverged 1 (scripts/verify.mjs), 33 braga-only files absent.
+  - Content audit: 18/18 landmarks have 5 gallery photos; videos 1-3 each (toural, santos-passos, sao-francisco have 1); 0/18 have a panorama.
+- Verification run: `npm run verify` green after each group.
+- Evidence captured: /tmp/g3d/{before,after}-*.png (default and sunset overview), /tmp/g3d/luma.mjs.
+- Known risk or unresolved issue: wave 8b clouds and sun shafts still open; braga lacks waves 6-8, so the sync can only ever report this fork as ahead until they are ported back.
+- Next best step: Phase C finer DEM, or the wave 8b cloud pass.

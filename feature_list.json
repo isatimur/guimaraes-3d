@@ -1,6 +1,6 @@
 {
   "project": "guimaraes-3d",
-  "last_updated": "2026-10-04",
+  "last_updated": "2026-10-05",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -195,7 +195,7 @@
       "evidence": [
         "scripts/sync-engine.sh + scripts/engine-base.json (base 1784ff3)"
       ],
-      "notes": "Report-only by default; --apply copies, --record advances the base."
+      "notes": "Hash-guarded 3-way (base, fork, braga HEAD): --dry-run prints same|behind|ahead|diverged; --apply copies behind files only and writes *.conflict for diverged ones; --record advances the base."
     },
     {
       "id": "gui-012",
@@ -212,7 +212,25 @@
         "Vercel project guimaraes-3d, alias https://guimaraes-3d.vercel.app HTTP 200",
         "deployed f3ca363..a4994e1, 2026-10-04"
       ],
-      "notes": "Config waits on guimaraes-3d.com."
+      "notes": "Config waits on guimaraes-3d.com. Re-deployed 2026-10-05 (session 006), see gui-013."
+    },
+    {
+      "id": "gui-013",
+      "priority": 13,
+      "area": "hardening",
+      "title": "Session 006 hardening: API defaults, cinema config, SEO, sky lift, safe engine sync",
+      "user_visible_behavior": "Bare /api/adsb and /api/route work; the overview is readable at the default time; crawlers find robots.txt, sitemap.xml, JSON-LD and hreflang; unknown URLs show a branded 404.",
+      "status": "passing",
+      "verification": [
+        "npm run verify (7/7)",
+        "headless load: 0 page errors, 0 console warnings",
+        "curl /, /robots.txt, /sitemap.xml, /api/adsb on the live URL: 200"
+      ],
+      "evidence": [
+        "commits ac90141 e27dab7 ddc48ec 1d01a6e 3b98e36 (guimaraes-3d)",
+        "mean map luma 71.6 -> 89.6 at the default time, 73.2 -> 104.1 at sunset (/tmp/g3d/*.png)"
+      ],
+      "notes": "Wave 8b is only the minimum (lighting lift). Clouds and sun shafts tuning is still open. Accepted fit drift is documented in src/fit.js FIT_RULES (castelo, penha, santos-passos, vila-flor). No landmark has a 360 panorama (0/18)."
     }
   ]
 }
