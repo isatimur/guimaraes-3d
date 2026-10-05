@@ -317,8 +317,8 @@ const PRESETS = {
     light: 0xffcf9c, lightI: 3.7,
     zenith: 0x2f4f86, mid: 0x7d9cc6, haze: 0xe0c398, scatter: 0xffbe78, scatterK: 0.5, scatterP: 6,
     disk: 0xffe9c2, diskI: 3.1,
-    hemiSky: 0xbcd0e8, hemiGround: 0x5a4c3c, hemiI: 0.2,
-    env: 0.6, exposure: 1.08, density: 0.0002, falloff: 0.0038, night: 0,
+    hemiSky: 0xc8d8ee, hemiGround: 0x7a6650, hemiI: 0.45,
+    env: 0.95, exposure: 1.28, density: 0.00016, falloff: 0.0038, night: 0,
   },
   day: {
     az: 165, el: 50,
@@ -333,8 +333,11 @@ const PRESETS = {
     light: 0xffb063, lightI: 4.2,
     zenith: 0x2b4470, mid: 0x8898b8, haze: 0xe0ab7a, scatter: 0xff9d52, scatterK: 0.6, scatterP: 5,
     disk: 0xffd28f, diskI: 4,
-    hemiSky: 0xbcc0d6, hemiGround: 0x5c4634, hemiI: 0.16,
-    env: 0.62, exposure: 1.12, density: 0.00017, falloff: 0.003, night: 0,
+    // lifted for Guimarães (wave 8b minimum): the low sun leaves the hill
+    // slopes and street canyons in shadow, so the sky fill, the environment
+    // and the exposure carry the overview; thinner haze keeps it clear
+    hemiSky: 0xd0d4ec, hemiGround: 0x8a6a50, hemiI: 0.6,
+    env: 1.15, exposure: 1.4, density: 0.00014, falloff: 0.003, night: 0,
   },
   night: {
     az: 140, el: 10,
