@@ -12,3 +12,4 @@ videos/
 
 # local screenshot scratch
 .shots/
+*.conflict

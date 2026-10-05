@@ -190,10 +190,10 @@
       "user_visible_behavior": "Engine fixes can be ported from braga-3d in one documented step.",
       "status": "passing",
       "verification": [
-        "scripts/sync-engine.sh reports changes; scripts/engine-base.txt records the base"
+        "scripts/sync-engine.sh reports changes; scripts/engine-base.json records the base"
       ],
       "evidence": [
-        "scripts/sync-engine.sh + scripts/engine-base.txt (base 1784ff3)"
+        "scripts/sync-engine.sh + scripts/engine-base.json (base 1784ff3)"
       ],
       "notes": "Report-only by default; --apply copies, --record advances the base."
     },

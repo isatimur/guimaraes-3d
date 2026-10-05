@@ -26,7 +26,7 @@ updates it automatically.
   - Added `scripts/verify.mjs` + `npm run verify` — the single gate; skips checks whose data does not exist.
   - Added individual `check:*` npm scripts; fixed the `package.json` name (`braga-3d` → `guimaraes-3d`).
   - Added `init.sh`, `.nvmrc` (22) and `engines.node >=22`.
-  - Added `scripts/sync-engine.sh` + `scripts/engine-base.txt` (base `1784ff3`).
+  - Added `scripts/sync-engine.sh` + `scripts/engine-base.json` (base `1784ff3`).
   - Added this progress log.
 - Verification run: `npm run verify`
   - PASS build, geo, dimensions, 1:1 fit, traffic, models
@@ -34,7 +34,7 @@ updates it automatically.
 - Evidence captured: verify summary above; `feature_list.json` statuses.
 - Commits: `guimaraes-3d: harness pack — AGENTS.md, feature_list, progress, init.sh, verify gate, engine-sync`.
 - Files or artifacts updated: AGENTS.md, CLAUDE.md, feature_list.json, claude-progress.md,
-  init.sh, .nvmrc, scripts/verify.mjs, scripts/sync-engine.sh, scripts/engine-base.txt, package.json.
+  init.sh, .nvmrc, scripts/verify.mjs, scripts/sync-engine.sh, scripts/engine-base.json, package.json.
 - Known risk or unresolved issue:
   - Uncommitted work predating this session: `data/routes.json`, `data/story.json`,
     `cities/guimaraes.json`, `scripts/fetch-routes.mjs`, `src/story.js` (routes/story in progress).

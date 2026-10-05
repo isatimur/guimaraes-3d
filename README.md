@@ -180,7 +180,7 @@ a visible focus ring; it also fails on page errors.
 ## Engine lineage
 
 Forked from **braga-3d**, which remains the engine source of truth. The engine
-base is recorded in `scripts/engine-base.txt`; `scripts/sync-engine.sh` reports
+base is recorded in `scripts/engine-base.json`; `scripts/sync-engine.sh` reports
 (or `--apply` carries over) engine changes from Braga. Braga-specific content
 was stripped and replaced with Guimarães data, models and locales — the
 `guimaraes` fork keeps its own palette, castle mark, dawn opening and cinema

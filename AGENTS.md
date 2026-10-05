@@ -80,7 +80,7 @@ PLAN.md         project plan and remaining rounds
 
 ## Engine Lineage
 
-Forked from braga-3d (engine base recorded in `scripts/engine-base.txt`; see
+Forked from braga-3d (engine base recorded in `scripts/engine-base.json`; see
 `PLAN.md`). Braga is the engine source of truth. Use `scripts/sync-engine.sh`
 to report (or `--apply`) engine changes.
 
