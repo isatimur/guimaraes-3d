@@ -87,7 +87,13 @@
       }
     }
   ],
-  "panorama": null,
+  "panorama": {
+    "type": "youtube",
+    "youtube_id": "Q8_1XgfAt0o",
+    "title": "Castelo de Guimarães 360 8k video tour",
+    "channel": "Andrew Mardamshin",
+    "caption_ru": "Видеотур по замку Гимарайнш в формате 360° (8K)"
+  },
   "videos": [
     {
       "youtube_id": "NiuG5HGT5aU",

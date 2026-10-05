@@ -22,7 +22,10 @@ export const landmarks = {
       "The floodlit walls at night",
       "The path up to the main gate and towers",
       "A memorial plaque on the granite rock at the foot of the walls"
-    ]
+    ],
+    "panorama": {
+      "caption": "An 8K 360° video tour of Guimarães Castle"
+    }
   },
   "paco-duques": {
     "name": "Palace of the Dukes of Braganza",
@@ -44,7 +47,10 @@ export const landmarks = {
       "The inner courtyard with its arcades and brick chimneys",
       "A laid table beneath a Flemish tapestry",
       "The palace from the air: four corner towers and steep roofs"
-    ]
+    ],
+    "panorama": {
+      "caption": "A 360° video of the Palace of the Dukes of Braganza in Guimarães (September 2021)"
+    }
   },
   "sao-miguel-castelo": {
     "name": "Church of São Miguel do Castelo",

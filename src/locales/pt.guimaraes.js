@@ -22,7 +22,10 @@ export const landmarks = {
       "As muralhas iluminadas à noite",
       "O caminho para a porta principal e as torres",
       "Placa comemorativa no penedo de granito, ao pé das muralhas"
-    ]
+    ],
+    "panorama": {
+      "caption": "Visita virtual a 360° (8K) ao Castelo de Guimarães"
+    }
   },
   "paco-duques": {
     "name": "Paço dos Duques de Bragança",
@@ -44,7 +47,10 @@ export const landmarks = {
       "O pátio interior com as arcadas e as chaminés de tijolo",
       "Mesa posta sob uma tapeçaria flamenga",
       "O paço visto do ar: quatro torreões e telhados íngremes"
-    ]
+    ],
+    "panorama": {
+      "caption": "Vídeo a 360° do Paço dos Duques de Bragança, em Guimarães (setembro de 2021)"
+    }
   },
   "sao-miguel-castelo": {
     "name": "Igreja de São Miguel do Castelo",

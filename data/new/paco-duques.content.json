@@ -91,7 +91,13 @@
       }
     }
   ],
-  "panorama": null,
+  "panorama": {
+    "type": "youtube",
+    "youtube_id": "iCyaeIHmIR8",
+    "title": "58- 360º Guimarães, Palacio de los duques de Braganza - Septiembre 2021",
+    "channel": "360 Videos",
+    "caption_ru": "Дворец герцогов Браганса в Гимарайнше, видео 360° (сентябрь 2021)"
+  },
   "videos": [
     {
       "youtube_id": "xOZLJYj3Ts4",

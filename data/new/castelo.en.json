@@ -19,6 +19,9 @@
    "The floodlit walls at night",
    "The path up to the main gate and towers",
    "A memorial plaque on the granite rock at the foot of the walls"
-  ]
+  ],
+  "panorama": {
+   "caption": "An 8K 360° video tour of Guimarães Castle"
+  }
  }
 }
