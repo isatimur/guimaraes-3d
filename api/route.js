@@ -16,7 +16,7 @@
 //   airline name and IATA flight number: adsbdb callsign (4);
 //   aircraft (by ICAO hex): adsbdb https://api.adsbdb.com/v0/aircraft/4951cd.
 // Route data is crowd-sourced (the VRS standing data): a callsign can fly a
-// new route before the data knows it. A route that passes far from Braga
+// new route before the data knows it. A route that passes far from Guimarães
 // (the aircraft is within 74 km of it) is treated as unknown, not shown.
 //
 // Output: { ok, callsign, hex,
@@ -30,7 +30,7 @@
 // reply carries public, max-age=600 (60 when ok: false), so the CDN shares
 // it between visitors too.
 // The city (its aircraft point, for the plausibility test and the routeset
-// query) comes from cities/<id>.json via ?city=<id>, default braga
+// query) comes from cities/<id>.json via ?city=<id>, default guimaraes
 // (41.55 / -8.42). Every helper takes the config as `cfg`.
 import { cityConfig, userAgent } from './_city.js';
 
@@ -38,7 +38,7 @@ const TIMEOUT_MS = 3500;
 const TTL_MS = 10 * 60e3;
 const FAIL_TTL_MS = 60e3;
 const CACHE_MAX = 500;
-const PLAUSIBLE_KM = 400; // a route leg passes at most this far from Braga
+const PLAUSIBLE_KM = 400; // a route leg passes at most this far from Guimarães
 
 const CALLSIGN_RE = /^[A-Z0-9]{2,8}$/;
 const HEX_RE = /^[0-9a-f]{6}$/;
@@ -208,9 +208,9 @@ function cached(key, fn) {
 // timeouts (7 s), inside the function's 10 s.
 const lolRouteset = routeset('api.adsb.lol', 'adsb.lol');
 const imRouteset = routeset('adsb.im', 'adsb.im');
-// (cache keys: Braga's as before; another city gets its own, the leg
+// (cache keys: the default city's as before; another city gets its own, the leg
 // picked depends on the city)
-const keyOf = (cfg, k) => (cfg.id === 'braga' ? k : `${cfg.id}:${k}`);
+const keyOf = (cfg, k) => (cfg.id === 'guimaraes' ? k : `${cfg.id}:${k}`);
 async function routeChain(callsign, dbRoute, cfg) {
   let answered = false;
   const first = await cached(keyOf(cfg, `adsb.lol-routeset:${callsign}`), () => lolRouteset(callsign, cfg));
@@ -231,7 +231,7 @@ async function routeChain(callsign, dbRoute, cfg) {
 }
 
 // The core, without the HTTP wrapper (node tests call it directly).
-export async function lookupRoute(callsign, hex, cfg = cityConfig('braga')) {
+export async function lookupRoute(callsign, hex, cfg = cityConfig('guimaraes')) {
   const db = callsign ? cached(keyOf(cfg, `adsbdb-callsign:${callsign}`), () => adsbdbCallsign(callsign, cfg)) : null;
   const [route, dbr, ac] = await Promise.all([
     callsign ? routeChain(callsign, db, cfg) : null,
@@ -272,7 +272,7 @@ export default async function handler(req, res) {
   const keys = q ? [...q.keys()] : [];
   const callsign = q?.get('callsign') ?? null;
   const hex = q?.get('hex') ?? null;
-  const cfg = q?.has('city') ? cityConfig(q.get('city')) : cityConfig('braga');
+  const cfg = q?.has('city') ? cityConfig(q.get('city')) : cityConfig('guimaraes');
   const bad =
     !q ||
     !cfg ||
@@ -291,6 +291,6 @@ export default async function handler(req, res) {
   } catch {
     out = { ok: false, callsign, hex, flight: null, route: null, aircraft: null };
   }
-  res.setHeader('X-Braga-Route', out.route?.src || 'none');
+  res.setHeader('X-Guimaraes-Route', out.route?.src || 'none');
   send(200, out.ok ? 'public, max-age=600, s-maxage=600' : 'public, max-age=60, s-maxage=60', out);
 }

@@ -1,4 +1,4 @@
-// GET /api/adsb: aircraft within 40 nm (74 km) of Braga, one small JSON.
+// GET /api/adsb: aircraft within 40 nm (74 km) of Guimarães, one small JSON.
 //
 // Why a function: none of the key-less ADS-B APIs send CORS headers
 // (checked from a browser on braga-3d.com, 2026-09-28), so the page cannot
@@ -19,7 +19,7 @@
 // flight: the callsign, else the registration (the label); call: the
 // callsign only (api/route.js looks it up); reg: the registration or ''.
 // The point and radius come from cities/<id>.json (aircraft: lat, lon,
-// radius_nm; Braga 41.55 / -8.42 / 40 nm), chosen by ?city=<id>.
+// radius_nm; Guimarães 41.44 / -8.29 / 40 nm), chosen by ?city=<id>.
 import { cityConfig, userAgent } from './_city.js';
 
 const FT = 0.3048;
@@ -112,7 +112,7 @@ async function getJson(url, ua, ms = 5000) {
 }
 
 // The core, without the HTTP wrapper (node tests call it directly).
-export async function fetchAircraft(cfg = cityConfig('braga')) {
+export async function fetchAircraft(cfg = cityConfig('guimaraes')) {
   const errors = [];
   const ua = userAgent(cfg);
   for (const s of sourcesFor(cfg)) {
@@ -149,7 +149,7 @@ export default async function handler(req, res) {
     return;
   }
   const url = String(req.url || '');
-  let cfg = cityConfig('braga');
+  let cfg = cityConfig('guimaraes');
   if (url.includes('?')) {
     let q = null;
     try {
@@ -175,7 +175,7 @@ export default async function handler(req, res) {
     memo.set(cfg.id, { at: Date.now(), out });
   }
   res.setHeader('Cache-Control', `public, max-age=0, s-maxage=${out.maxAge}, stale-while-revalidate=${out.maxAge * 2}`);
-  res.setHeader('X-Braga-Adsb', out.src || 'none');
+  res.setHeader('X-Guimaraes-Adsb', out.src || 'none');
   res.statusCode = 200;
   res.end(JSON.stringify(out));
 }

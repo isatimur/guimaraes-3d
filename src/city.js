@@ -10,7 +10,7 @@
 // evaluate before the fetch answers. main.js awaits loadCity() first.
 import { language, t } from './i18n.js';
 
-const HOSTS = { 'braga-3d.com': 'braga', 'www.braga-3d.com': 'braga', 'braga-3d.vercel.app': 'braga' };
+const HOSTS = { 'guimaraes-3d.vercel.app': 'guimaraes', 'guimaraes-3d.com': 'guimaraes', 'www.guimaraes-3d.com': 'guimaraes' };
 const ID_RE = /^[a-z][a-z0-9-]*$/;
 
 export function resolveCityId(envId, search = '', hostname = '') {

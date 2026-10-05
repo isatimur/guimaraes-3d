@@ -2,7 +2,7 @@
 // question, grounded in this site's own verified place data.
 //
 // Request (JSON, at most 4 KB):
-//   { city: 'braga', lang: 'ru' | 'en' | 'pt', question: '<= 300 chars',
+//   { city: 'guimaraes', lang: 'ru' | 'en' | 'pt', question: '<= 300 chars',
 //     context: { placeId?, viewCentre?: { lat, lon }, time?, weather? } }
 // Reply 200:
 //   { answer, actions: [{ type: 'fly_to' | 'route_to', placeId, name, lat, lon }],
@@ -353,7 +353,7 @@ const SHORT_TEXT = /^[\p{L}\p{N} °%.,:;+\-/()]{0,60}$/u;
 export function validate(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return 'body must be a JSON object';
   for (const k of Object.keys(body)) if (!['city', 'lang', 'question', 'context'].includes(k)) return `unknown field ${k}`;
-  const city = body.city ?? 'braga';
+  const city = body.city ?? 'guimaraes';
   if (typeof city !== 'string' || !ID_RE.test(city) || !cityConfig(city)) return 'city must be a known city id';
   if (!LANGS.has(body.lang)) return 'lang must be ru, en or pt';
   if (typeof body.question !== 'string') return 'question must be a string';

@@ -96,7 +96,7 @@ if (LITE) {
 }
 
 // Exposed for tests and debugging: renderer.info, ready flags, flight count.
-const debug = (window.__braga = { ready: false, flights: 0, dataStatus: null });
+const debug = (window.__braga = window.__city = { ready: false, flights: 0, dataStatus: null }); // __city is the neutral alias; __braga stays for the modules and scripts that read it
 debug.tier = { ...TIER, dprCap: DPR.cap };
 // Load phases in ms since navigation (docs/perf, /tmp/perf/measure.mjs)
 debug.timing = {};

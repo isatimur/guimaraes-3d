@@ -1,5 +1,5 @@
 // The city an API call is for: ?city=<id>, validated against the config
-// files on disk (cities/<id>.json), default braga. Shared by api/adsb.js
+// files on disk (cities/<id>.json), default guimaraes. Shared by api/adsb.js
 // and api/route.js (an underscore file is not a route on Vercel).
 // vercel.json includeFiles ships cities/*.json with the functions.
 import { readFileSync, existsSync } from 'node:fs';
@@ -12,7 +12,7 @@ const cache = new Map();
 
 // { id, name, origin, aircraft: { lat, lon, radius_nm }, domain } or null
 // when the id is not a known city.
-export function cityConfig(id = 'braga') {
+export function cityConfig(id = 'guimaraes') {
   if (!ID_RE.test(id)) return null;
   if (cache.has(id)) return cache.get(id);
   const file = join(CITIES, `${id}.json`);
@@ -38,6 +38,6 @@ export function cityConfig(id = 'braga') {
 
 // The User-Agent the upstream sees: the city's site.
 export function userAgent(cfg) {
-  const site = cfg?.domain || 'https://braga-3d.com';
+  const site = cfg?.domain || 'https://guimaraes-3d.vercel.app';
   return `${site.replace(/^https?:\/\//, '')} live map (${site})`;
 }
