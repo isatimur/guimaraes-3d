@@ -18,7 +18,6 @@
 // one (PLAN.md, round 3): add src/models/guimaraes/<name>.js exporting
 // { [id]: builder } and spread it into DETAILED below.
 import { Kit, PALETTE, MAT, triangleCount } from './models/kit.js';
-import { blockBuilders } from './models/guimaraes/block.js';
 import { builders as detailedBuilders } from './models/guimaraes/index.js';
 
 export { PALETTE, MAT, triangleCount };
@@ -47,7 +46,7 @@ export const LANDMARK_SPECS = {
 };
 
 const DETAILED = { ...detailedBuilders };
-const BUILDERS = { ...blockBuilders(Object.keys(LANDMARK_SPECS)), ...DETAILED };
+const BUILDERS = { ...DETAILED };
 
 const TYPE_DEFAULT = Object.fromEntries(Object.entries(LANDMARK_SPECS).map(([id, s]) => [s.type, id]));
 export const MODEL_TYPES = Object.keys(TYPE_DEFAULT);

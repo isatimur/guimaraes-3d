@@ -31,6 +31,26 @@
     "facts": { "min": 4, "max": 6, "maxChars": 140 }
   },
   "og_image": "/og/guimaraes.jpg",
+  "cinema_order": [
+    { "id": "castelo", "shot": "crane", "dur": 15, "time": "morning" },
+    { "id": "sao-miguel-castelo", "shot": "rise", "dur": 9, "time": "morning" },
+    { "id": "muralha", "shot": "dolly", "dur": 10, "time": "morning" },
+    { "id": "oliveira", "shot": "crane", "dur": 12, "time": "morning" },
+    { "id": "sao-tiago", "shot": "orbit", "dur": 10, "time": "morning" },
+    { "id": "toural", "shot": "dolly", "dur": 11, "time": "day" },
+    { "id": "paco-duques", "shot": "orbit", "dur": 12, "time": "day" },
+    { "id": "alberto-sampaio", "shot": "dolly", "dur": 10, "time": "day" },
+    { "id": "plataforma-artes", "shot": "crane", "dur": 11, "time": "day" },
+    { "id": "couros", "shot": "orbit", "dur": 10, "time": "day" },
+    { "id": "santa-marinha", "shot": "orbit", "dur": 12, "time": "day" },
+    { "id": "sao-francisco", "shot": "dolly", "dur": 10, "time": "day" },
+    { "id": "santos-passos", "shot": "crane", "dur": 11, "time": "day" },
+    { "id": "vila-flor", "shot": "dolly", "dur": 10, "time": "day" },
+    { "id": "uminho-azurem", "shot": "crane", "dur": 10, "time": "sunset" },
+    { "id": "briteiros", "shot": "orbit", "dur": 13, "time": "sunset" },
+    { "id": "penha", "shot": "crane", "dur": 17, "time": "sunset" },
+    { "id": "estadio-afonso-henriques", "shot": "rise", "dur": 12, "time": "sunset", "then": "night", "at": 3 }
+  ],
   "landmark_candidates": [
     { "id": "castelo", "name_pt": "Castelo de Guimarães", "category": "civic", "why": "10th-c. castle, cradle of Portugal" },
     { "id": "paco-duques", "name_pt": "Paço dos Duques de Bragança", "category": "museum", "why": "15th-c. ducal palace, 39 chimneys" },

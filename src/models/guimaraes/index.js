@@ -3,8 +3,7 @@
 // src/models.js: builder.metric = true, drawn at 1:1 metres on the OSM
 // outline, local +z the main front.
 //
-// An id without a builder here falls back to the generic massing in
-// block.js, then to the type default. Replace the massing one by one.
+// Every id has a detailed builder here (the generic massing fallback was removed).
 import castelo from './castelo.js';
 import pacoDuques from './paco-duques.js';
 import saoMiguel from './sao-miguel-castelo.js';

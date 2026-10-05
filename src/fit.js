@@ -79,11 +79,25 @@ export function shrinkCheck(fit) {
 // features (a cable car, a wall, a park) that would flatten a huge plateau.
 // These rules level the ground under the building only, so the rest follows
 // the real slope.
+// drift: { max, note } documents a known, accepted excess over the OSM extent
+// (the never-shrink rule only limits the model from below). While the worst
+// deviation stays <= max, the console warning is skipped; the note is the
+// reason, kept with the rule.
 export const FIT_RULES = {
+  // the crenellations, tower plinths and the gate ramp add width beyond the
+  // mapped curtain-wall ring
+  castelo: {
+    drift: { max: 0.12, note: 'merlons, tower plinths and the gate ramp stand slightly proud of the mapped curtain-wall ring' },
+  },
+  // the granite stair and balustrade in front of the twin-tower front
+  'santos-passos': {
+    drift: { max: 0.12, note: 'the granite stair and balustrade in front of the twin-tower facade extend past the mapped church outline' },
+  },
   // the sanctuary stands on level ground; the cable (1.2 km of it), the pylons
   // and the park follow the hill instead of being flattened into a mesa
   penha: {
     pad: { parts: [/Santuário/] },
+    drift: { max: 0.15, note: 'the sanctuary stairs, terrace wall and cable-car station project beyond the mapped church outline; the model never shrinks below it' },
   },
   // the Alfândega tower is levelled; the wall follows the ground
   muralha: {
@@ -92,6 +106,7 @@ export const FIT_RULES = {
   // the palace and its two auditoria are levelled; the garden follows suit
   'vila-flor': {
     pad: { parts: [/^(building|site)$/] },
+    drift: { max: 0.12, note: 'the terrace balustrade and projecting end bays make the palace block 10.1 % wider than the mapped outline' },
   },
   // the pousada and church are levelled; the garden keeps the slope
   'santa-marinha': {
@@ -387,7 +402,8 @@ export function fitLandmark(l, ctx) {
     height: dimsH ? dev(H, dimsH) : null,
   };
   const worst = Math.max(deviation.site, deviation.main ?? 0, deviation.height ?? 0);
-  if (worst > DEVIATION_WARN && !fit.legacy && typeof console !== 'undefined') {
+  const accepted = rule.drift && worst <= rule.drift.max;
+  if (worst > DEVIATION_WARN && !accepted && !fit.legacy && typeof console !== 'undefined') {
     console.warn(`[guimaraes] ${l.id}: model box deviates ${(worst * 100).toFixed(0)} % from the OSM extent`, deviation);
   }
 

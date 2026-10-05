@@ -214,7 +214,8 @@ function cone(geos, cx, cy, cz, r, h, color, seed, seg = 8) {
 // A wildflower head: a tiny baked-colour blob that keeps its own hue against
 // the season (aCenter.w < 0: no tint, no winter shrink), for the meadows.
 function flower(geos, cx, cy, cz, r, hex, seed) {
-  const g = new THREE.IcosahedronGeometry(r, 0).toNonIndexed();
+  const ico = new THREE.IcosahedronGeometry(r, 0); // polyhedra are already non-indexed
+  const g = ico.index ? ico.toNonIndexed() : ico;
   g.translate(cx, cy, cz);
   const rnd = lcg(seed);
   const p = g.attributes.position;
