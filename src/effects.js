@@ -55,10 +55,10 @@ class SunRaysPass extends Pass {
     this.quad = new FullScreenQuad();
     // tuning (3d-sky-rays): energy threshold over the sky luminance, the
     // source falloff around the sun, what the foreground keeps of the shafts
-    this.threshold = { value: 0.85 };
-    this.nearK = { value: 14 };
-    this.fore = { value: 0.36 };
-    this.gain = 1.9;
+    this.threshold = { value: 0.7 };
+    this.nearK = { value: 9 };
+    this.fore = { value: 0.4 };
+    this.gain = 2.6;
     this.maskMat = new THREE.ShaderMaterial({
       uniforms: { tDiffuse: { value: null }, tDepth: { value: null }, uSun: { value: this.sun }, uAspect: { value: 1 }, uThreshold: this.threshold, uNearK: this.nearK },
       vertexShader: QUAD_VERT,

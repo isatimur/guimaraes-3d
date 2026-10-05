@@ -24,7 +24,8 @@ export const WEATHERS = ['clear', 'partly', 'overcast', 'rain', 'fog'];
 // dim/grey/fog/haze: the atmosphere dials; rain: streak density; wet: the
 // ground wetness it leads to
 const STATES = {
-  clear: { cover: 0, shadow: 0, dim: 0, grey: 0, fog: 0, haze: 0, rain: 0, wet: 0 },
+  // clear is a fair-weather sky: a few scattered cumulus and their shadows
+  clear: { cover: 0.2, shadow: 0.55, dim: 0, grey: 0, fog: 0, haze: 0, rain: 0, wet: 0 },
   partly: { cover: 0.36, shadow: 0.72, dim: 0.03, grey: 0.06, fog: 0, haze: 0, rain: 0, wet: 0 },
   overcast: { cover: 0.9, shadow: 0.5, dim: 0.6, grey: 0.72, fog: 0, haze: 0.35, rain: 0, wet: 0 },
   rain: { cover: 0.97, shadow: 0.45, dim: 0.74, grey: 0.86, fog: 0, haze: 1, rain: 1, wet: 1 },
@@ -372,7 +373,7 @@ export function createWeather({ scene, atmosphere, datumM = 0, mobile = false, r
     name = next;
     Object.assign(from, cur);
     Object.assign(to, STATES[next]);
-    if (cover != null) to.cover = THREE.MathUtils.clamp(cover, next === 'clear' ? 0 : 0.2, 1);
+    if (cover != null) to.cover = THREE.MathUtils.clamp(cover, 0.2, 1);
     blendT = instant ? 1 : 0;
     if (instant) Object.assign(cur, to);
     for (const f of listeners) f(name);
