@@ -79,6 +79,9 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
   let landmarkGroup = scene.getObjectByName('landmarks');
 
   const NEAR_M = mobile ? 2000 : 4000;
+  // adaptive governor (main.js): < 1 shrinks the streamed radius, the near-LOD
+  // radius and the per-frame integration budget together.
+  let budgetScale = 1;
   const MEM_CAP = (mobile ? 120 : 350) * 1048576;
   const TREE_CAP = nature?.streamCap ?? 0;
 
@@ -545,7 +548,7 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
   function radiusFor(altM) {
     if (altM > (mobile ? 6000 : 4500)) return Infinity;
     const r = 3000 * Math.pow(Math.max(altM, 300) / 300, 0.517);
-    return (mobile ? r / 2 : r) * S;
+    return (mobile ? r / 2 : r) * S * budgetScale;
   }
 
   function schedule() {
@@ -557,7 +560,7 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
     stats.altM = Math.round(altU / S);
     _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
     _frustum.setFromProjectionMatrix(_pm);
-    const nearU = NEAR_M * S;
+    const nearU = NEAR_M * S * budgetScale;
     const cands = [];
     for (const T of tiles.values()) {
       const dCam = rectDist(T.rect, cam.x, cam.z);
@@ -642,13 +645,14 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
     }
     // new geometry within the frame budget
     const t0 = performance.now();
-    while (ready.length && performance.now() - t0 < SLICE_MS) integrate(ready.shift());
+    const sliceMs = SLICE_MS * Math.max(0.4, budgetScale);
+    while (ready.length && performance.now() - t0 < sliceMs) integrate(ready.shift());
     for (const G of groups.values()) {
-      if (performance.now() - t0 >= SLICE_MS) break;
+      if (performance.now() - t0 >= sliceMs) break;
       if (G.dirty) rebuildGroup(G);
     }
     sinceLines += dt;
-    if (linesDirty && sinceLines > 1 && performance.now() - t0 < SLICE_MS) {
+    if (linesDirty && sinceLines > 1 && performance.now() - t0 < sliceMs) {
       sinceLines = 0;
       rebuildLines();
     }
@@ -733,6 +737,14 @@ export function createTiles({ renderer, scene, camera, terrain, heightAt, proj, 
     group,
     stats,
     update,
+    // adaptive governor: < 1 shrinks the streamed radius, the near-LOD
+    // radius and the per-frame geometry slice
+    setBudgetScale(k) {
+      budgetScale = Math.min(1, Math.max(0.25, k || 1));
+    },
+    get budgetScale() {
+      return budgetScale;
+    },
     get index() {
       return index;
     },
