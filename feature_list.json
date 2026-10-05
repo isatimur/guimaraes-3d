@@ -230,7 +230,27 @@
         "commits ac90141 e27dab7 ddc48ec 1d01a6e 3b98e36 (guimaraes-3d)",
         "mean map luma 71.6 -> 89.6 at the default time, 73.2 -> 104.1 at sunset (/tmp/g3d/*.png)"
       ],
-      "notes": "Wave 8b is only the minimum (lighting lift). Clouds and sun shafts tuning is still open. Accepted fit drift is documented in src/fit.js FIT_RULES (castelo, penha, santos-passos, vila-flor). No landmark has a 360 panorama (0/18)."
+      "notes": "At session 006 the sky work was the lighting lift only; clouds and shafts were tuned in session 007 (gui-014). Accepted fit drift is documented in src/fit.js FIT_RULES (castelo, penha, santos-passos, vila-flor)."
+    },
+    {
+      "id": "gui-014",
+      "priority": 14,
+      "area": "scene",
+      "title": "Session 007: 360 panoramas, videos, clouds and shafts, adaptive governor",
+      "user_visible_behavior": "Castle and Paco dos Duques open a real 360 video. Fair-weather clouds drift by default and cast moving shadows. Low-sun shafts read more clearly and close under a solid deck or rain. A slow device loses resolution, shadow size, post passes and stream radius in steps, and gets them back.",
+      "status": "passing",
+      "verification": [
+        "npm run verify (7/7), npm run check:fit",
+        "npm run check:data -- --online: the 2 panoramas pass the projection check; 9 older video entries show title or channel drift (open)",
+        "node /tmp/g3d/gov.mjs <url> 8 and 20: level 0 to 3 to 0, 0 console errors or warnings"
+      ],
+      "evidence": [
+        "commits 42bdb1d 2db1212 401113d",
+        "panoramas Q8_1XgfAt0o (castelo), iCyaeIHmIR8 (paco-duques): EQUIRECTANGULAR on the watch page",
+        "overview 1.81 M triangles at 1920x1080 (budget 2.4 M), 196 calls; clouds add 1 call and 2 triangles",
+        "8x CPU throttle: 30 ms at level 0, 23 ms after the governor settled at level 3; 20x: 88 ms to 72 ms; both recover to 16.7 ms"
+      ],
+      "notes": "Panoramas: 2 of 18. Oliveira, Penha, Santa Marinha, stadium and Briteiros have no verified true-360 video (only flat ones titled 360). The landmark near-LOD step of the governor does not exist here (landmarks.js has only the screen-size far LOD). The 4x throttle did not slow the frame at all on this machine (vsync-bound at 16.7 ms)."
     }
   ]
 }
