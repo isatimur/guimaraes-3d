@@ -146,3 +146,12 @@ updates it automatically.
 - Open: `check:data -- --online` shows title or channel drift on 9 older video entries (castelo 1 and 2, paco-duques 0 and 2, toural 0, penha 0 and 2, muralha 0, briteiros 1). Not synced yet. `merge-landmarks.mjs` overwrites the hand-written `routes` export in `src/locales/{en,pt}.guimaraes.js`; use it for `landmarks.json` only.
 - Known risk: the ray source now fires more strongly in clear air; check low-end phones before raising the gain again.
 - Next best step: sync the 9 drifted video titles, then build exterior-accurate castelo and paco-duques models from exterior photos.
+
+### Session 008
+
+- Date: 2026-10-06
+- Goal: live weather matches reality (port of porto-3d ed0db10).
+- Completed: weather states drizzle, rain (moderate), downpour in `src/weather.js`; `weatherFromCode` picks by WMO code and precipitation (`src/live.js`); live mode on for first visits through `default_live` in `cities/guimaraes.json`; `src/guide.js` labels.
+- Evidence: build and verify OK; fresh visit on preview and production shows live mode and the real badge (thunderstorm, 18 C, matches Open-Meteo code 95, 17.5 C); seven forced-state screenshots in /tmp/g3d/state-*.png, ordered by intensity; production deployed with `vercel --prod`.
+- Open: drizzle, rain and downpour were checked by forcing states, not by a real shower. Production logs one 404 for `/data/gtfs/schedule.json` (no GTFS feed; older than this change). Thunder maps to rain.
+- Next best step: sync the 9 drifted video titles, then the exterior-accurate castelo and paco-duques models.

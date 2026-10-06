@@ -17,6 +17,7 @@
   "timezone": "Europe/Lisbon",
   "locale_default": "ru",
   "season_default": "summer",
+  "default_live": true,
   "transit": { "gtfs_url": null, "operator": "TUG", "operator_long": "Transportes Urbanos de Guimarães", "gtfs_rt": null, "todo": "find a GTFS feed on dados.gov.pt / NAP; else schedule line to Penha only" },
   "aircraft": { "lat": 41.44, "lon": -8.29, "radius_nm": 40 },
   "weather": { "lat": 41.4425, "lon": -8.2918 },

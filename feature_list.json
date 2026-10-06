@@ -251,6 +251,25 @@
         "8x CPU throttle: 30 ms at level 0, 23 ms after the governor settled at level 3; 20x: 88 ms to 72 ms; both recover to 16.7 ms"
       ],
       "notes": "Panoramas: 2 of 18. Oliveira, Penha, Santa Marinha, stadium and Briteiros have no verified true-360 video (only flat ones titled 360). The landmark near-LOD step of the governor does not exist here (landmarks.js has only the screen-size far LOD). The 4x throttle did not slow the frame at all on this machine (vsync-bound at 16.7 ms)."
+    },
+    {
+      "id": "gui-015",
+      "priority": 15,
+      "area": "weather",
+      "title": "Real-time weather by intensity; live mode on for first visits",
+      "user_visible_behavior": "A slight shower (WMO 80, 61, or under 0.6 mm) draws as light rain, a moderate one as rain, a heavy one (82, 65-67, over 2.5 mm) as a downpour. A first visit with no saved choice opens in live mode with the real badge. An explicit '0', a #weather= or #time= hash, and saved choices still win.",
+      "status": "passing",
+      "verification": [
+        "npm run build, npm run verify: OK",
+        "headless fresh visit (no localStorage) on a preview build and on production: live mode on, badge 'Guimarães now · 18° · sunset/sunrise · thunderstorm' matches Open-Meteo (code 95, 17.5 C)",
+        "each state forced with #weather=<state>&time=noon: clear, partly, overcast, drizzle, rain, downpour, fog; screenshots /tmp/g3d/state-*.png read; streak density and grey rise in that order; console 0 errors, 0 warnings on the preview"
+      ],
+      "evidence": [
+        "src/weather.js states drizzle (rain 0.28), rain (0.65, now moderate), downpour (1.0, the old rain dials)",
+        "src/live.js weatherFromCode and wantLive; cities/guimaraes.json default_live; src/guide.js labels",
+        "ported from porto-3d ed0db10"
+      ],
+      "notes": "Only the thunderstorm reading was live during the test, so the drizzle, rain and downpour mapping was checked by forcing the states, not by a real shower. Thunder (95+) still maps to rain, as in porto. On production the console shows one 404 for /data/gtfs/schedule.json (no GTFS feed yet; it existed before this change). No new locale strings: 'морось' and 'ливень' already had PT and EN."
     }
   ]
 }

@@ -8,7 +8,7 @@
 //   - rain: line streaks in a box carried in front of the camera, sized to
 //     the view so they read as rain in a close-up and over the whole city;
 //     one GPU-driven draw, density is the draw range;
-//   - five states (clear, partly cloudy, overcast, rain, fog), each a set
+//   - seven states (clear, partly cloudy, overcast, drizzle, rain, downpour, fog), each a set
 //     of dials that blend over 3 s from wherever the last blend stood. Wet
 //     ground dries slower than it gets wet.
 //
@@ -18,7 +18,7 @@ import * as THREE from 'three';
 import { WEATHER_UNIFORMS, CLOUD_GLSL, FOG_UNIFORMS } from './scene.js';
 import { S } from './geo.js';
 
-export const WEATHERS = ['clear', 'partly', 'overcast', 'rain', 'fog'];
+export const WEATHERS = ['clear', 'partly', 'overcast', 'drizzle', 'rain', 'downpour', 'fog'];
 
 // cover: deck cover 0..1; shadow: how much a cloud dims the sun under it;
 // dim/grey/fog/haze: the atmosphere dials; rain: streak density; wet: the
@@ -28,7 +28,12 @@ const STATES = {
   clear: { cover: 0.2, shadow: 0.55, dim: 0, grey: 0, fog: 0, haze: 0, rain: 0, wet: 0 },
   partly: { cover: 0.36, shadow: 0.72, dim: 0.03, grey: 0.06, fog: 0, haze: 0, rain: 0, wet: 0 },
   overcast: { cover: 0.9, shadow: 0.5, dim: 0.6, grey: 0.72, fog: 0, haze: 0.35, rain: 0, wet: 0 },
-  rain: { cover: 0.97, shadow: 0.45, dim: 0.74, grey: 0.86, fog: 0, haze: 1, rain: 1, wet: 1 },
+  // light rain: a thin veil of streaks, a grey but still bright sky
+  drizzle: { cover: 0.9, shadow: 0.5, dim: 0.5, grey: 0.75, fog: 0, haze: 0.6, rain: 0.28, wet: 1 },
+  // moderate rain
+  rain: { cover: 0.95, shadow: 0.47, dim: 0.64, grey: 0.8, fog: 0, haze: 0.85, rain: 0.65, wet: 1 },
+  // a downpour: the full dials
+  downpour: { cover: 0.97, shadow: 0.45, dim: 0.74, grey: 0.86, fog: 0, haze: 1, rain: 1, wet: 1 },
   fog: { cover: 0, shadow: 0, dim: 0.3, grey: 0.4, fog: 1, haze: 0, rain: 0, wet: 0.2 },
 };
 const DIALS = ['cover', 'shadow', 'dim', 'grey', 'fog', 'haze', 'rain'];
