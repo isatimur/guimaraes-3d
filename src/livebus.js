@@ -100,6 +100,12 @@ export function createLiveBus({ scene, camera, renderer, project, heightAt, mobi
   if (rtKey) console.info(`[guimaraes] TUB real-time: key stored, but TUB publishes no open GTFS-Realtime feed yet${TUB_RT_URL ? '' : ' (TUB_RT_URL is null)'}; the buses run on the schedule`);
 
   async function load() {
+    // a city without a GTFS feed (cities/<id>.json transit.gtfs_url is null)
+    // has no schedule file: skip the request instead of logging a 404
+    if (!CITY.transit?.gtfs_url) {
+      status = 'no feed';
+      return;
+    }
     status = 'loading';
     try {
       const r = await fetch(assetUrl(dataPath('gtfs/schedule.json')));
