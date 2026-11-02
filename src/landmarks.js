@@ -80,6 +80,42 @@ function clusterGeometry(g, cell) {
   return out;
 }
 
+// Zero-area triangles (collinear cap points, repeated corners from the kit
+// builders) cover no surface, but at some view angles the rasteriser still
+// gives the sliver a few fragments. Their normal and wall uv are zero, the
+// stone shader's normal goes NaN there, and the bloom mips spread that one
+// pixel into black squares while the camera orbits. Drop them, in place,
+// from a non-indexed geometry (all attributes stay aligned).
+function dropZeroAreaTriangles(g) {
+  if (g.index) return g;
+  const P = g.attributes.position.array;
+  const nT = Math.floor(P.length / 9);
+  const keep = new Uint8Array(nT);
+  let kept = 0;
+  for (let t = 0; t < nT; t++) {
+    const o = t * 9;
+    const ux = P[o + 3] - P[o], uy = P[o + 4] - P[o + 1], uz = P[o + 5] - P[o + 2];
+    const vx = P[o + 6] - P[o], vy = P[o + 7] - P[o + 1], vz = P[o + 8] - P[o + 2];
+    const cx = uy * vz - uz * vy, cy = uz * vx - ux * vz, cz = ux * vy - uy * vx;
+    if (cx * cx + cy * cy + cz * cz >= 1e-12) {
+      keep[t] = 1;
+      kept++;
+    }
+  }
+  if (kept === nT || Object.values(g.attributes).some((a) => a.isInterleavedBufferAttribute)) return g;
+  for (const [name, a] of Object.entries(g.attributes)) {
+    const k = a.itemSize * 3;
+    const out = new a.array.constructor(kept * k);
+    for (let t = 0, j = 0; t < nT; t++) {
+      if (!keep[t]) continue;
+      out.set(a.array.subarray(t * k, t * k + k), j);
+      j += k;
+    }
+    g.setAttribute(name, new THREE.BufferAttribute(out, a.itemSize, a.normalized));
+  }
+  return g;
+}
+
 const PIN_ANGLE = 0.018; // pin height / camera distance: about 24 px on a 900 px view
 const PIN_MIN = 0.05; // world units: in a close-up the pin stays small
 const OUTLINE_LIFT = 0.25;
@@ -325,6 +361,7 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
   const items = list.map((l, index) => {
     const fit = fits[index];
     const g = fit.geometry;
+    dropZeroAreaTriangles(g);
     // per-landmark id for the focus effect in the shader
     g.setAttribute('aLid', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count).fill(index), 1));
     const mesh = new THREE.Mesh(g, material);
@@ -339,6 +376,7 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
     const movers = [];
     for (const p of fit.pieces || []) {
       const pg = p.geometry;
+      dropZeroAreaTriangles(pg);
       pg.setAttribute('aLid', new THREE.BufferAttribute(new Float32Array(pg.attributes.position.count).fill(index), 1));
       const pm = new THREE.Mesh(pg, material);
       pm.name = p.name;
@@ -514,7 +552,8 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
       const want = it.index !== activeIndex && cellPx < (onFar ? LOD_OFF_PX : LOD_ON_PX);
       if (want && !L.far) {
         if (built) continue; // one build per frame
-        L.far = clusterGeometry(L.full, L.r / LOD_K);
+        // clustering can leave three distinct but collinear corners
+        L.far = dropZeroAreaTriangles(clusterGeometry(L.full, L.r / LOD_K));
         built = true;
       }
       const geo = want ? L.far : L.full;
