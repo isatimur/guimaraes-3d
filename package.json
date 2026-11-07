@@ -11,6 +11,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "verify": "node scripts/verify.mjs",
+    "test": "node --test scripts/*.test.mjs",
     "check:data": "node scripts/check-data.mjs --city guimaraes",
     "check:geo": "node scripts/check-geo.mjs --city guimaraes",
     "check:dimensions": "node scripts/check-dimensions.mjs --city guimaraes",
