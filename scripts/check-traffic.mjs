@@ -203,7 +203,9 @@ for (let d = 0; d < g.n; d++) {
 console.log(`roundabout lanes: ${roundLanes} (${ringLanes} on closed rings), clockwise: ${roundCw}`);
 
 // ---- simulate
-const secs = +(process.argv[2] || 90);
+// the first bare number on the command line (verify passes --city <id>
+// first, which made this NaN and skipped the whole simulation)
+const secs = +(process.argv.slice(2).find((a) => /^\d+$/.test(a)) || 90);
 let seed = 7;
 const rnd = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
 const flow = createFlow(net, { N: 600, rnd });
