@@ -38,6 +38,6 @@ export function cityConfig(id = 'guimaraes') {
 
 // The User-Agent the upstream sees: the city's site.
 export function userAgent(cfg) {
-  const site = cfg?.domain || 'https://guimaraes-3d.vercel.app';
+  const site = cfg?.domain || 'https://guimaraes.portugal-3d.com';
   return `${site.replace(/^https?:\/\//, '')} live map (${site})`;
 }
