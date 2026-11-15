@@ -8,8 +8,8 @@
     "en": "An interactive 3D map of Guimarães: the cradle of Portugal, its medieval centre and the Penha mountain.",
     "pt": "Um mapa 3D interativo de Guimarães: o berço de Portugal, o centro medieval e a montanha da Penha."
   },
-  "domain": "https://guimaraes-3d.vercel.app",
-  "hostnames": ["guimaraes-3d.com", "www.guimaraes-3d.com", "guimaraes-3d.vercel.app"],
+  "domain": "https://guimaraes.portugal-3d.com",
+  "hostnames": ["guimaraes-3d.com", "www.guimaraes-3d.com", "guimaraes-3d.vercel.app", "guimaraes.portugal-3d.com"],
   "origin": { "lat": 41.4425, "lon": -8.2918 },
   "core_bbox": { "s": 41.41, "w": -8.34, "n": 41.475, "e": -8.24 },
   "wide_bbox": { "s": 41.36, "w": -8.42, "n": 41.53, "e": -8.16 },
