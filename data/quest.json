@@ -449,6 +449,7 @@
         },
         {
           "id": "muralha",
+          "view": { "k": 0.55, "mk": 0.6 },
           "from": { "text": "facts, long", "items": "facts, history", "visit": "tip" },
           "sources": [
             "https://www.visitguimaraes.travel/torre-da-alfandega-muralha-e-adarve",
@@ -626,6 +627,7 @@
         },
         {
           "id": "santos-passos",
+          "view": { "mk": 0.75 },
           "from": { "text": "facts", "basis": "history", "visit": "tip" },
           "sources": [
             "https://em.guimaraes.pt/geo_artigo-28/igreja-e-oratorios-de-nossa-senhora-da-consolacao-e-dos-santos-passos",
