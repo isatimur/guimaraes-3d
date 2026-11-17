@@ -11,7 +11,7 @@ updates it automatically.
 - Repository root: `~/Dev/guimaraes-3d`
 - Standard startup path: `./init.sh`
 - Standard verification path: `npm run verify`
-- Current highest-priority unfinished feature: none blocking — `gui-008` (story) done; ongoing polish tracked in PLAN.md
+- Current highest-priority unfinished feature: none blocking — `gui-016` (history routes) on branch `feat/history-routes`; ongoing polish tracked in PLAN.md
 - Current blocker: none — `npm run verify` is green (7/7)
 
 ## Session Log
@@ -155,3 +155,13 @@ updates it automatically.
 - Evidence: build and verify OK; fresh visit on preview and production shows live mode and the real badge (thunderstorm, 18 C, matches Open-Meteo code 95, 17.5 C); seven forced-state screenshots in /tmp/g3d/state-*.png, ordered by intensity; production deployed with `vercel --prod`.
 - Open: drizzle, rain and downpour were checked by forcing states, not by a real shower. Production logs one 404 for `/data/gtfs/schedule.json` (no GTFS feed; older than this change). Thunder maps to rain.
 - Next best step: sync the 9 drifted video titles, then the exterior-accurate castelo and paco-duques models.
+
+### Session 009 — history routes (#quest), ported from porto-3d (feature gui-016)
+
+- Date: 2026-11-17. Branch `feat/history-routes`; not merged, not pushed, not deployed.
+- Engine: porto-3d 7be3158's route engine as a lazy chunk (`src/quest.js`, `quest.css`, `quest-tasks.js`, `events.js`; `quest-progress.js` with the key `guimaraes-quests-<city>` and no older save to migrate). Small core hooks: `src/live.js` `hold()`; `src/landmarks.js` `pick(raycaster, only)` and `setForced()`; `src/main.js` (menu button next to the Story, `#quest` / `#quest=<id>` in the hash with the visitor's own light, request token and Esc during the load, keys, map picking, label declutter, `lifeReady()` after life.js, a text-version link on the map-failed message); `src/guide.js` stays shut during a route. The labels layer gets its own `aria-hidden` back after a find task (Porto removed it).
+- Not ported: the early route card on a deep link (Guimarães has no lazy mode loading); a `#quest` link opens the route after the city is built.
+- Routes (`data/quest.json`): `from-the-castle-to-the-squares` (castle: visual detail, the keep; São Miguel: true/false; Paço: sequence 1420/1807/1937/1959; Oliveira: multiple choice, the vow before Aljubarrota; São Tiago: find on the map) and `the-wall-and-beyond` (Toural: multiple choice, the cattle fair; Muralha: sequence 1318/1322/1369/1385; Couros: true/false, tanners outside the walls; São Francisco: multiple choice, the convent pulled down for the town's security; Santos Passos: find on the map).
+- Text pages: `scripts/route-pages.mjs` writes `public/route/` and a marked block in `public/sitemap.xml`; `npm run verify` runs it with `--check`; `vercel.json` serves `/route/` as HTML.
+- Checks: see feature gui-016. Browser checks and screenshots in `/tmp/gmr-quest/` (not in the repository).
+- Known: the ru history of several cards is shorter than en/pt (Session 002), so quotes come from sentences present in all three languages. The santos-passos card says the Campo da Feira is north-west of the historic centre; the landmark's coordinates put it south-east of Oliveira (that sentence is not quoted). Not checked on a physical phone or with a screen reader.

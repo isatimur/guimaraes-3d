@@ -270,6 +270,25 @@
         "ported from porto-3d ed0db10"
       ],
       "notes": "Only the thunderstorm reading was live during the test, so the drizzle, rain and downpour mapping was checked by forcing the states, not by a real shower. Thunder (95+) still maps to rain, as in porto. On production the console shows one 404 for /data/gtfs/schedule.json (no GTFS feed yet; it existed before this change). No new locale strings: 'морось' and 'ливень' already had PT and EN."
+    },
+    {
+      "id": "gui-016",
+      "priority": 16,
+      "area": "modes",
+      "title": "History routes (#quest): two routes of five stops, one task per stop",
+      "user_visible_behavior": "Menu > Modes > History routes, or #quest / #quest=<id>, opens a chooser of two routes: from-the-castle-to-the-squares (Castelo, São Miguel do Castelo, Paço dos Duques, Oliveira, Praça de São Tiago) and the-wall-and-beyond (Toural, Muralha and Torre da Alfândega, Couros, São Francisco, Santos Passos). The camera flies to each stop; the card shows the photo with credit, three quoted lines and one task (multiple choice, true/false, find on the map, sequence, visual detail); retry without penalty, gold or plain stamp; the end screen gives one 'in the real city' line per stop. Clear daylight during a route, the visitor's light (and live mode) back on exit. Progress in localStorage guimaraes-quests-guimaraes. Text pages under /route/ without script, in the sitemap; a text link on the map-failed message.",
+      "status": "passing",
+      "verification": [
+        "node --test scripts/*.test.mjs: 37 pass, 1 skipped (the routes share no stop)",
+        "npm run verify: build, route pages, data contract, geo, dimensions, fit, traffic, models",
+        "browser checks /tmp/gmr-quest/check.mjs on vite preview of the build: flow, find, seq, matrix, light, behave, nowebgl, views, modes"
+      ],
+      "evidence": [
+        "ported from porto-3d 7be3158 (src/quest.js, quest.css, quest-progress.js, quest-tasks.js, events.js, scripts/route-pages.mjs, scripts/quest.test.mjs)",
+        "every history, answer, dated and visit line is a verbatim substring of the landmark's own text in that language (data/landmarks.json ru, src/locales/{en,pt}.guimaraes.js); no answer rests on a sentence the card marks as legend or tradition",
+        "first load +1.18 kB gzip entry JS and +0.21 kB in the shared three.js chunk; CSS and index.html unchanged; lazy quest JS 9.35 kB gzip, CSS 2.86 kB gzip"
+      ],
+      "notes": "No early route card on a #quest deep link: Guimarães has no lazy mode loading, so the card opens once the city is built. The landmark name of muralha is wider than a phone screen, so its map label never shows on a phone (the label declutter hides clipped names; existing behaviour). The ru texts of several cards were cut shorter in Session 002; quotes were chosen from sentences present in all three languages."
     }
   ]
 }
