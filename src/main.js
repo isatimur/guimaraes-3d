@@ -17,7 +17,7 @@ import { fitLandmark, padFor } from './fit.js';
 import { createCameraRig } from './camera.js';
 import { createSkyline, createCinema } from './tour.js';
 import { createStory } from './story.js';
-import { createUI, createLoader, placesWord } from './ui.js';
+import { createUI, createLoader, placesWord, mountTool } from './ui.js';
 import { createSearch, IMPORTANCE } from './search.js';
 import { assetUrl } from './data.js';
 import { createRouteLayer, createFlyAlong } from './routes.js';
@@ -225,7 +225,12 @@ async function start() {
   debug.buildings = city.stats;
   mark('buildings');
 
-  const marks = buildLandmarks(landmarks, fits, heightAt, outlines, (i) => select(i));
+  // the history routes (quest.js, data/quest.json): a lazy chunk, made on
+  // the first #quest or menu click (see startMode). During a route a label
+  // click is a find-on-map pick.
+  let quest = null;
+  let questLoad = null;
+  const marks = buildLandmarks(landmarks, fits, heightAt, outlines, (i) => (quest?.active ? quest.mapPick(i) : select(i)));
   scene.add(marks.group);
   debug.landmarks = marks.items.map((it) => ({
     id: it.data.id,
@@ -439,7 +444,7 @@ async function start() {
   // starts with the boot view, before the city is built.
   function makeIntro() {
     const param = new URLSearchParams(location.search).get('intro');
-    const deep = /(^|[#&])((place|route)=|(cinema|story)(&|$))/.test(location.hash);
+    const deep = /(^|[#&])((place|route|quest)=|(cinema|story|quest)(&|$))/.test(location.hash);
     let seen = false;
     try {
       seen = sessionStorage.getItem('braga-intro') === '1';
@@ -671,7 +676,7 @@ async function start() {
     },
     onRoute: (id) => openRoute(id),
     toast: (msg, ms) => ui.toast(msg, ms),
-    isBlocked: () => !!(cinema?.active || story?.active || intro?.active),
+    isBlocked: () => !!(cinema?.active || story?.active || intro?.active || quest?.active),
   });
   debug.search = search;
 
@@ -692,13 +697,19 @@ async function start() {
   // live=1, from live.js) when they differ from the default
   function currentHash() {
     const parts = [];
-    if (route) parts.push(`route=${route.route.id}`);
+    // the history routes keep #quest=<id> (or #quest) while they run (a reload resumes)
+    if (quest?.active) parts.push(quest.hash);
+    else if (route) parts.push(`route=${route.route.id}`);
     else if (active >= 0) parts.push(`place=${landmarks[active].id}`);
-    if (atmosphere.time !== DEFAULT_TIME) parts.push(`time=${atmosphere.time}`);
+    // a history route shows daylight but the link keeps the visitor's own light
+    const held = quest?.heldLight;
+    const time = held ? held.time : atmosphere.time;
+    if (time !== DEFAULT_TIME) parts.push(`time=${time}`);
     // until life and the seasons exist (deferLayers), keep what the link said
     const was = life && seasons ? null : new URLSearchParams(location.hash.replace(/^#/, ''));
     if (life) {
-      if (debug.life?.live.hash) parts.push(debug.life.live.hash);
+      const h = held ? held.hash : debug.life?.live.hash;
+      if (h) parts.push(h);
     } else for (const k of ['weather', 'live']) if (was.has(k)) parts.push(`${k}=${was.get(k)}`);
     if (seasons) {
       if (debug.season && debug.season !== debug.seasons?.today) parts.push('season=' + (debug.season === 'fall' ? 'autumn' : debug.season));
@@ -708,10 +719,15 @@ async function start() {
   function applyHash() {
     const q = new URLSearchParams(location.hash.replace(/^#/, ''));
     const tm = q.get('time');
-    if (tm && TIMES.includes(tm) && tm !== atmosphere.time) setTime(tm, { writeHash: false });
-    // #cinema and #story open the two guided modes
+    // (while a history route shows daylight, the hash carries the visitor's
+    // held light: that one is not a new choice)
+    const heldTime = quest?.heldLight?.time;
+    if (tm && TIMES.includes(tm) && tm !== atmosphere.time && tm !== heldTime) setTime(tm, { writeHash: false });
+    // #cinema, #story and #quest open the guided modes
     if (q.has('cinema')) return void (cinema.active || startMode('cinema'));
     if (q.has('story') && story) return void (story.active || startMode('story'));
+    if (q.has('quest') && hasQuest) return void (quest?.active ? quest.open(q.get('quest')) : startMode('quest', q.get('quest')));
+    cancelQuestLoad();
     const r = q.get('route');
     const p = q.get('place');
     if (r) {
@@ -999,7 +1015,80 @@ async function start() {
       setHash(currentHash());
     },
   });
-  function startMode(name) {
+  // History routes: five landmarks each, one task per stop (quest.js,
+  // data/quest.json, ported from porto-3d). The chunk and the data load on
+  // the first use; the entry bundle carries only these hooks and the menu
+  // button. The route shows clear daylight and puts the visitor's own
+  // light back itself (live mode too), so on exit nothing is saved: the
+  // time buttons follow the scene and the hash is written again.
+  const hasQuest = CITY.quest !== false;
+  let modeRequest = 0; // startMode() numbers each request
+  let questLoading = false; // a route's chunk or data is still on its way
+  const syncTimeButtons = () => {
+    for (const b of timeButtons) b.setAttribute('aria-pressed', String(b.dataset.time === atmosphere.time));
+  };
+  const questCtx = () => ({
+    ...modeCtx,
+    city: CITY.id || 'guimaraes',
+    atmosphere,
+    getLife: () => life,
+    // a find-on-map task's candidates show whatever the category filter
+    forceShow: (set) => marks.setForced(set),
+    onExit: () => {
+      syncTimeButtons();
+      setHash(currentHash());
+    },
+    onFocus: storyLabels,
+    onEnter: () => {
+      ui.callout.hide();
+      if (active >= 0) close();
+    },
+    onPlace: (i) => select(i),
+    onRoute: () => setHash(currentHash()),
+    onError: () => {
+      ui.toast(t('Не удалось загрузить маршрут'), 4000);
+      setHash(currentHash());
+    },
+  });
+  function ensureQuest() {
+    if (quest) return Promise.resolve(quest);
+    questLoad ??= import('./quest.js')
+      .then(({ createQuest }) => {
+        quest ??= createQuest(questCtx());
+        debug.quest = quest;
+        return quest;
+      })
+      .catch((error) => {
+        questLoad = null;
+        throw error;
+      });
+    return questLoad;
+  }
+  // Esc or another mode while the route still loads: stay on the map
+  function cancelQuestLoad() {
+    if (!questLoading) return false;
+    questLoading = false;
+    modeRequest++;
+    setHash(currentHash());
+    return true;
+  }
+  if (hasQuest) {
+    const questBtn = document.createElement('button');
+    questBtn.type = 'button';
+    questBtn.className = 'tool mode-btn';
+    questBtn.id = 'quest-toggle';
+    questBtn.setAttribute('aria-controls', 'quest');
+    questBtn.title = t('Откройте исторический Гимарайнш: маршруты с заданием на каждой остановке');
+    questBtn.innerHTML = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8l1.6 3.5 3.8.4-2.8 2.6.8 3.8L8 10.2 4.6 12.1l.8-3.8-2.8-2.6 3.8-.4z" /></svg><span class="mode-label">${t('Исторические маршруты')}</span>`;
+    mountTool(questBtn, 'modes', { closes: true });
+    // next to the story, the other guided mode
+    document.getElementById('story-toggle')?.after(questBtn);
+    questBtn.addEventListener('click', () => (quest?.active ? quest.stop() : startMode('quest')));
+  }
+  // arg: the history route's id (#quest=<id>)
+  function startMode(name, arg) {
+    const request = ++modeRequest;
+    questLoading = false;
     if (intro?.active) intro.skip();
     if (tour) stopTour();
     if (active >= 0) close();
@@ -1009,9 +1098,32 @@ async function start() {
     ui.atmo.close();
     search.close();
     flyKeys.reset();
+    if (name !== 'quest') quest?.stop();
     if (name === 'cinema') {
       story?.stop();
       cinema.start();
+    } else if (name === 'quest') {
+      cinema.stop();
+      story?.stop();
+      questLoading = true;
+      setHash(arg ? `quest=${arg}` : 'quest');
+      ensureQuest()
+        .then((instance) => {
+          if (request !== modeRequest) return;
+          // questLoading stays set until quest.json is in: Esc still cancels
+          return instance.start(() => request === modeRequest, arg).then(() => {
+            if (request !== modeRequest) return;
+            questLoading = false;
+            if (instance.active) setHash(currentHash());
+          });
+        })
+        .catch(() => {
+          if (request !== modeRequest) return;
+          questLoading = false;
+          ui.toast(t('Не удалось загрузить маршрут'), 4000);
+          setHash(currentHash());
+        });
+      return;
     } else {
       cinema.stop();
       story?.start();
@@ -1035,7 +1147,7 @@ async function start() {
     rig,
     debug,
     // the intro, the route fly-along and the guided modes own the camera
-    isBlocked: () => !!(intro?.active || tour || cinema?.active || story?.active),
+    isBlocked: () => !!(intro?.active || tour || cinema?.active || story?.active || quest?.active),
     placeOpen: () => active >= 0,
   });
   window.addEventListener('keydown', (e) => {
@@ -1045,7 +1157,10 @@ async function start() {
     // cinema and story own every key while they play
     if (cinema?.active) return void cinema.onKey(e);
     if (story?.active) return void story.onKey(e);
+    // the history route: Esc leaves; Tab, Enter and Space stay with its buttons
+    if (quest?.active) return void quest.onKey(e);
     if (e.key === 'Escape') {
+      if (cancelQuestLoad()) return; // a route still loading: stay on the map
       if (ui.tools.open) ui.tools.set(false); // the phone's tools sheet first
       else if (tour) stopTour();
       else if (active >= 0) close();
@@ -1076,18 +1191,21 @@ async function start() {
     if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5) return;
     toNdc(e);
     raycaster.setFromCamera(ndc, camera);
+    // the history route owns the map: only a find-on-map task's candidates pick
+    if (quest?.active) return void quest.mapPick(marks.pick(raycaster, quest.pickable));
     const hit = marks.pick(raycaster);
     if (hit != null) select(hit);
   });
   let hoverQueued = false;
   canvas.addEventListener('pointermove', (e) => {
+    if (quest?.active && !quest.pickable.size) return void setHover(-1);
     if (hoverQueued || e.buttons) return;
     hoverQueued = true;
     requestAnimationFrame(() => {
       hoverQueued = false;
       toNdc(e);
       raycaster.setFromCamera(ndc, camera);
-      setHover(marks.pick(raycaster) ?? -1);
+      setHover(marks.pick(raycaster, quest?.active ? quest.pickable : null) ?? -1);
     });
   });
   canvas.addEventListener('pointerleave', () => setHover(-1));
@@ -1220,7 +1338,9 @@ async function start() {
     lastDeclutter = now;
     const placed = [];
     const onRoute = route ? new Set(route.stopIdx) : null;
-    const rank = (it) => (it.index === active ? 2 : onRoute?.has(it.index) ? 1 : 0);
+    // the history route: its own stops win over the labels it hides
+    const routeFocus = quest?.active ? (it) => it.labelEl.classList.contains('is-story-focus') : () => false;
+    const rank = (it) => (it.index === active ? 2 : onRoute?.has(it.index) || routeFocus(it) ? 1 : 0);
     const order = marks.items
       .filter((it) => it.label.visible)
       .map((it) => {
@@ -1231,7 +1351,7 @@ async function start() {
       .sort((a, b) => rank(b.it) - rank(a.it) || b.score - a.score || a.d - b.d);
 
     // far zoom: greedy clusters around the highest-priority labels
-    const clustering = camDist > CLUSTER_FROM && !route && !story?.active && !cinema?.active;
+    const clustering = camDist > CLUSTER_FROM && !route && !story?.active && !cinema?.active && !quest?.active;
     const seeds = [];
     if (clustering) {
       for (const o of order) {
@@ -1323,7 +1443,8 @@ async function start() {
       const box = { l: o.sx - w / 2 - 4, r: o.sx + w / 2 + 4, t: o.sy - h - 2, b: o.sy + 2 };
       const clash = placed.some((p) => box.l < p.r && box.r > p.l && box.t < p.b && box.b > p.t);
       const offEdge = box.l < 0 || box.r > size.w || box.t < 0; // a clipped name reads as a typo
-      const show = !o.behind && (!clash || o.it.index === active) && !hits(box) && !offEdge;
+      // a find-on-map candidate's small «?» marker shows even where it touches another
+      const show = !o.behind && (!clash || o.it.index === active || el.classList.contains('is-quest-candidate')) && !hits(box) && !offEdge;
       el.classList.toggle('is-muted', !show);
       if (show) placed.push(box);
     }
@@ -1640,6 +1761,8 @@ async function start() {
     await step('life', () => {
       // footprints, outlines: where the people of streetscape.js may not walk
       life = createLife({ renderer, scene, camera, atmosphere, project, heightAt, roads, items: marks.items, nature, fx, reducedMotion, mobile: LITE, lite: LITE, debug, setHash: () => setHash(currentHash()), footprints: city.footprints, outlines });
+      // a history route opened before life.js: it now holds life's weather and live sun too
+      quest?.lifeReady();
     });
     await step('seasons', () => {
       seasons = createSeasons({ renderer, scene, camera, atmosphere, nature, fx, weather: life?.weather, terrain, ui, reducedMotion, mobile: LITE, lite: LITE, debug });
@@ -1687,8 +1810,11 @@ loadCity()
     const msg = t('Не удалось запустить карту. Нужен браузер с поддержкой WebGL.');
     const text = document.getElementById('loader-text');
     const loaderEl = document.getElementById('loader');
+    // without WebGL: the text version of the history routes (scripts/route-pages.mjs)
+    const link = CITY.quest !== false && { href: `/route/${language === 'pt' ? '' : `${language}/`}`, textContent: t('Текстовая версия исторических маршрутов') };
     if (text && loaderEl && !loaderEl.classList.contains('is-done')) {
       text.textContent = msg;
+      if (link) text.append(' ', Object.assign(document.createElement('a'), link));
       loaderEl.classList.add('is-error');
     } else if (!debug.interactive) {
       // the boot view already removed the loader: say it over the map
