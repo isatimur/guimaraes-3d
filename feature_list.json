@@ -279,16 +279,17 @@
       "user_visible_behavior": "Menu > Modes > History routes, or #quest / #quest=<id>, opens a chooser of two routes: from-the-castle-to-the-squares (Castelo, São Miguel do Castelo, Paço dos Duques, Oliveira, Praça de São Tiago) and the-wall-and-beyond (Toural, Muralha and Torre da Alfândega, Couros, São Francisco, Santos Passos). The camera flies to each stop; the card shows the photo with credit, three quoted lines and one task (multiple choice, true/false, find on the map, sequence, visual detail); retry without penalty, gold or plain stamp; the end screen gives one 'in the real city' line per stop. Clear daylight during a route, the visitor's light (and live mode) back on exit. Progress in localStorage guimaraes-quests-guimaraes. Text pages under /route/ without script, in the sitemap; a text link on the map-failed message.",
       "status": "passing",
       "verification": [
-        "node --test scripts/*.test.mjs: 37 pass, 1 skipped (the routes share no stop)",
-        "npm run verify: build, route pages, data contract, geo, dimensions, fit, traffic, models",
-        "browser checks /tmp/gmr-quest/check.mjs on vite preview of the build: flow, find, seq, matrix, light, behave, nowebgl, views, modes"
+        "node --test scripts/*.test.mjs: 37 pass, 1 skipped (the routes share no stop); a mutation run of 7 broken copies of data/quest.json: all 7 caught",
+        "npm run verify: OK, 8 passed (build, route pages, data contract, geo, dimensions, 1:1 fit, traffic, models); main afb77fa: OK, 7 passed",
+        "browser checks /tmp/gmr-quest/check.mjs on vite preview of the build: flow 460/460 (both routes, 1280x800 and 390x844, pt and en), find 27/27, seq 8/8, matrix 57/58, light 16/16, behave 14/14, nowebgl 10/10, views 24/24, modes 8/8, entry 12/12",
+        "the one matrix failure is a console warning 'buildings-ms.json unavailable (Failed to fetch)' logged when a reload aborts that fetch; /tmp/gmr-quest/probe-reload.mjs reproduces it 8/8 on main afb77fa and 8/8 on the branch"
       ],
       "evidence": [
         "ported from porto-3d 7be3158 (src/quest.js, quest.css, quest-progress.js, quest-tasks.js, events.js, scripts/route-pages.mjs, scripts/quest.test.mjs)",
         "every history, answer, dated and visit line is a verbatim substring of the landmark's own text in that language (data/landmarks.json ru, src/locales/{en,pt}.guimaraes.js); no answer rests on a sentence the card marks as legend or tradition",
-        "first load +1.18 kB gzip entry JS and +0.21 kB in the shared three.js chunk; CSS and index.html unchanged; lazy quest JS 9.35 kB gzip, CSS 2.86 kB gzip"
+        "first load against main afb77fa (gzip): entry JS 391.68 -> 392.86 kB (+1.18), shared three.js chunk 80.87 -> 81.08 kB (+0.21), about +1.39 kB in all; CSS 13.09 and index.html 7.20 unchanged; lazy: quest JS 23.51 kB (9.35 gzip), quest CSS 11.00 kB (2.86 gzip), data/quest.json 53.8 kB (16.7 gzip)"
       ],
-      "notes": "No early route card on a #quest deep link: Guimarães has no lazy mode loading, so the card opens once the city is built. The landmark name of muralha is wider than a phone screen, so its map label never shows on a phone (the label declutter hides clipped names; existing behaviour). The ru texts of several cards were cut shorter in Session 002; quotes were chosen from sentences present in all three languages."
+      "notes": "No early route card on a #quest deep link: Guimarães has no lazy mode loading, so the card opens once the city is built. The landmark name of muralha is wider than a phone screen, so its map label never shows on a phone (the label declutter hides clipped names; existing behaviour), and the phone view of the Alfândega tower stays small (view mk 0.6 barely changed it, likely the distance floor). São Tiago's «?» marker stands next to Oliveira's model (77 m); a click on Oliveira, not a candidate, does nothing. The ru texts of several cards were cut shorter in Session 002; quotes were chosen from sentences present in all three languages."
     }
   ]
 }

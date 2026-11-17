@@ -248,8 +248,8 @@ test('find on the map: the stop itself among real landmarks with coordinates, fa
     }
     // two markers closer than this overlap on a phone: never both candidates
     for (const a of t.candidates) for (const b of t.candidates) if (a < b) assert.ok(metres(byId.get(a), byId.get(b)) >= 150, `${tag(s)}: ${a} and ${b} are under 150 m apart`);
-    // no other landmark sits on top of the target (it would hide which one is meant)
-    for (const l of LM) if (l.id !== t.target && t.candidates.includes(l.id)) assert.ok(metres(l, byId.get(t.target)) >= 150);
+    // (a non-candidate may stand near the target: São Tiago's marker sits
+    // beside Oliveira's model; a click on a non-candidate does nothing)
     for (const lang of LANGS) assert.ok(inAny(t.basis[lang], sourceText(s.id, lang), BASIS_FIELDS), `${tag(s)}/${lang}: basis not in the place card: «${t.basis[lang]}»`);
   }
 });
