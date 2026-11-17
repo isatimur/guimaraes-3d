@@ -526,6 +526,7 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
   }
 
   const hidden = new Set();
+  let forced = new Set(); // setForced(): shown whatever the filter
   let activeIndex = -1;
   const _m = new THREE.Matrix4();
   const _pos = new THREE.Vector3();
@@ -564,7 +565,7 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
   function updatePins(time, animate, camPos) {
     if (camPos) updateLod(camPos);
     for (const it of items) {
-      const off = hidden.has(it.data.category);
+      const off = hidden.has(it.data.category) && !forced.has(it.index);
       const active = it.index === activeIndex;
       const d = camPos ? camPos.distanceTo(_pos.set(it.center.x, it.top, it.center.z)) : 1500;
       const H = Math.max(PIN_MIN, d * PIN_ANGLE) * (active ? 1.35 : 1);
@@ -583,11 +584,18 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
   }
   updatePins(0, false);
 
+  // forced (declared next to `hidden`): item indices shown whatever the
+  // category filter (a history route's find-on-map candidates, quest.js);
+  // they rejoin the filter when the set is emptied
+  function setForced(set) {
+    forced = new Set(set || []);
+    setHiddenCategories([...hidden]);
+  }
   function setHiddenCategories(set) {
     hidden.clear();
     for (const c of set) hidden.add(c);
     for (const it of items) {
-      const on = !hidden.has(it.data.category);
+      const on = !hidden.has(it.data.category) || forced.has(it.index);
       for (const m of it.meshes) m.visible = on;
       if (it.outline) it.outline.visible = on;
       it.label.visible = on;
@@ -607,11 +615,13 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
   }
 
   const _ray = new THREE.Vector3();
-  function pick(raycaster) {
+  // only: a Set of item indices that may be picked (a find-on-map task's
+  // candidates, quest.js); else every shown item
+  function pick(raycaster, only) {
     let best = null;
     let bestD = Infinity;
     for (const it of items) {
-      if (hidden.has(it.data.category)) continue;
+      if (only ? !only.has(it.index) : hidden.has(it.data.category)) continue;
       const pinPos = _pos.set(it.center.x, it.pinY ?? it.top, it.center.z);
       const r = Math.max(it.pinH * 0.6, 0.6);
       const pinHit = raycaster.ray.distanceSqToPoint(pinPos) < r * r;
@@ -646,6 +656,7 @@ export function buildLandmarks(list, fits, heightAt, outlines, onLabelClick) {
     outlineMaterial: outlineMat,
     updatePins,
     setHiddenCategories,
+    setForced,
     setActive,
     pick,
     shrink,

@@ -19,6 +19,12 @@ export const messages = {
   'Прокрутите вниз, чтобы начать': ['Desça a página para começar', 'Scroll down to begin'],
   'Вернуться к карте': ['Voltar ao mapa', 'Back to the map'],
   'Не удалось загрузить историю': ['Não foi possível carregar a história', 'The story could not be loaded'],
+  // history routes (quest.js); its own texts live in data/quest.json. The
+  // label and title hold for one route or several, and name no count.
+  'Исторические маршруты': ['Rotas da história', 'History routes'],
+  'Откройте исторический Гимарайнш: маршруты с заданием на каждой остановке': ['Descobrir Guimarães histórica: rotas com uma tarefa em cada paragem', 'Discover historic Guimarães: routes with a task at every stop'],
+  'Не удалось загрузить маршрут': ['Não foi possível carregar a rota', 'The route could not be loaded'],
+  'Текстовая версия исторических маршрутов': ['Versão em texto das rotas da história', 'Text version of the history routes'],
   'Брага': ['Braga', 'Braga'],
   'Брага — 3D-карта достопримечательностей': ['Braga — mapa 3D de pontos de interesse', 'Braga — 3D landmarks map'],
   'Интерактивная 3D-карта Браги: соборы, сады, площади и святилища на холмах.': ['Mapa 3D interativo de Braga: catedrais, jardins, praças e santuários nas colinas.', 'An interactive 3D map of Braga: cathedrals, gardens, squares and hilltop sanctuaries.'],

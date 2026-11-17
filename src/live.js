@@ -309,6 +309,7 @@ export function createLive({ atmosphere, weather, reducedMotion = false, onPersi
   let lastFetch = -Infinity;
   let fetching = false;
   let status = 'idle';
+  let held = false; // hold(): a guided mode owns the light for a while
 
   const ui = mountControls({
     onWeather: (name) => {
@@ -329,7 +330,7 @@ export function createLive({ atmosphere, weather, reducedMotion = false, onPersi
 
   // a click on any time-of-day preset leaves live mode
   atmosphere.onChange((name) => {
-    if (name !== 'live' && live) setLive(false, { fromTime: true });
+    if (name !== 'live' && live && !held) setLive(false, { fromTime: true });
   });
   weather.onChange((name) => ui?.setWeather(name, live && !manualWeather));
 
@@ -424,7 +425,7 @@ export function createLive({ atmosphere, weather, reducedMotion = false, onPersi
   }
 
   function applyReading() {
-    if (!live || !reading || manualWeather) return;
+    if (!live || held || !reading || manualWeather) return;
     const w = weatherFromCode(reading.code, reading.cloud, reading.precip);
     // the deck cover follows the real cloud cover within the state
     weather.set(w.state, { cover: coverFor(w.state, reading) });
@@ -469,7 +470,7 @@ export function createLive({ atmosphere, weather, reducedMotion = false, onPersi
   // Called from the render loop (life.js): no timers, so a hidden tab
   // neither fetches nor recomputes.
   function update() {
-    if (!live) return;
+    if (!live || held) return;
     const tNow = performance.now();
     if (tNow - lastSun > SUN_EVERY) {
       tickSun(false);
@@ -533,6 +534,18 @@ export function createLive({ atmosphere, weather, reducedMotion = false, onPersi
     mock(r) {
       reading = { temp: 21, code: 2, cloud: 50, precip: 0, wind: 4, windDir: 250, isDay: 1, at: Date.now(), stale: false, ...r };
       lastFetch = performance.now();
+      applyReading();
+    },
+    // hold(true): the real sun and weather stop driving the scene, and a
+    // preset set meanwhile does not leave live mode; nothing is saved.
+    // hold(false) gives the scene back to the sun; with resume: false
+    // (the visitor picked a preset meanwhile) live mode ends as on a click.
+    // Ported from porto-3d for the history routes (src/quest.js).
+    hold(on, resume = true) {
+      held = !!on;
+      if (held || !live) return;
+      if (!resume) return setLive(false, { fromTime: true });
+      tickSun(true);
       applyReading();
     },
     // the hash fragment the map can carry (main.js currentHash)

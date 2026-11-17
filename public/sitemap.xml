@@ -19,4 +19,15 @@
   <url><loc>https://guimaraes.portugal-3d.com/p/uminho-azurem/</loc><lastmod>2026-10-05</lastmod><priority>0.8</priority></url>
   <url><loc>https://guimaraes.portugal-3d.com/p/briteiros/</loc><lastmod>2026-10-05</lastmod><priority>0.8</priority></url>
   <url><loc>https://guimaraes.portugal-3d.com/p/vila-flor/</loc><lastmod>2026-10-05</lastmod><priority>0.8</priority></url>
+  <!-- route pages: scripts/route-pages.mjs -->
+  <url><loc>https://guimaraes.portugal-3d.com/route/</loc><priority>0.7</priority></url>
+  <url><loc>https://guimaraes.portugal-3d.com/route/en/</loc><priority>0.7</priority></url>
+  <url><loc>https://guimaraes.portugal-3d.com/route/ru/</loc><priority>0.7</priority></url>
+  <url><loc>https://guimaraes.portugal-3d.com/route/from-the-castle-to-the-squares/</loc><priority>0.7</priority></url>
+  <url><loc>https://guimaraes.portugal-3d.com/route/from-the-castle-to-the-squares/en/</loc><priority>0.7</priority></url>
+  <url><loc>https://guimaraes.portugal-3d.com/route/from-the-castle-to-the-squares/ru/</loc><priority>0.7</priority></url>
+  <url><loc>https://guimaraes.portugal-3d.com/route/the-wall-and-beyond/</loc><priority>0.7</priority></url>
+  <url><loc>https://guimaraes.portugal-3d.com/route/the-wall-and-beyond/en/</loc><priority>0.7</priority></url>
+  <url><loc>https://guimaraes.portugal-3d.com/route/the-wall-and-beyond/ru/</loc><priority>0.7</priority></url>
+  <!-- /route pages -->
 </urlset>

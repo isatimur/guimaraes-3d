@@ -1,0 +1,675 @@
+{
+  "ui": {
+    "kicker": { "ru": "Исторические маршруты", "en": "History routes", "pt": "Rotas da história" },
+    "title": { "ru": "Откройте исторический Гимарайнш", "en": "Discover historic Guimarães", "pt": "Descobrir Guimarães histórica" },
+    "subtitle": {
+      "ru": "Выберите маршрут. На каждой остановке задание: вопрос, поиск на карте или события по порядку. За верный ответ — печать.",
+      "en": "Choose a route. Each stop sets a task: a question, a place to find on the map or events to put in order. Each right answer earns a stamp.",
+      "pt": "Escolha uma rota. Cada paragem traz uma tarefa: uma pergunta, um lugar para encontrar no mapa ou acontecimentos para ordenar. Cada resposta certa vale um selo."
+    },
+    "note": {
+      "ru": "Тексты взяты из карточек мест этой карты, у каждого указаны источники. 3D-здания — упрощённые модели нынешних построек.",
+      "en": "The texts come from the place cards of this map, each with its sources. The 3D buildings are simplified models of the places as they stand today.",
+      "pt": "Os textos vêm das fichas dos lugares deste mapa, cada um com as suas fontes. Os edifícios em 3D são modelos simplificados dos lugares tal como estão hoje."
+    },
+    "route_stops": { "ru": "Остановок: {n}", "en": "Stops: {n}", "pt": "Paragens: {n}" },
+    "route_done": { "ru": "Пройдено: {d} из {m}", "en": "Done: {d} of {m}", "pt": "Feitas: {d} de {m}" },
+    "open_route": { "ru": "Открыть маршрут", "en": "Open the route", "pt": "Abrir a rota" },
+    "all_routes": { "ru": "Все маршруты", "en": "All routes", "pt": "Todas as rotas" },
+    "start": { "ru": "Начать", "en": "Start", "pt": "Começar" },
+    "resume": { "ru": "Продолжить ({n} из {m})", "en": "Continue ({n} of {m})", "pt": "Continuar ({n} de {m})" },
+    "restart": { "ru": "Начать заново", "en": "Start again", "pt": "Recomeçar" },
+    "stop": { "ru": "Остановка {n} из {m}", "en": "Stop {n} of {m}", "pt": "Paragem {n} de {m}" },
+    "question": { "ru": "Вопрос", "en": "Question", "pt": "Pergunta" },
+    "correct_gold": { "ru": "Верно с первой попытки! Вы получаете золотую печать.", "en": "Right first time! You earn a gold stamp.", "pt": "Certo à primeira! Ganhou um selo dourado." },
+    "correct_plain": { "ru": "Верно! Вы получаете печать.", "en": "Right! You earn a stamp.", "pt": "Certo! Ganhou um selo." },
+    "retry": { "ru": "Не этот. Попробуйте другой ответ.", "en": "Not this one. Try another answer.", "pt": "Não é esta. Experimente outra resposta." },
+    "basis": { "ru": "Из карточки места:", "en": "From the place card:", "pt": "Da ficha do lugar:" },
+    "basis_quote": { "ru": "«{text}»", "en": "“{text}”", "pt": "«{text}»" },
+    "sources": { "ru": "Источники", "en": "Sources", "pt": "Fontes" },
+    "photo": { "ru": "Фото", "en": "Photo", "pt": "Foto" },
+    "show": { "ru": "Показать место", "en": "Show the place", "pt": "Mostrar o lugar" },
+    "next": { "ru": "Следующая остановка", "en": "Next stop", "pt": "Próxima paragem" },
+    "finish": { "ru": "Посмотреть результат", "en": "See the result", "pt": "Ver o resultado" },
+    "result": { "ru": "Ваш результат", "en": "Your result", "pt": "O seu resultado" },
+    "summary": { "ru": "Пройдено мест: {v}. С первой попытки: {g}.", "en": "{v} places visited, {g} answered right first time", "pt": "{v} lugares visitados; acertou à primeira em {g}" },
+    "stamps": { "ru": "Печати маршрута", "en": "Route stamps", "pt": "Selos da rota" },
+    "stamp_gold": { "ru": "{name}: верно с первой попытки", "en": "{name}: right first time", "pt": "{name}: certo à primeira" },
+    "stamp_plain": { "ru": "{name}: верный ответ", "en": "{name}: right answer", "pt": "{name}: resposta certa" },
+    "stamp_seen": { "ru": "{name}: место пройдено", "en": "{name}: visited", "pt": "{name}: visitado" },
+    "stamp_none": { "ru": "{name}: ещё впереди", "en": "{name}: not yet visited", "pt": "{name}: ainda por visitar" },
+    "visit": { "ru": "В настоящем городе", "en": "In the real city", "pt": "Na cidade real" },
+    "open_card": { "ru": "Открыть карточку", "en": "Open the place card", "pt": "Abrir a ficha" },
+    "explore": { "ru": "Гулять по карте", "en": "Explore the map", "pt": "Explorar o mapa" },
+    "close": { "ru": "Выйти (Esc)", "en": "Exit (Esc)", "pt": "Sair (Esc)" },
+    "text_version": { "ru": "Текстовая версия", "en": "Text version", "pt": "Versão em texto" },
+    "text_lead": {
+      "ru": "Текстовая версия исторических маршрутов 3D-карты Гимарайнша: каждое место с историей, фотографией и источниками.",
+      "en": "The text version of the history routes on the 3D map of Guimarães: each place with its history, a photo and its sources.",
+      "pt": "A versão em texto das rotas da história do mapa 3D de Guimarães: cada lugar com a sua história, uma fotografia e as fontes."
+    },
+    "open_map": { "ru": "Открыть этот маршрут на 3D-карте", "en": "Open this route on the 3D map", "pt": "Abrir esta rota no mapa 3D" },
+    "open_map_all": { "ru": "Открыть 3D-карту", "en": "Open the 3D map", "pt": "Abrir o mapa 3D" },
+    "languages": { "ru": "Язык", "en": "Language", "pt": "Idioma" },
+    "places": { "ru": "Места маршрута", "en": "Places on the route", "pt": "Lugares da rota" },
+    "tf_label": { "ru": "Верно или нет?", "en": "True or false?", "pt": "Verdadeiro ou falso?" },
+    "tf_true": { "ru": "Верно", "en": "True", "pt": "Verdadeiro" },
+    "tf_false": { "ru": "Неверно", "en": "False", "pt": "Falso" },
+    "tf_is_true": { "ru": "Утверждение верно.", "en": "The statement is true.", "pt": "A afirmação é verdadeira." },
+    "tf_is_false": { "ru": "Утверждение неверно.", "en": "The statement is false.", "pt": "A afirmação é falsa." },
+    "find_label": { "ru": "Найдите на карте", "en": "Find it on the map", "pt": "Encontre no mapa" },
+    "find_prompt": {
+      "ru": "Где на карте {name}? Нажмите на здание или на его метку «?». Как оно выглядит, видно на фото.",
+      "en": "Where is {name} on the map? Click or tap its building or its «?» marker. The photo shows what it looks like.",
+      "pt": "Onde fica {name} no mapa? Clique ou toque no edifício ou na sua marca «?». A fotografia mostra como é."
+    },
+    "find_list": { "ru": "Или выберите из списка:", "en": "Or choose from the list:", "pt": "Ou escolha na lista:" },
+    "find_wrong": { "ru": "Не то: это {name}. Попробуйте другое место.", "en": "Not this one: that is {name}. Try another place.", "pt": "Não é este: é {name}. Experimente outro lugar." },
+    "find_hint": {
+      "ru": "Подсказка: метка нужного места теперь выделена на карте.",
+      "en": "A hint: the marker of the place you are looking for now stands out on the map.",
+      "pt": "Uma ajuda: a marca do lugar que procura está agora destacada no mapa."
+    },
+    "show_area": { "ru": "Показать район", "en": "Show the area", "pt": "Mostrar a zona" },
+    "seq_label": { "ru": "Расставьте по порядку", "en": "Put in order", "pt": "Ponha por ordem" },
+    "seq_prompt": {
+      "ru": "Расставьте события по времени: самое раннее наверху. Двигайте их стрелками.",
+      "en": "Put these events in time order, the earliest at the top. Move them with the arrows.",
+      "pt": "Ordene estes acontecimentos no tempo, o mais antigo em cima. Mova-os com as setas."
+    },
+    "seq_up": { "ru": "Выше: {item}", "en": "Move up: {item}", "pt": "Subir: {item}" },
+    "seq_down": { "ru": "Ниже: {item}", "en": "Move down: {item}", "pt": "Descer: {item}" },
+    "seq_moved": { "ru": "{item}: теперь {n}-е из {m}.", "en": "{item}: now {n} of {m}.", "pt": "{item}: agora {n} de {m}." },
+    "seq_check": { "ru": "Проверить порядок", "en": "Check the order", "pt": "Verificar a ordem" },
+    "seq_wrong": {
+      "ru": "Пока не по порядку: на своём месте {k} из {m}. Переставьте и проверьте снова.",
+      "en": "Not in order yet: {k} of {m} in the right place. Move them and check again.",
+      "pt": "Ainda não está por ordem: {k} de {m} no lugar certo. Mude-os e verifique de novo."
+    },
+    "seq_same": {
+      "ru": "Этот порядок вы уже проверяли. Переставьте событие и проверьте снова.",
+      "en": "You have checked this order already. Move an event and check again.",
+      "pt": "Já verificou esta ordem. Mude um acontecimento e verifique de novo."
+    },
+    "seq_basis": { "ru": "Даты из карточки места:", "en": "Dates from the place card:", "pt": "Datas da ficha do lugar:" },
+    "look_label": { "ru": "Посмотрите на карту", "en": "Look at the map", "pt": "Observe o mapa" },
+    "look_hint": {
+      "ru": "Ответ — на 3D-модели. Кнопка «{show}» вернёт её в кадр.",
+      "en": "The answer is on the 3D model. “{show}” brings it back into view.",
+      "pt": "A resposta está no modelo 3D. «{show}» volta a enquadrá-lo."
+    }
+  },
+  "routes": [
+    {
+      "id": "from-the-castle-to-the-squares",
+      "title": { "ru": "От замка к площадям", "en": "From the castle to the squares", "pt": "Do castelo às praças" },
+      "intro": {
+        "ru": "Пять мест: от замкового холма вниз к площадям старого города. На каждой остановке одно задание, за верный ответ — печать.",
+        "en": "Five places, from the castle hill down to the squares of the old town. Each stop sets one task. Each right answer earns a stamp.",
+        "pt": "Cinco lugares, da colina do castelo até às praças do centro histórico. Cada paragem traz uma tarefa. Cada resposta certa vale um selo."
+      },
+      "end_lead": {
+        "ru": "Вы прошли пять мест на карте. Все они стоят в Гимарайнше, и их можно увидеть своими глазами.",
+        "en": "You have seen the five places on the map. All of them stand in Guimarães, and you can visit them in person.",
+        "pt": "Viu os cinco lugares no mapa. Todos estão em Guimarães e pode visitá-los pessoalmente."
+      },
+      "stops": [
+        {
+          "id": "castelo",
+          "from": { "text": "long, history", "basis": "long", "visit": "tip" },
+          "sources": [
+            "https://pt.wikipedia.org/wiki/Castelo_de_Guimar%C3%A3es",
+            "https://en.wikipedia.org/wiki/Castle_of_Guimar%C3%A3es",
+            "https://pacodosduques.gov.pt/planear-visita/bilhetica-horarios/"
+          ],
+          "text": {
+            "ru": [
+              "Графиня Мумадона Диаш заложила замок около 958 года, чтобы защитить свой монастырь от мавров и норманнов.",
+              "С XV века артиллерия сделала замок бесполезным.",
+              "В 1836 году совет города чуть не разобрал его на брусчатку: предложение отклонили с перевесом в один голос."
+            ],
+            "en": [
+              "Countess Mumadona Dias founded the castle around 958 to shield her monastery from Moorish and Norse raids.",
+              "From the 15th century artillery made the castle useless.",
+              "In 1836 the town council came within one vote of demolishing it for paving stone."
+            ],
+            "pt": [
+              "A condessa Mumadona Dias fundou o castelo por volta de 958 para proteger o seu mosteiro das incursões de mouros e normandos.",
+              "A partir do século XV, a artilharia tornou o castelo inútil.",
+              "Em 1836, a Câmara esteve a um voto de o demolir para calcetar as ruas."
+            ]
+          },
+          "task": {
+            "id": "castle-keep",
+            "type": "visual_detail",
+            "model_check": { "file": "src/models/guimaraes/castelo.js", "word": "keep" },
+            "question": {
+              "ru": "Посмотрите на замок на карте. Что поднимается посреди его стен?",
+              "en": "Look at the castle on the map. What rises in the middle of its walls?",
+              "pt": "Observe o castelo no mapa. O que se ergue no meio das suas muralhas?"
+            },
+            "options": [
+              { "id": "church", "ru": "Церковь с колокольней", "en": "A church with a bell tower", "pt": "Uma igreja com campanário" },
+              { "id": "keep", "ru": "Высокая башня — донжон", "en": "A tall tower: the keep", "pt": "Uma torre alta: a torre de menagem" },
+              { "id": "houses", "ru": "Ряд домов с красными крышами", "en": "A row of houses with red roofs", "pt": "Uma fila de casas de telhados vermelhos" }
+            ],
+            "answer": "keep",
+            "basis": {
+              "ru": "Стены в форме щита с зубчатыми башнями и донжон посередине — итог готической перестройки XIII века и реставрации 1937–1940 годов.",
+              "en": "The shield-shaped walls with battlemented towers and the central keep come from a Gothic remodelling in the 13th century and the restoration of 1937–1940.",
+              "pt": "As muralhas em forma de escudo, com torres ameadas e a torre de menagem ao centro, vêm da remodelação gótica do século XIII e do restauro de 1937–1940."
+            }
+          },
+          "visit": {
+            "ru": ["Между замком и дворцом стоит романская церковь Сан-Мигел, а у пандуса дворца — статуя Афонсу Энрикеша."],
+            "en": ["Between the castle and the palace stands the Romanesque church of São Miguel, and the statue of Afonso Henriques stands by the palace ramp."],
+            "pt": ["Entre o castelo e o paço fica a igreja românica de São Miguel e, junto à rampa do paço, a estátua de D. Afonso Henriques."]
+          }
+        },
+        {
+          "id": "sao-miguel-castelo",
+          "from": { "text": "history, long", "basis": "history", "visit": "tip" },
+          "sources": [
+            "https://pt.wikipedia.org/wiki/Igreja_de_S%C3%A3o_Miguel_do_Castelo",
+            "https://en.wikipedia.org/wiki/Church_of_S%C3%A3o_Miguel_do_Castelo"
+          ],
+          "text": {
+            "ru": [
+              "Церковь впервые упомянута в 1216 году в документе коллегиаты Гимарайнша.",
+              "Архиепископ Силвестре Годинью освятил церковь около 1239 года.",
+              "Предание говорит, что в её купели крестили первого короля Португалии, хотя храм моложе короля на целый век."
+            ],
+            "en": [
+              "The church is first mentioned in 1216, in a document of the collegiate of Guimarães.",
+              "Archbishop Silvestre Godinho consecrated the church around 1239.",
+              "Legend holds that the first King of Portugal was baptised in its font, although the church is a full century younger than the king."
+            ],
+            "pt": [
+              "A igreja é referida pela primeira vez em 1216, num documento da Colegiada de Guimarães.",
+              "O arcebispo Silvestre Godinho sagrou a igreja por volta de 1239.",
+              "Diz a lenda que o primeiro rei de Portugal foi batizado na sua pia, embora a igreja seja um século mais nova do que o rei."
+            ]
+          },
+          "task": {
+            "id": "sao-miguel-ruin",
+            "type": "true_false",
+            "statement": {
+              "ru": "Церковь никогда не лежала в руинах.",
+              "en": "The church never fell into ruin.",
+              "pt": "A igreja nunca chegou a ficar em ruínas."
+            },
+            "answer": false,
+            "basis": {
+              "ru": "К 1870 году церковь перестала быть приходской и стояла в руинах.",
+              "en": "By 1870 the church had ceased to be a parish church and stood in ruins.",
+              "pt": "Por 1870 a igreja deixara de ser paroquial e estava em ruínas."
+            }
+          },
+          "visit": {
+            "ru": ["Внутри полутемно: дайте глазам привыкнуть и рассмотрите плиты пола и купель слева от входа."],
+            "en": ["It is dim inside: let your eyes adjust, then look at the floor slabs and the font to the left of the door."],
+            "pt": ["O interior é escuro: deixe os olhos habituarem-se e repare nas lajes do chão e na pia à esquerda da porta."]
+          }
+        },
+        {
+          "id": "paco-duques",
+          "from": { "text": "history", "items": "facts", "visit": "tip" },
+          "sources": [
+            "https://pt.wikipedia.org/wiki/Pa%C3%A7o_dos_Duques_de_Bragan%C3%A7a_(Guimar%C3%A3es)",
+            "https://en.wikipedia.org/wiki/Palace_of_the_Dukes_of_Braganza",
+            "https://pacodosduques.gov.pt/monumentos/paco-dos-duques/historia-paco/",
+            "https://www.cm-guimaraes.pt/monumentos/poi/paco-dos-duques-de-braganca"
+          ],
+          "text": {
+            "ru": [
+              "Дворец заказал Афонсу, внебрачный сын короля Жуана I и восьмой граф Барселуш.",
+              "Наследники предпочли Вила-Висозу на юге, и дворец опустел.",
+              "В 1611 году клариссы, а в 1666 году капуцины получили разрешение брать отсюда камень для своих монастырей."
+            ],
+            "en": [
+              "The palace was commissioned by Afonso, illegitimate son of King John I and 8th Count of Barcelos.",
+              "His heirs preferred Vila Viçosa in the south, and the palace emptied.",
+              "In 1611 the Poor Clares and in 1666 the Capuchins were allowed to take stone from the palace for their convents."
+            ],
+            "pt": [
+              "O paço foi mandado construir por D. Afonso, filho natural de D. João I e 8.º conde de Barcelos.",
+              "Os herdeiros preferiram Vila Viçosa, no sul, e o paço esvaziou-se.",
+              "Em 1611 as clarissas e, em 1666, os capuchos obtiveram licença para tirar pedra do paço para os seus conventos."
+            ]
+          },
+          "task": {
+            "id": "paco-dates",
+            "type": "sequence",
+            "items": [
+              {
+                "id": "begun",
+                "year": 1420,
+                "label": { "ru": "Граф Афонсу начинает строить дворец", "en": "Count Afonso begins the palace", "pt": "O conde D. Afonso começa a construir o paço" },
+                "quote": {
+                  "ru": "Строительство началось около 1420 года, после второй женитьбы графа Афонсу.",
+                  "en": "Building began around 1420, after Count Afonso’s second marriage.",
+                  "pt": "A construção começou por volta de 1420, depois do segundo casamento do conde D. Afonso."
+                }
+              },
+              {
+                "id": "barracks",
+                "year": 1807,
+                "label": { "ru": "Во дворце размещают казарму", "en": "The palace becomes a barracks", "pt": "O paço passa a quartel" },
+                "quote": {
+                  "ru": "С 1807 по 1935 год во дворце стояла казарма.",
+                  "en": "The palace served as a barracks from 1807 to 1935.",
+                  "pt": "De 1807 a 1935 o paço serviu de quartel."
+                }
+              },
+              {
+                "id": "rebuilt",
+                "year": 1937,
+                "label": { "ru": "Рожериу де Азеведу начинает реконструкцию дворца", "en": "Rogério de Azevedo starts rebuilding the palace", "pt": "Rogério de Azevedo começa a reconstruir o paço" },
+                "quote": {
+                  "ru": "Реконструкция Рожериу де Азеведу шла с 1937 по 1959 год.",
+                  "en": "Rogério de Azevedo’s reconstruction ran from 1937 to 1959.",
+                  "pt": "A reconstrução de Rogério de Azevedo decorreu entre 1937 e 1959."
+                }
+              },
+              {
+                "id": "residence",
+                "year": 1959,
+                "label": { "ru": "Дворец становится северной резиденцией президента", "en": "The palace becomes the President’s residence in the north", "pt": "O paço torna-se residência oficial do Presidente da República no Norte" },
+                "quote": {
+                  "ru": "С 25 июня 1959 года — северная резиденция президента Португалии.",
+                  "en": "Since 25 June 1959 it has been the President of Portugal’s residence in the north.",
+                  "pt": "Desde 25 de junho de 1959 é residência oficial do Presidente da República no Norte."
+                }
+              }
+            ],
+            "start": ["residence", "begun", "rebuilt", "barracks"]
+          },
+          "visit": {
+            "ru": ["У пандуса перед фасадом стоит статуя Афонсу Энрикеша, а до замка — три минуты пешком через парк."],
+            "en": ["The statue of Afonso Henriques stands by the ramp in front, and the castle is a three-minute walk through the park."],
+            "pt": ["Junto à rampa da entrada está a estátua de D. Afonso Henriques, e o castelo fica a três minutos a pé pelo parque."]
+          }
+        },
+        {
+          "id": "oliveira",
+          "from": { "text": "history, long", "basis": "history", "visit": "tip" },
+          "sources": [
+            "https://pt.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira_(Guimar%C3%A3es)",
+            "https://en.wikipedia.org/wiki/Igreja_de_Nossa_Senhora_da_Oliveira",
+            "https://www.cm-guimaraes.pt/monumentos/poi/igreja-de-nossa-senhora-da-oliveira",
+            "https://pt.wikipedia.org/wiki/Padr%C3%A3o_do_Salado"
+          ],
+          "text": {
+            "ru": [
+              "Около 949 года графиня Мумадона Диаш основала в низине Вимаранеша обитель во имя Спасителя, Девы Марии и апостолов — сначала двойную, для монахов и монахинь.",
+              "Около 1513 года над церковью подняли башню в мануэлинском стиле с зубцами.",
+              "На площади перед храмом стоит готический балдахин Падран-ду-Саладу в память о битве 1340 года, а рядом растёт олива — символ чуда 1342 года, давшего церкви имя."
+            ],
+            "en": [
+              "Around 949 Countess Mumadona Dias founded a house on the low ground of Vimaranes, dedicated to the Saviour, the Virgin and the Apostles; at first it was a double monastery for monks and nuns.",
+              "Around 1513 a battlemented Manueline tower was raised over the church.",
+              "In the square in front stands the Gothic canopy of the Padrão do Salado, raised in memory of the battle of 1340, and beside it grows an olive tree, the symbol of the miracle of 1342 that gave the church its name."
+            ],
+            "pt": [
+              "Por volta de 949, a condessa Mumadona Dias fundou na parte baixa de Vimaranes uma casa dedicada ao Salvador, à Virgem e aos Apóstolos; era ao início um mosteiro dúplice, de monges e monjas.",
+              "Por volta de 1513 levantou-se sobre a igreja uma torre manuelina ameada.",
+              "No largo em frente ergue-se o alpendre gótico do Padrão do Salado, em memória da batalha de 1340, e ao lado cresce uma oliveira, símbolo do milagre de 1342 que deu nome à igreja."
+            ]
+          },
+          "task": {
+            "id": "oliveira-vow",
+            "type": "multiple_choice",
+            "question": {
+              "ru": "Король Жуан I дал обет Святой Марии, а потом оплатил перестройку этой церкви. Накануне какой битвы он дал обет?",
+              "en": "King John I made a vow to Saint Mary and later paid for this church to be rebuilt. On the eve of which battle did he make the vow?",
+              "pt": "D. João I fez um voto a Santa Maria e depois pagou a remodelação desta igreja. Na véspera de que batalha fez o voto?"
+            },
+            "options": [
+              { "id": "aljubarrota", "ru": "Битва при Алжубарроте", "en": "The Battle of Aljubarrota", "pt": "A batalha de Aljubarrota" },
+              { "id": "sao-mamede", "ru": "Битва при Сан-Мамеде", "en": "The Battle of São Mamede", "pt": "A batalha de São Mamede" },
+              { "id": "salado", "ru": "Битва при Саладо", "en": "The Battle of the Salado", "pt": "A batalha do Salado" }
+            ],
+            "answer": "aljubarrota",
+            "basis": {
+              "ru": "Накануне битвы при Алжубарроте в 1385 году король Жуан I дал ей обет и в 1387 году оплатил перестройку храма.",
+              "en": "On the eve of the Battle of Aljubarrota in 1385 King John I made a vow to her, and in 1387 he paid for the rebuilding of the church.",
+              "pt": "Na véspera da batalha de Aljubarrota, em 1385, D. João I fez-lhe um voto e, em 1387, pagou a remodelação da igreja."
+            }
+          },
+          "visit": {
+            "ru": ["Через готическую аркаду старой ратуши с площади Оливейры попадаете прямо на площадь Сантьяго."],
+            "en": ["From Largo da Oliveira, the Gothic arcade of the old town hall leads straight into Praça de Santiago."],
+            "pt": ["Do Largo da Oliveira, a arcada gótica dos antigos Paços do Concelho leva diretamente à Praça de Santiago."]
+          }
+        },
+        {
+          "id": "sao-tiago",
+          "from": { "text": "history, facts", "basis": "facts", "visit": "tip" },
+          "sources": [
+            "https://en.wikipedia.org/wiki/Santiago_Square",
+            "https://pt.wikipedia.org/wiki/Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_e_Zona_de_Couros",
+            "https://blog.araduca.pt/2011/08/praca-de-s-tiago-3.html"
+          ],
+          "text": {
+            "ru": [
+              "Документы упоминают площадь много веков подряд, и она сохранила средневековую планировку.",
+              "Часовню святого Иакова разобрали в январе 1887 года; её план выложен в мостовой.",
+              "Романтичные сегодня дома с деревянными балконами когда-то считали трущобами."
+            ],
+            "en": [
+              "Documents mention the square over many centuries, and it keeps its medieval layout.",
+              "The chapel of Saint James was demolished in January 1887; its plan is marked in the paving.",
+              "The houses with wooden balconies that look so romantic today were once thought slums."
+            ],
+            "pt": [
+              "Os documentos referem a praça ao longo de muitos séculos, e ela mantém o traçado medieval.",
+              "A capela de São Tiago foi demolida em janeiro de 1887; a planta está marcada no pavimento.",
+              "As casas de varandas de madeira, tão românticas hoje, foram em tempos tidas por insalubres."
+            ]
+          },
+          "task": {
+            "id": "find-sao-tiago",
+            "type": "find_on_map",
+            "target": "sao-tiago",
+            "candidates": ["sao-tiago", "toural", "paco-duques", "sao-francisco", "santos-passos", "plataforma-artes"],
+            "basis": {
+              "ru": "Аркада старой ратуши соединяет площадь с площадью Оливейры.",
+              "en": "The arcade of the old town hall links the square to Largo da Oliveira.",
+              "pt": "A arcada dos antigos Paços do Concelho liga a praça ao Largo da Oliveira."
+            }
+          },
+          "visit": {
+            "ru": ["Найдите на мостовой линию, повторяющую план снесённой часовни."],
+            "en": ["Look for the line in the paving that traces the plan of the demolished chapel."],
+            "pt": ["Procure no pavimento a linha que desenha a planta da capela demolida."]
+          }
+        }
+      ]
+    },
+    {
+      "id": "the-wall-and-beyond",
+      "title": { "ru": "Стена и город за ней", "en": "The wall and the town beyond it", "pt": "A muralha e a vila para lá dela" },
+      "intro": {
+        "ru": "Пять мест вдоль средневековой стены и за ней: её единственная уцелевшая башня, площадь и квартал кожевников, выросшие за стеной, францисканский монастырь и церковь на старом ярмарочном поле. На каждой остановке одно задание, за верный ответ — печать.",
+        "en": "Five places along the medieval wall and beyond it: its one surviving tower, the square and the tanners' quarter that grew up outside it, a Franciscan convent and the church on the old fairground. Each stop sets one task. Each right answer earns a stamp.",
+        "pt": "Cinco lugares ao longo da muralha medieval e para lá dela: a única torre que dela resta, a praça e o bairro dos curtidores que cresceram fora dela, um convento franciscano e a igreja do antigo campo de feiras. Cada paragem traz uma tarefa. Cada resposta certa vale um selo."
+      },
+      "end_lead": {
+        "ru": "Вы прошли пять мест на карте. Все они стоят в Гимарайнше, и их можно увидеть своими глазами.",
+        "en": "You have seen the five places on the map. All of them stand in Guimarães, and you can visit them in person.",
+        "pt": "Viu os cinco lugares no mapa. Todos estão em Guimarães e pode visitá-los pessoalmente."
+      },
+      "stops": [
+        {
+          "id": "toural",
+          "from": { "text": "history, long", "basis": "facts", "visit": "tip" },
+          "sources": ["https://pt.wikipedia.org/wiki/Largo_do_Toural", "https://pt.wikipedia.org/wiki/Guimar%C3%A3es"],
+          "text": {
+            "ru": [
+              "В 1791 году городская управа сдала в аренду участок вдоль стены под застройку.",
+              "Фасады получили аркады в первом этаже, огромные окна в два этажа, мансардные крыши и красивые кованые решётки балконов — тот облик, который и сегодня называют «гостиной города».",
+              "В 2011 году на площадь вернулся ренессансный фонтан XVI века, а в 2012-м, к культурной столице Европы, её реконструировали."
+            ],
+            "en": [
+              "In 1791 the town council leased a plot along the wall for building.",
+              "The façades gained arcades at ground level, huge windows two storeys high, dormer roofs and fine wrought-iron balconies — the look still known today as the city's “drawing room”.",
+              "In 2011 the 16th-century Renaissance fountain returned to the square, and in 2012, for the European Capital of Culture, the whole space was remodelled and linked to Avenida Alberto Sampaio."
+            ],
+            "pt": [
+              "Em 1791 a Câmara aforou o terreno junto à muralha para edificação.",
+              "As fachadas ganharam arcadas no piso térreo, janelas enormes com dois pisos de altura, telhados de águas furtadas e belas grades de ferro forjado — o aspeto que ainda hoje lhe vale o nome de «sala de visitas» da cidade.",
+              "Em 2011 o chafariz renascentista do século XVI regressou à praça e, em 2012, ano de Capital Europeia da Cultura, todo o espaço foi requalificado e ligado à Avenida Alberto Sampaio."
+            ]
+          },
+          "task": {
+            "id": "toural-origin",
+            "type": "multiple_choice",
+            "question": {
+              "ru": "Из чего вырос Турал?",
+              "en": "What did the Toural grow out of?",
+              "pt": "De que nasceu o Toural?"
+            },
+            "options": [
+              { "id": "garden", "ru": "Из королевского сада", "en": "A royal garden", "pt": "De um jardim real" },
+              { "id": "plots", "ru": "Из монастырских огородов", "en": "A monastery's vegetable plots", "pt": "Das hortas de um mosteiro" },
+              { "id": "fair", "ru": "Из ярмарки скота за городскими стенами", "en": "A cattle fair held outside the town walls", "pt": "De uma feira de gado que se fazia fora das muralhas" }
+            ],
+            "answer": "fair",
+            "basis": {
+              "ru": "Площадь выросла из ярмарки скота, шумевшей здесь за городскими стенами в XVII веке.",
+              "en": "The square grew out of the cattle fair held outside the town walls in the 17th century.",
+              "pt": "A praça nasceu da feira de gado que, no século XVII, se fazia fora das muralhas."
+            }
+          },
+          "visit": {
+            "ru": ["Удобно начать прогулку отсюда: на юг, к башне Алфандега с надписью «Aqui nasceu Portugal», и дальше через аркаду к площадям Сантьягу и Оливейра, на север — к дворцу герцогов и замку."],
+            "en": ["It is a handy place to start a walk: south to the Alfândega tower inscribed “Aqui nasceu Portugal” and on through the arcade to the squares of Santiago and Oliveira, or north to the Dukes' Palace and the castle."],
+            "pt": ["É um bom ponto de partida: a sul, para a Torre da Alfândega com a inscrição «Aqui nasceu Portugal» e, pela arcada, até às praças de Santiago e da Oliveira; a norte, para o Paço dos Duques e o Castelo."]
+          }
+        },
+        {
+          "id": "muralha",
+          "view": { "k": 0.55, "mk": 0.6 },
+          "from": { "text": "facts, long", "items": "facts, history", "visit": "tip" },
+          "sources": [
+            "https://www.visitguimaraes.travel/torre-da-alfandega-muralha-e-adarve",
+            "https://pt.wikipedia.org/wiki/Hist%C3%B3ria_de_Guimar%C3%A3es",
+            "https://www.allaboutportugal.pt/pt/guimaraes/monumentos/torre-da-alfandega-aqui-nasceu-portugal",
+            "https://maisguimaraes.pt/muralha-organiza-visita-guiada-a-muralha-e-a-torre-da-alfandega/"
+          ],
+          "text": {
+            "ru": [
+              "Жуан I велел снести внутреннюю стену между двумя посадами, объединив их в один город.",
+              "Torre da Alfândega — единственная сохранившаяся башня средневековой стены Гимарайнша.",
+              "На ней и высечено «Aqui nasceu Portugal»."
+            ],
+            "en": [
+              "João I ordered the inner wall between the two burghs demolished, making them one town.",
+              "The Torre da Alfândega is the only surviving tower of Guimarães' medieval wall.",
+              "It bears the inscription “Aqui nasceu Portugal”."
+            ],
+            "pt": [
+              "D. João I mandou demolir a muralha interior entre os dois burgos, unindo-os numa só vila.",
+              "A Torre da Alfândega é a única torre que resta da muralha medieval de Guimarães.",
+              "Nela está inscrito «Aqui nasceu Portugal»."
+            ]
+          },
+          "task": {
+            "id": "wall-years",
+            "type": "sequence",
+            "items": [
+              {
+                "id": "completed",
+                "year": 1318,
+                "label": { "ru": "Король Диниш завершает стену", "en": "King Dinis completes the wall", "pt": "D. Dinis conclui a muralha" },
+                "quote": {
+                  "ru": "Окончательный обвод стены начали при Афонсу III и завершили в 1318 году при короле Динише.",
+                  "en": "The definitive wall was begun under Afonso III and completed in 1318 under King Dinis.",
+                  "pt": "O traçado definitivo da muralha começou com D. Afonso III e ficou concluído em 1318, com D. Dinis."
+                }
+              },
+              {
+                "id": "infante",
+                "year": 1322,
+                "label": { "ru": "Инфант Афонсу воюет против отца, короля Диниша", "en": "Prince Afonso makes war on his father, King Dinis", "pt": "O infante D. Afonso faz guerra ao pai, D. Dinis" },
+                "quote": {
+                  "ru": "в 1322 году, когда инфант Афонсу воевал против своего отца Диниша",
+                  "en": "in 1322, when the Infante Afonso made war on his father Dinis",
+                  "pt": "em 1322, quando o infante D. Afonso guerreava seu pai, D. Dinis"
+                }
+              },
+              {
+                "id": "castile",
+                "year": 1369,
+                "label": { "ru": "Кастильские войска Энрике II вторгаются в область", "en": "Castilian troops under Henry II invade the region", "pt": "Tropas de Castela comandadas por Henrique II invadem a região" },
+                "quote": {
+                  "ru": "в 1369-м, когда кастильские войска Энрике II вторглись в область Entre-Douro-e-Minho",
+                  "en": "in 1369, when Castilian troops under Henry II invaded the Entre-Douro-e-Minho",
+                  "pt": "em 1369, quando as tropas de Castela comandadas por Henrique II invadiram a região de Entre-Douro-e-Minho"
+                }
+              },
+              {
+                "id": "siege",
+                "year": 1385,
+                "label": { "ru": "Король Жуан I осаждает город", "en": "King João I lays siege to the town", "pt": "D. João I cerca a vila" },
+                "quote": {
+                  "ru": "в 1385-м, когда Жуан I осадил сопротивлявшихся вимаранцев",
+                  "en": "in 1385, when João I besieged the resisting Vimaranenses",
+                  "pt": "em 1385, quando D. João I montou cerco aos resistentes vimaranenses"
+                }
+              }
+            ],
+            "start": ["castile", "siege", "completed", "infante"]
+          },
+          "visit": {
+            "ru": ["Начните от Ларгу-да-Кондесса-Мунадона и пройдите вдоль Авениды Алберту Сампайю: со стены видны дворец герцогов, замок и Пенья."],
+            "en": ["Start at Largo da Condessa Mumadona and walk along Avenida Alberto Sampaio: from the wall you can see the Dukes' Palace, the castle and Penha."],
+            "pt": ["Comece no Largo da Condessa Mumadona e siga pela Avenida Alberto Sampaio: do adarve vê-se o Paço dos Duques, o castelo e a Penha."]
+          }
+        },
+        {
+          "id": "couros",
+          "from": { "text": "history", "basis": "history", "visit": "tip" },
+          "sources": [
+            "https://www.cm-guimaraes.pt/areas-de-intervencao/ambiente-e-sustentabilidade/ambiente/ribeira-da-costa-couros/enquadramento-historico",
+            "https://em.guimaraes.pt/geo_artigo-28/zona-de-couros",
+            "https://whc.unesco.org/en/list/1031",
+            "https://pt.wikipedia.org/wiki/Centro_Hist%C3%B3rico_de_Guimar%C3%A3es_e_Zona_de_Couros"
+          ],
+          "text": {
+            "ru": [
+              "Выделка кож в Гимарайнше документирована с XIII века.",
+              "В XIX веке нынешняя Зона Коуруш превратилась в привилегированный центр обработки кож: производство держалось на традиционной технике и ручном труде.",
+              "В июле 1977 года Зона Коуруш была классифицирована как Imóvel de Interesse Público."
+            ],
+            "en": [
+              "Leather working in Guimarães is documented from the 13th century.",
+              "In the 19th century the area we now call Couros became a privileged centre of hide processing, its output still based on traditional technique and hand labour.",
+              "In July 1977 the Couros Zone was listed as an Imóvel de Interesse Público."
+            ],
+            "pt": [
+              "A curtimenta em Guimarães está documentada desde o século XIII.",
+              "No século XIX, a atual Zona de Couros tornou-se um núcleo privilegiado da transformação de peles, com uma produção ainda assente na técnica tradicional e no trabalho manual.",
+              "Em julho de 1977, a Zona de Couros foi classificada como Imóvel de Interesse Público."
+            ]
+          },
+          "task": {
+            "id": "couros-walls",
+            "type": "true_false",
+            "statement": {
+              "ru": "Кожевники Гимарайнша селились внутри городских стен.",
+              "en": "The tanners of Guimarães settled inside the town walls.",
+              "pt": "Os curtidores de Guimarães instalaram-se dentro das muralhas."
+            },
+            "answer": false,
+            "basis": {
+              "ru": "Ремесло требовало обильной воды, и потому кожевники селились не в стенах города, а в низине вдоль ручья — там, где воды было вдоволь, а запахи не мешали горожанам.",
+              "en": "The trade needed plenty of water, so the tanners settled not inside the walls but in the low ground along the stream, where water was abundant and the smells did not trouble the townspeople.",
+              "pt": "A atividade exigia água em abundância, pelo que os curtidores se instalaram não dentro das muralhas, mas na parte baixa ao longo da ribeira, onde a água sobrava e os cheiros não incomodavam a vila."
+            }
+          },
+          "visit": {
+            "ru": ["Идите из центра на запад по Rua de Couros вдоль ручья: чаны для дубления и старые фабрики разбросаны по обеим сторонам улицы."],
+            "en": ["Head west from the centre along Rua de Couros, following the stream: the tanning vats and old factories lie on both sides of the street."],
+            "pt": ["Siga do centro para poente pela Rua de Couros, acompanhando a ribeira: os tanques de curtir e as antigas fábricas ficam dos dois lados da rua."]
+          }
+        },
+        {
+          "id": "sao-francisco",
+          "from": { "text": "facts", "basis": "history", "visit": "tip" },
+          "sources": [
+            "https://pt.wikipedia.org/wiki/Convento_de_S%C3%A3o_Francisco_(Guimar%C3%A3es)",
+            "https://pt.wikipedia.org/wiki/Gualter_(santo)",
+            "http://www.ordemsaofrancisco.com/"
+          ],
+          "text": {
+            "ru": [
+              "Францисканцы пришли в Гимарайнш в 1217 году с фраем Гвалтером, посланным Франциском Ассизским.",
+              "Нынешний монастырь отстроили с 1400 года по приказу Жуана I; готическую апсиду закончили около 1461 года.",
+              "В церкви похоронена Констанса де Норонья, первая герцогиня Браганса (надгробие с лежащей фигурой)."
+            ],
+            "en": [
+              "The Franciscans reached Guimarães in 1217 with Friar Gualter, sent by Francis of Assisi.",
+              "The present convent was rebuilt from 1400 by order of João I; the Gothic apse was finished around 1461.",
+              "Constança de Noronha, first Duchess of Bragança, is buried in the church (tomb with recumbent effigy)."
+            ],
+            "pt": [
+              "Os franciscanos chegaram a Guimarães em 1217 com frei Gualter, enviado por Francisco de Assis.",
+              "O convento atual foi reedificado a partir de 1400 por ordem de D. João I; a ábside gótica ficou pronta por volta de 1461.",
+              "Na igreja está sepultada Constança de Noronha, primeira duquesa de Bragança (túmulo com jacente)."
+            ]
+          },
+          "task": {
+            "id": "sao-francisco-convent",
+            "type": "multiple_choice",
+            "question": {
+              "ru": "Почему король Диниш велел снести первый францисканский монастырь у городских стен?",
+              "en": "Why did King Dinis order the first Franciscan convent by the town walls to be pulled down?",
+              "pt": "Porque mandou D. Dinis demolir o primeiro convento franciscano junto às muralhas?"
+            },
+            "options": [
+              { "id": "palace", "ru": "Его землю отвели под королевский дворец", "en": "Its land was wanted for a royal palace", "pt": "O terreno era preciso para um paço real" },
+              { "id": "siege", "ru": "В случае осады он угрожал безопасности города", "en": "In a siege it threatened the town's security", "pt": "Comprometia a segurança da vila em caso de cerco" },
+              { "id": "fire", "ru": "Его разрушил пожар", "en": "A fire had left it in ruins", "pt": "Um incêndio tinha-o deixado em ruínas" }
+            ],
+            "answer": "siege",
+            "basis": {
+              "ru": "Монастырь у стен просуществовал недолго: в 1325 году король Диниш велел его снести, потому что в случае осады укрепления ордена угрожали безопасности города.",
+              "en": "The convent by the walls did not last long: in 1325 King Dinis ordered it demolished, because in a siege the friars' fortifications threatened the town's security.",
+              "pt": "O convento junto às muralhas durou pouco: em 1325, D. Dinis mandou demolí-lo, por comprometer a segurança do burgo em caso de cerco."
+            }
+          },
+          "visit": {
+            "ru": ["Осмотрите готическую апсиду снаружи, главный портал, барочный интерьер-зал и клуатр с залом капитула."],
+            "en": ["Look at the Gothic apse from outside, the main portal, the Baroque hall interior and the cloister with its chapter house."],
+            "pt": ["Veja a ábside gótica pelo exterior, o portal principal, o interior barroco em nave-sala e o claustro com a sala do capítulo."]
+          }
+        },
+        {
+          "id": "santos-passos",
+          "view": { "mk": 0.75 },
+          "from": { "text": "facts", "basis": "history", "visit": "tip" },
+          "sources": [
+            "https://em.guimaraes.pt/geo_artigo-28/igreja-e-oratorios-de-nossa-senhora-da-consolacao-e-dos-santos-passos",
+            "https://www.cm-guimaraes.pt/monumentos/poi/igreja-de-n-sra-da-consolacao-e-santos-passos",
+            "https://www.allaboutportugal.pt/pt/guimaraes/monumentos/igreja-de-nossa-senhora-da-consolacao-e-santos-passos",
+            "https://pt.wikipedia.org/wiki/Gualter_(santo)"
+          ],
+          "text": {
+            "ru": [
+              "Новую церковь заказали в 1769 году; это, вероятно, последняя работа Андре Соареша (1720–1769).",
+              "Строительство завершили в октябре 1785 года; две башни, лестницу и балюстраду добавили в XIX веке.",
+              "Oratórios (Passos) образуют Via-Sacra с раскрашенными деревянными фигурами Страстей."
+            ],
+            "en": [
+              "The new church was commissioned in 1769 and is probably the last work designed by André Soares (1720–1769).",
+              "It was finished in October 1785; the twin towers, staircase and balustrade were added in the 19th century.",
+              "The Oratórios (Passos) form a Via Sacra with painted wooden figures of the Passion."
+            ],
+            "pt": [
+              "A nova igreja foi encomendada em 1769 e é, provavelmente, a última obra concebida por André Soares (1720–1769).",
+              "Ficou concluída em outubro de 1785; as duas torres, a escadaria e a balaustrada foram acrescentadas no século XIX.",
+              "Os Oratórios (Passos) formam uma via-sacra com figuras de madeira policromada da Paixão."
+            ]
+          },
+          "task": {
+            "id": "find-santos-passos",
+            "type": "find_on_map",
+            "target": "santos-passos",
+            "candidates": ["santos-passos", "sao-francisco", "oliveira", "toural", "vila-flor", "paco-duques"],
+            "basis": {
+              "ru": "Церковь стоит на оси Ларгу-да-Република-ду-Бразил, рядом с садом и дорогой, ведущей к канатной дороге на Пенью.",
+              "en": "The church stands on the axis of Largo da República do Brasil, beside its garden and the road leading to the Penha cable car.",
+              "pt": "A igreja fica no eixo do Largo da República do Brasil, junto ao seu jardim e à estrada que sobe para o teleférico da Penha."
+            }
+          },
+          "visit": {
+            "ru": ["Церковь стоит на Ларгу-да-Република-ду-Бразил, перед ней — ухоженный сад; отсюда хорошо начать путь к нижней станции канатной дороги на Пенью."],
+            "en": ["The church stands on Largo da República do Brasil, in front of a neat garden, and from here it is easy to walk on to the lower station of the Penha cable car."],
+            "pt": ["A igreja fica no Largo da República do Brasil, em frente de um jardim cuidado; daqui segue-se facilmente até à estação inferior do teleférico da Penha."]
+          }
+        }
+      ]
+    }
+  ]
+}

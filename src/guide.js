@@ -183,7 +183,7 @@ export function createGuide({ landmarks, select, getActive, project, rig, reduce
   // G opens and focuses, Esc closes. Capture phase: Esc closes the guide
   // before main.js closes the place card under it.
   const typing = (el) => el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement || el?.isContentEditable;
-  const busyMode = () => /\bis-(intro|cinema|story)\b/.test(document.body.className);
+  const busyMode = () => /\bis-(intro|cinema|story|quest)\b/.test(document.body.className);
   window.addEventListener(
     'keydown',
     (e) => {
